@@ -195,9 +195,14 @@ export default function TemplateDetailPage({
 
                                 <div className="flex-1 min-w-0">
                                     <h3 className="font-bold text-white text-base truncate">{ex.exercise?.name}</h3>
-                                    <p className="text-xs text-slate-400 mt-1">
-                                        {ex.target_sets} serie × {ex.target_reps_min || "?"}-{ex.target_reps_max || "?"} reps
-                                        {ex.target_rir !== null && ` @ RIR ${ex.target_rir}`}
+                                    <p className="text-xs text-slate-400 mt-1 flex items-center gap-2">
+                                        <span>
+                                            {ex.target_sets} serie × {ex.target_reps_min || "?"}-{ex.target_reps_max || "?"} reps
+                                            {ex.target_rir !== null && ` @ RIR ${ex.target_rir}`}
+                                        </span>
+                                        {ex.sets_data && Array.isArray(ex.sets_data) && ex.sets_data.length > 0 && (
+                                            <span className="px-1 py-0.5 rounded bg-primary/10 text-primary text-[8px] font-black uppercase border border-primary/20">Flex</span>
+                                        )}
                                     </p>
                                 </div>
 

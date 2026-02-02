@@ -5,6 +5,7 @@ export interface ProgressionSettings {
     deload_rate: number
     target_rir: number
     enable_auto_progression: boolean
+    max_plate_weight: number
 }
 
 export interface ProgressionResult {
@@ -90,7 +91,8 @@ export async function getProgressionSettings(userId: string): Promise<Progressio
             progression_rate: 0.025,
             deload_rate: 0.10,
             target_rir: 2,
-            enable_auto_progression: true
+            enable_auto_progression: true,
+            max_plate_weight: 20
         }
     }
 

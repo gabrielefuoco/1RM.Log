@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/client"
-import { Exercise, CreateExerciseInput, BodyPart, ExerciseType } from "@/types/database"
+import { Exercise, CreateExerciseInput, BodyPart, ExerciseType, TemplateSet } from "@/types/database"
 
 export async function getExercises(bodyPart?: BodyPart) {
     const supabase = createClient()
@@ -70,6 +70,7 @@ export interface AddTemplateExerciseInput {
     target_reps_max: number | null
     target_rir: number | null
     order: number
+    sets_data?: TemplateSet[]
 }
 
 export async function addTemplateExercise(input: AddTemplateExerciseInput) {
@@ -146,6 +147,7 @@ export interface UpdateTemplateExerciseInput {
     target_reps_min?: number | null
     target_reps_max?: number | null
     target_rir?: number | null
+    sets_data?: TemplateSet[]
 }
 
 export async function updateTemplateExercise(id: string, updates: UpdateTemplateExerciseInput) {

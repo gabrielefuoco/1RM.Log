@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { getExercises, addTemplateExercise } from "@/services/exercises"
-import { Exercise } from "@/types/database"
+import { Exercise, TemplateSet } from "@/types/database"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -16,8 +16,9 @@ import {
     DrawerTrigger,
     DrawerClose,
 } from "@/components/ui/drawer"
-import { Plus, Search, Dumbbell } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { Plus, Search, Dumbbell, Trash2 } from "lucide-react"
+import { useAutoAnimate } from "@formkit/auto-animate/react"
 
 interface AddTemplateExerciseDrawerProps {
     templateId: string
@@ -45,6 +46,49 @@ export function AddTemplateExerciseDrawer({
     const [targetRepsMin, setTargetRepsMin] = useState(8)
     const [targetRepsMax, setTargetRepsMax] = useState(12)
     const [targetRir, setTargetRir] = useState(2)
+    const [setsData, setSetsData] = useState<TemplateSet[]>([
+        { reps_min: 8, reps_max: 12, rir: 2, type: 'straight' },
+        { reps_min: 8, reps_max: 12, rir: 2, type: 'straight' },
+        { reps_min: 8, reps_max: 12, rir: 2, type: 'straight' },
+    ])
+
+    const [parent] = useAutoAnimate()
+
+    // Sync global to all sets
+    const updateGlobal = (count: number, min: number, max: number, rir: number) => {
+        setTargetSets(count)
+        setTargetRepsMin(min)
+        setTargetRepsMax(max)
+        setTargetRir(rir)
+
+        const newSets: TemplateSet[] = Array.from({ length: count }, () => ({
+            reps_min: min,
+            reps_max: max,
+            rir: rir,
+            type: 'straight'
+        }))
+        setSetsData(newSets)
+    }
+
+    const updateSingleSet = (index: number, updates: Partial<TemplateSet>) => {
+        setSetsData(prev => {
+            const next = [...prev]
+            next[index] = { ...next[index], ...updates }
+            return next
+        })
+    }
+
+    const addSet = () => {
+        const lastSet = setsData[setsData.length - 1] || { reps_min: 8, reps_max: 12, rir: 2, type: 'straight' }
+        setSetsData(prev => [...prev, { ...lastSet }])
+        setTargetSets(prev => prev + 1)
+    }
+
+    const removeSet = (index: number) => {
+        if (setsData.length <= 1) return
+        setSetsData(prev => prev.filter((_, i) => i !== index))
+        setTargetSets(prev => prev - 1)
+    }
 
     // Load exercises on mount
     useEffect(() => {
@@ -69,6 +113,7 @@ export function AddTemplateExerciseDrawer({
                 target_reps_min: targetRepsMin,
                 target_reps_max: targetRepsMax,
                 target_rir: targetRir,
+                sets_data: setsData,
                 order: currentExercisesCount
             })
             setOpen(false)
@@ -93,7 +138,7 @@ export function AddTemplateExerciseDrawer({
                     </Button>
                 )}
             </DrawerTrigger>
-            <DrawerContent className="bg-background border-t border-white/10 max-h-[85vh]">
+            <DrawerContent className="bg-background border-t border-white/10 max-h-[90vh]">
                 <div className="mx-auto w-full max-w-sm overflow-y-auto">
                     <DrawerHeader>
                         <DrawerTitle className="text-white text-xl">
@@ -122,7 +167,7 @@ export function AddTemplateExerciseDrawer({
                                 </div>
 
                                 {/* Exercise List */}
-                                <div className="max-h-64 overflow-y-auto space-y-2">
+                                <div className="max-h-80 overflow-y-auto space-y-2 pr-1 custom-scrollbar">
                                     {filteredExercises.map((exercise) => (
                                         <button
                                             key={exercise.id}
@@ -151,10 +196,10 @@ export function AddTemplateExerciseDrawer({
                                 {/* Selected exercise */}
                                 <div className="p-3 rounded-xl bg-primary/10 border border-primary/30 flex items-center gap-3">
                                     <Dumbbell className="h-5 w-5 text-primary" />
-                                    <div>
-                                        <p className="font-bold text-white">{selectedExercise.name}</p>
+                                    <div className="flex-1">
+                                        <p className="font-bold text-white leading-tight">{selectedExercise.name}</p>
                                         <button
-                                            className="text-xs text-primary hover:underline"
+                                            className="text-[10px] text-primary hover:underline uppercase font-bold tracking-wider"
                                             onClick={() => setSelectedExercise(null)}
                                         >
                                             Cambia esercizio
@@ -162,42 +207,42 @@ export function AddTemplateExerciseDrawer({
                                     </div>
                                 </div>
 
-                                {/* Config */}
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div className="space-y-2">
-                                        <Label className="text-white">Serie</Label>
+                                {/* Global Config Grid */}
+                                <div className="grid grid-cols-2 gap-3">
+                                    <div className="space-y-1.5">
+                                        <Label className="text-[10px] uppercase text-slate-500 font-bold ml-1">Serie</Label>
                                         <Input
                                             type="number"
                                             min={1}
                                             max={10}
                                             value={targetSets}
-                                            onChange={(e) => setTargetSets(Number(e.target.value))}
-                                            className="bg-zinc-900/50 border-white/10 text-white text-center text-lg font-bold"
+                                            onChange={(e) => updateGlobal(Number(e.target.value), targetRepsMin, targetRepsMax, targetRir)}
+                                            className="bg-zinc-900/50 border-white/5 text-white text-center text-lg font-bold h-10"
                                         />
                                     </div>
-                                    <div className="space-y-2">
-                                        <Label className="text-white">RIR Target</Label>
+                                    <div className="space-y-1.5">
+                                        <Label className="text-[10px] uppercase text-slate-500 font-bold ml-1">RIR Target</Label>
                                         <Input
                                             type="number"
                                             min={0}
                                             max={5}
                                             value={targetRir}
-                                            onChange={(e) => setTargetRir(Number(e.target.value))}
-                                            className="bg-zinc-900/50 border-white/10 text-white text-center text-lg font-bold"
+                                            onChange={(e) => updateGlobal(targetSets, targetRepsMin, targetRepsMax, Number(e.target.value))}
+                                            className="bg-zinc-900/50 border-white/5 text-white text-center text-lg font-bold h-10"
                                         />
                                     </div>
                                 </div>
 
-                                <div className="space-y-2">
-                                    <Label className="text-white">Range Reps</Label>
+                                <div className="space-y-1.5">
+                                    <Label className="text-[10px] uppercase text-slate-500 font-bold ml-1">Range Reps Default</Label>
                                     <div className="flex items-center gap-2">
                                         <Input
                                             type="number"
                                             min={1}
                                             max={50}
                                             value={targetRepsMin}
-                                            onChange={(e) => setTargetRepsMin(Number(e.target.value))}
-                                            className="bg-zinc-900/50 border-white/10 text-white text-center font-bold"
+                                            onChange={(e) => updateGlobal(targetSets, Number(e.target.value), targetRepsMax, targetRir)}
+                                            className="bg-zinc-900/50 border-white/5 text-white text-center font-bold h-10"
                                         />
                                         <span className="text-slate-500">—</span>
                                         <Input
@@ -205,28 +250,91 @@ export function AddTemplateExerciseDrawer({
                                             min={1}
                                             max={50}
                                             value={targetRepsMax}
-                                            onChange={(e) => setTargetRepsMax(Number(e.target.value))}
-                                            className="bg-zinc-900/50 border-white/10 text-white text-center font-bold"
+                                            onChange={(e) => updateGlobal(targetSets, targetRepsMin, Number(e.target.value), targetRir)}
+                                            className="bg-zinc-900/50 border-white/5 text-white text-center font-bold h-10"
                                         />
+                                    </div>
+                                </div>
+
+                                {/* Per-Set Detail */}
+                                <div className="pt-2 space-y-3">
+                                    <div className="flex items-center justify-between">
+                                        <h3 className="text-[10px] font-black text-slate-600 uppercase tracking-[0.2em]">Dettaglio Serie</h3>
+                                        <Button
+                                            variant="ghost"
+                                            size="sm"
+                                            className="h-6 text-[10px] text-primary hover:bg-primary/10 font-black"
+                                            onClick={addSet}
+                                        >
+                                            + AGGIUNGI
+                                        </Button>
+                                    </div>
+
+                                    <div className="space-y-2 max-h-48 overflow-y-auto pr-1 custom-scrollbar" ref={parent}>
+                                        {setsData.map((set, i) => (
+                                            <div key={i} className="bg-zinc-900/60 rounded-xl p-3 border border-white/5 space-y-3">
+                                                <div className="flex items-center justify-between">
+                                                    <span className="text-[10px] font-black text-primary/50 uppercase italic">Serie {i + 1}</span>
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="icon"
+                                                        className="h-5 w-5 text-red-500/30 hover:text-red-500 hover:bg-red-500/10"
+                                                        onClick={() => removeSet(i)}
+                                                    >
+                                                        <Trash2 className="h-3 w-3" />
+                                                    </Button>
+                                                </div>
+
+                                                <div className="grid grid-cols-3 gap-3">
+                                                    <div>
+                                                        <Label className="text-[8px] uppercase text-slate-600 mb-1 block font-bold text-center">Min</Label>
+                                                        <Input
+                                                            type="number"
+                                                            value={set.reps_min}
+                                                            onChange={(e) => updateSingleSet(i, { reps_min: Number(e.target.value) })}
+                                                            className="h-8 bg-zinc-950/50 border-white/5 text-xs text-center font-bold"
+                                                        />
+                                                    </div>
+                                                    <div>
+                                                        <Label className="text-[8px] uppercase text-slate-600 mb-1 block font-bold text-center">Max</Label>
+                                                        <Input
+                                                            type="number"
+                                                            value={set.reps_max}
+                                                            onChange={(e) => updateSingleSet(i, { reps_max: Number(e.target.value) })}
+                                                            className="h-8 bg-zinc-950/50 border-white/5 text-xs text-center font-bold"
+                                                        />
+                                                    </div>
+                                                    <div>
+                                                        <Label className="text-[8px] uppercase text-slate-600 mb-1 block font-bold text-center">RIR</Label>
+                                                        <Input
+                                                            type="number"
+                                                            value={set.rir}
+                                                            onChange={(e) => updateSingleSet(i, { rir: Number(e.target.value) })}
+                                                            className="h-8 bg-zinc-950/50 border-white/5 text-xs text-center font-bold"
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ))}
                                     </div>
                                 </div>
                             </>
                         )}
                     </div>
 
-                    <DrawerFooter>
+                    <DrawerFooter className="pt-0">
                         {selectedExercise && (
                             <Button
                                 onClick={handleSubmit}
                                 disabled={loading}
-                                className="w-full bg-primary text-background-dark font-bold hover:bg-primary/90"
+                                className="w-full bg-primary text-background-dark font-black uppercase tracking-widest hover:bg-primary/90 py-6"
                             >
-                                {loading ? "Aggiunta..." : "Aggiungi alla Scheda"}
+                                {loading ? "Salvataggio..." : "Aggiungi Esercizio"}
                             </Button>
                         )}
                         <DrawerClose asChild>
-                            <Button variant="outline" className="w-full border-white/10 text-white hover:bg-white/5 hover:text-white">
-                                Annulla
+                            <Button variant="ghost" className="w-full text-slate-500 text-xs uppercase font-bold">
+                                Chiudi
                             </Button>
                         </DrawerClose>
                     </DrawerFooter>

@@ -26,6 +26,7 @@ const progressionSchema = z.object({
     progression_rate: z.number().min(0.005).max(0.10), // 0.5% to 10%
     deload_rate: z.number().min(0.05).max(0.20), // 5% to 20%
     target_rir: z.number().min(0).max(5),
+    max_plate_weight: z.number().min(5).max(50),
     enable_auto_progression: z.boolean(),
 })
 
@@ -42,6 +43,7 @@ export function ProgressionSettings() {
             deload_rate: 0.10,
             target_rir: 2,
             enable_auto_progression: true,
+            max_plate_weight: 20,
         },
     })
 
@@ -62,6 +64,7 @@ export function ProgressionSettings() {
                     deload_rate: Number(data.deload_rate),
                     target_rir: data.target_rir,
                     enable_auto_progression: data.enable_auto_progression,
+                    max_plate_weight: data.max_plate_weight || 20,
                 })
             }
             setIsLoading(false)
@@ -187,6 +190,35 @@ export function ProgressionSettings() {
                                         </FormControl>
                                         <FormDescription>
                                             Di quanto aumentare il carico quando l'esercizio è "facile".
+                                        </FormDescription>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+
+                            <FormField
+                                control={form.control}
+                                name="max_plate_weight"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Disco Max (kg)</FormLabel>
+                                        <FormControl>
+                                            <div className="flex items-center gap-4">
+                                                <Slider
+                                                    min={5}
+                                                    max={25}
+                                                    step={5}
+                                                    value={[field.value]}
+                                                    onValueChange={(val) => field.onChange(val[0])}
+                                                    className="flex-1"
+                                                />
+                                                <span className="font-mono text-xl font-bold text-primary w-12 text-center">
+                                                    {field.value}
+                                                </span>
+                                            </div>
+                                        </FormControl>
+                                        <FormDescription>
+                                            Il disco più pesante in palestra (20 o 25kg).
                                         </FormDescription>
                                         <FormMessage />
                                     </FormItem>

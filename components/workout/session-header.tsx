@@ -2,9 +2,10 @@
 
 import { Exercise, TemplateExercise } from "@/types/database"
 import { Badge } from "@/components/ui/badge"
-import { MoreVertical, ChevronRight, ChevronLeft, Trash2, Plus } from "lucide-react"
+import { MoreVertical, ChevronRight, ChevronLeft, Trash2, Plus, Info, RefreshCcw } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
+import { useState } from "react"
 
 interface SessionHeaderProps {
     exercise: Exercise
@@ -12,9 +13,11 @@ interface SessionHeaderProps {
     currentExerciseIndex: number
     totalExercises: number
     nextExercise?: Exercise | null
+    nextTemplateData?: TemplateExercise | null
     onBack?: () => void
     onAddExercise?: () => void
     onRemoveExercise?: () => void
+    onSwapExercise?: () => void
     className?: string
 }
 
@@ -24,11 +27,15 @@ export function SessionHeader({
     currentExerciseIndex,
     totalExercises,
     nextExercise,
+    nextTemplateData,
     onBack,
     onAddExercise,
     onRemoveExercise,
+    onSwapExercise,
     className
 }: SessionHeaderProps) {
+    const [isExpanded, setIsExpanded] = useState(false)
+
     return (
         <div className={cn("space-y-4", className)}>
             {/* Top Row: Back (if provided) + Counter + Actions */}
@@ -61,6 +68,17 @@ export function SessionHeader({
                             onClick={onRemoveExercise}
                         >
                             <Trash2 className="h-4 w-4" />
+                        </Button>
+                    )}
+                    {onSwapExercise && (
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            className="text-muted-foreground hover:text-primary h-8 w-8"
+                            onClick={onSwapExercise}
+                            title="Swap Exercise"
+                        >
+                            <RefreshCcw className="h-4 w-4" />
                         </Button>
                     )}
                     {onAddExercise && (
@@ -114,15 +132,48 @@ export function SessionHeader({
 
             {/* Next Exercise Preview */}
             {nextExercise && (
-                <div className="flex items-center gap-3 px-4 py-3 bg-muted/20 rounded-xl border border-border/50">
-                    <div className="h-8 w-8 rounded-lg bg-muted flex items-center justify-center">
-                        <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                <div
+                    className={cn(
+                        "transition-all duration-300 ease-in-out cursor-pointer",
+                        "bg-muted/20 rounded-xl border border-border/50",
+                        isExpanded ? "p-4 space-y-3" : "px-4 py-3"
+                    )}
+                    onClick={() => setIsExpanded(!isExpanded)}
+                >
+                    <div className="flex items-center gap-3">
+                        <div className={cn(
+                            "h-8 w-8 rounded-lg bg-muted flex items-center justify-center transition-transform",
+                            isExpanded && "rotate-90 bg-primary/20"
+                        )}>
+                            <ChevronRight className={cn("h-4 w-4 text-muted-foreground", isExpanded && "text-primary")} />
+                        </div>
+                        <div className="flex-1">
+                            <p className="text-[9px] text-muted-foreground uppercase tracking-widest font-bold">Prossimo:</p>
+                            <p className="text-sm text-foreground font-bold">{nextExercise.name}</p>
+                        </div>
+                        {!isExpanded && <Info className="h-4 w-4 text-muted-foreground/30" />}
                     </div>
-                    <div className="flex-1">
-                        <p className="text-[9px] text-muted-foreground uppercase tracking-widest font-bold">Prossimo:</p>
-                        <p className="text-sm text-foreground font-bold">{nextExercise.name}</p>
-                    </div>
-                    <ChevronRight className="h-5 w-5 text-muted-foreground/30" />
+
+                    {isExpanded && nextTemplateData && (
+                        <div className="grid grid-cols-3 gap-2 pt-2 animate-in fade-in slide-in-from-top-2 duration-300">
+                            <div className="bg-background/40 rounded-lg p-2 border border-border/20 text-center">
+                                <p className="text-[8px] text-muted-foreground uppercase font-black">Serie</p>
+                                <p className="text-sm font-bold text-foreground">{nextTemplateData.target_sets}</p>
+                            </div>
+                            <div className="bg-background/40 rounded-lg p-2 border border-border/20 text-center">
+                                <p className="text-[8px] text-muted-foreground uppercase font-black">Reps</p>
+                                <p className="text-sm font-bold text-foreground">{nextTemplateData.target_reps_min}-{nextTemplateData.target_reps_max}</p>
+                            </div>
+                            <div className="bg-background/40 rounded-lg p-2 border border-border/20 text-center">
+                                <p className="text-[8px] text-muted-foreground uppercase font-black">RIR</p>
+                                <p className="text-sm font-bold text-primary">{nextTemplateData.target_rir ?? '-'}</p>
+                            </div>
+                        </div>
+                    )}
+
+                    {isExpanded && !nextTemplateData && (
+                        <p className="text-[10px] text-muted-foreground italic text-center py-1">Nessun obiettivo impostato</p>
+                    )}
                 </div>
             )}
         </div>

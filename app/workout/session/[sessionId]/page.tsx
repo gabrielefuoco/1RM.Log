@@ -15,13 +15,19 @@ import { RestTimer } from "@/components/workout/rest-timer"
 import { ExercisePicker } from "@/components/exercises/exercise-picker"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
+import { useWakeLock } from "@/hooks/use-wake-lock"
+import { DailyReadiness } from "@/components/workout/daily-readiness"
+
+import { WarmupCalculator } from "@/services/warmup"
 
 interface RunnerExerciseState {
     exercise: Exercise
     templateData?: any // If from template
+    setsData?: any[] // Per-set configuration from template
     logs: ExerciseLog[] // Logs done in THIS session
     historyLogs: ExerciseLog[] // Previous history
     targetSets: number
+    plannedWarmups?: any[] // Will use WarmupSet structure
 }
 
 import {
@@ -47,8 +53,12 @@ export default function SessionRunnerPage({ params }: { params: Promise<{ sessio
     // Timer State
     const [showTimer, setShowTimer] = useState(false)
 
+    // Readiness State
+    const [showReadiness, setShowReadiness] = useState(false)
+
     // Picker State
     const [isPickerOpen, setIsPickerOpen] = useState(false)
+    const [pickerMode, setPickerMode] = useState<'add' | 'swap'>('add')
 
     // Alert State
     const [alertConfig, setAlertConfig] = useState<{
@@ -62,6 +72,12 @@ export default function SessionRunnerPage({ params }: { params: Promise<{ sessio
         description: "",
         onConfirm: () => { }
     })
+
+    const { request: requestWakeLock } = useWakeLock()
+
+    useEffect(() => {
+        requestWakeLock()
+    }, [requestWakeLock])
 
     useEffect(() => {
         const init = async () => {
@@ -85,6 +101,7 @@ export default function SessionRunnerPage({ params }: { params: Promise<{ sessio
                         exercisesMap.set(te.exercise_id, {
                             exercise: te.exercise,
                             templateData: te,
+                            setsData: te.sets_data,
                             logs: [],
                             historyLogs: history,
                             targetSets: te.target_sets || 3
@@ -124,6 +141,11 @@ export default function SessionRunnerPage({ params }: { params: Promise<{ sessio
 
                 setRunnerExercises(Array.from(exercisesMap.values()))
 
+                // Show readiness only for new workouts (no logs yet)
+                if (data.logs.length === 0) {
+                    setShowReadiness(true)
+                }
+
             } catch (e) {
                 console.error(e)
                 toast.error("Errore caricamento sessione")
@@ -135,16 +157,17 @@ export default function SessionRunnerPage({ params }: { params: Promise<{ sessio
     }, [sessionId])
 
 
-    const handleLogSet = async (exIndex: number, setNumber: number, weight: number, reps: number, rir: number) => {
+    const handleLogSet = async (exIndex: number, setNumber: number, weight: number, reps: number, rir: number, setType: 'work' | 'warmup' | 'drop' | 'failure' = 'work') => {
         const currentItem = runnerExercises[exIndex]
         try {
-            const newLog = await logSet(sessionId, currentItem.exercise.id, setNumber, reps, weight, rir)
+            const newLog = await logSet(sessionId, currentItem.exercise.id, setNumber, reps, weight, rir, setType)
 
             // Update local state
             setRunnerExercises(prev => {
                 const copy = [...prev]
                 const target = { ...copy[exIndex] }
-                target.logs = [...target.logs.filter(l => l.set_number !== setNumber), newLog]
+                // Filter by BOTH set_number and set_type to avoid overwriting different set types with same number
+                target.logs = [...target.logs.filter(l => l.set_number !== setNumber || l.set_type !== setType), newLog]
                 copy[exIndex] = target
                 return copy
             })
@@ -158,42 +181,104 @@ export default function SessionRunnerPage({ params }: { params: Promise<{ sessio
         }
     }
 
+    const handleReadinessComplete = (data: { score: number, adjustment: 'none' | 'volume' | 'intensity' }) => {
+        setShowReadiness(false)
+        if (data.adjustment === 'none') return
+
+        setRunnerExercises(prev => prev.map(ex => {
+            const newEx = { ...ex }
+            if (data.adjustment === 'volume') {
+                newEx.targetSets = Math.max(1, ex.targetSets - 1)
+            }
+            // For 'intensity', we don't change state here, but we could pass it to SetLogger
+            // Or better, we apply it to the suggestion in SetLogger. Let's pass a global intensity multiplier.
+            return newEx
+        }))
+
+        if (data.adjustment === 'intensity') {
+            toast.info("Intensità ridotta del 10% per questa sessione")
+            setIntensityMultiplier(0.9)
+        } else if (data.adjustment === 'volume') {
+            toast.info("Volume ridotto (-1 set) per questa sessione")
+        }
+    }
+
+    const [intensityMultiplier, setIntensityMultiplier] = useState(1.0)
+
     const handleAddExercise = async (exercise: Exercise) => {
         setIsPickerOpen(false)
 
-        // Check if already in list
-        const exists = runnerExercises.find(r => r.exercise.id === exercise.id)
-        if (exists) {
-            toast.info("Esercizio già presente")
+        try {
+            const supabase = createClient()
+            // Fetch history for the new exercise
+            const { data: history } = await supabase
+                .from('exercise_logs')
+                .select('*')
+                .eq('exercise_id', exercise.id)
+                .order('created_at', { ascending: false })
+                .limit(10)
+
+            const newState: RunnerExerciseState = {
+                exercise,
+                templateData: null,
+                logs: [],
+                historyLogs: history || [],
+                targetSets: 3 // Default for ad-hoc
+            }
+
+            if (pickerMode === 'swap') {
+                setRunnerExercises(prev => {
+                    const copy = [...prev]
+                    copy[currentIndex] = newState
+                    return copy
+                })
+                toast.success(`Sostituito con ${exercise.name}`)
+            } else {
+                // Check if already in list when adding
+                const exists = runnerExercises.find(r => r.exercise.id === exercise.id)
+                if (exists) {
+                    toast.info("Esercizio già presente")
+                    return
+                }
+                setRunnerExercises(prev => [...prev, newState])
+                setCurrentIndex(runnerExercises.length)
+                toast.success(`Aggiunto ${exercise.name}`)
+            }
+        } catch (e) {
+            console.error(e)
+            toast.error("Errore aggiunta esercizio")
+        }
+    }
+
+
+    const handleAddWarmup = async () => {
+        const currentItem = runnerExercises[currentIndex]
+        const bestHistoryLog = currentItem.historyLogs.reduce((prev, curr) => (prev.weight > curr.weight) ? prev : curr, currentItem.historyLogs[0])
+
+        if (!bestHistoryLog) {
+            toast.info("Nessuna cronologia trovata per generare warmup automatico.")
             return
         }
 
-        // Fetch history
-        const history = await getPreviousLogs(exercise.id)
-
-        const newRunnerItem: RunnerExerciseState = {
-            exercise,
-            logs: [],
-            historyLogs: history,
-            targetSets: 3
-        }
-
-        setRunnerExercises(prev => [...prev, newRunnerItem])
-
-        // Go to new exercise
-        if (runnerExercises.length === 0) {
-            setCurrentIndex(0)
-        } else {
-            setCurrentIndex(runnerExercises.length)
-        }
+        const warmups = WarmupCalculator.calculate(bestHistoryLog.weight)
+        setRunnerExercises(prev => {
+            const copy = [...prev]
+            const target = { ...copy[currentIndex] }
+            target.plannedWarmups = warmups
+            copy[currentIndex] = target
+            return copy
+        })
+        toast.success(`${warmups.length} set di warmup aggiunti`)
     }
 
 
     const finishWorkout = async () => {
         try {
-            await finishSession(sessionId, 3600, "Completed via Runner") // TODO: Calc real duration
-            toast.success("Allenamento completato!")
-            router.replace('/')
+            // We just redirect to recap. The recap page will handle the final finishSession call 
+            // once the user fills in RPE and notes.
+            // But we should at least update the duration here if possible.
+            // For now, simple redirect.
+            router.push(`/workout/recap/${sessionId}`)
         } catch (e) {
             console.error(e)
             toast.error("Errore durante la chiusura dell'allenamento")
@@ -202,6 +287,16 @@ export default function SessionRunnerPage({ params }: { params: Promise<{ sessio
 
     // Render Helpers
     if (loading) return <div className="h-screen flex items-center justify-center"><Loader2 className="animate-spin text-primary" /></div>
+
+    if (showReadiness) {
+        return (
+            <div className="fixed inset-0 z-50 bg-background flex items-center justify-center p-6">
+                <div className="w-full max-w-md">
+                    <DailyReadiness onComplete={handleReadinessComplete} />
+                </div>
+            </div>
+        )
+    }
 
     if (runnerExercises.length === 0) {
         // Empty Session View
@@ -237,6 +332,7 @@ export default function SessionRunnerPage({ params }: { params: Promise<{ sessio
                     currentExerciseIndex={currentIndex}
                     totalExercises={runnerExercises.length}
                     nextExercise={nextItem?.exercise}
+                    nextTemplateData={nextItem?.templateData}
                     onBack={() => {
                         setAlertConfig({
                             open: true,
@@ -245,7 +341,14 @@ export default function SessionRunnerPage({ params }: { params: Promise<{ sessio
                             onConfirm: () => router.push('/')
                         })
                     }}
-                    onAddExercise={() => setIsPickerOpen(true)}
+                    onAddExercise={() => {
+                        setPickerMode('add')
+                        setIsPickerOpen(true)
+                    }}
+                    onSwapExercise={() => {
+                        setPickerMode('swap')
+                        setIsPickerOpen(true)
+                    }}
                     onRemoveExercise={() => {
                         setAlertConfig({
                             open: true,
@@ -277,29 +380,97 @@ export default function SessionRunnerPage({ params }: { params: Promise<{ sessio
 
             {/* Set Loggers */}
             <div className="p-4 space-y-2">
-                {Array.from({ length: Math.max(currentItem.targetSets, currentItem.logs.length) }).map((_, i) => {
-                    const setNum = i + 1
-                    const log = currentItem.logs.find(l => l.set_number === setNum)
-                    const prevLog = currentItem.historyLogs[0] // TODO: Should match specific set number from history if possible?
+                {/* 1. Planned Warmup Sets (not yet logged) */}
+                {currentItem.plannedWarmups?.filter(pw =>
+                    !currentItem.logs.some(l => l.set_type === 'warmup' && l.set_number === pw.set_number)
+                ).map((pw, i) => (
+                    <SetLogger
+                        key={`planned-warmup-${pw.set_number}`}
+                        setNumber={pw.set_number}
+                        setType="warmup"
+                        targetRir={0}
+                        isActive={i === 0 && currentItem.logs.filter(l => l.set_type === 'warmup').length === 0}
+                        onSave={(w, r, i) => handleLogSet(currentIndex, pw.set_number, w, r, i, 'warmup')}
+                        settings={progressionSettings}
+                        intensityMultiplier={intensityMultiplier}
+                        initialValues={{ weight: pw.weight, reps: pw.reps, rir: 0, set_type: 'warmup' } as any}
+                    />
+                ))}
+
+                {/* 2. All Logged Sets (Warmups and Work Sets) grouped together or sorted */}
+                {[...currentItem.logs].sort((a, b) => {
+                    if (a.set_type === b.set_type) return a.set_number - b.set_number
+                    return a.set_type === 'warmup' ? -1 : 1
+                }).map((log, i) => {
+                    const setTarget = currentItem.setsData?.[log.set_number - 1]
+                    const targetRir = setTarget?.rir ?? currentItem.templateData?.target_rir ?? 0
+                    const targetRepsMin = setTarget?.reps_min ?? currentItem.templateData?.target_reps_min
+                    const targetRepsMax = setTarget?.reps_max ?? currentItem.templateData?.target_reps_max
 
                     return (
                         <SetLogger
-                            key={`${currentItem.exercise.id}-set-${i}`}
-                            setNumber={setNum}
-                            previousLog={prevLog}
-                            targetRir={currentItem.templateData?.target_rir ?? 2}
-                            isActive={!log && setNum === (currentItem.logs.length + 1)}
-                            isFuture={!log && setNum > (currentItem.logs.length + 1)}
-                            onSave={(w, r, rir) => handleLogSet(currentIndex, setNum, w, r, rir)}
+                            key={log.id}
+                            setNumber={log.set_number}
+                            setType={log.set_type as any}
+                            targetRir={targetRir}
+                            targetRepsMin={targetRepsMin}
+                            targetRepsMax={targetRepsMax}
+                            onSave={(w, r, i) => handleLogSet(currentIndex, log.set_number, w, r, i, log.set_type as any)}
+                            settings={progressionSettings}
+                            intensityMultiplier={intensityMultiplier}
                             initialValues={log}
-                            settings={progressionSettings} // Integration Point
+                            previousLog={currentItem.historyLogs[0]}
                         />
                     )
                 })}
 
+                {/* 3. Empty Work Sets (targetSets - loggedWorkSets) */}
+                {Array.from({
+                    length: Math.max(0, currentItem.targetSets - currentItem.logs.filter(l => l.set_type !== 'warmup').length)
+                }).map((_, i) => {
+                    const loggedWorkSets = currentItem.logs.filter(l => l.set_type !== 'warmup').length
+                    const setNum = loggedWorkSets + i + 1
+                    const isFirstWorkSet = i === 0
+                    const isActive = currentItem.logs.filter(l => l.set_type === 'warmup').length === (currentItem.plannedWarmups?.length || 0) && isFirstWorkSet
+
+                    const setTarget = currentItem.setsData?.[setNum - 1]
+                    const targetRir = setTarget?.rir ?? currentItem.templateData?.target_rir ?? 0
+                    const targetRepsMin = setTarget?.reps_min ?? currentItem.templateData?.target_reps_min
+                    const targetRepsMax = setTarget?.reps_max ?? currentItem.templateData?.target_reps_max
+
+                    return (
+                        <SetLogger
+                            key={`empty-work-${i}`}
+                            setNumber={setNum}
+                            setType="work"
+                            targetRir={targetRir}
+                            targetRepsMin={targetRepsMin}
+                            targetRepsMax={targetRepsMax}
+                            isActive={isActive}
+                            isFuture={!isActive}
+                            onSave={(w, r, i) => handleLogSet(currentIndex, setNum, w, r, i, 'work')}
+                            settings={progressionSettings}
+                            intensityMultiplier={intensityMultiplier}
+                            previousLog={currentItem.historyLogs[0]}
+                        />
+                    )
+                })}
+            </div>
+
+            {/* Action Buttons */}
+            <div className="px-4 pb-4 grid grid-cols-2 gap-3">
                 <Button
-                    variant="ghost"
-                    className="w-full text-xs text-muted-foreground hover:text-primary mt-2"
+                    variant="outline"
+                    className="h-12 border-primary/20 bg-primary/5 text-primary font-bold rounded-xl hover:bg-primary/10 transition-all flex items-center justify-center gap-2"
+                    onClick={handleAddWarmup}
+                    disabled={currentItem.plannedWarmups && currentItem.plannedWarmups.length > 0}
+                >
+                    <Plus className="h-4 w-4" />
+                    Warmup
+                </Button>
+                <Button
+                    variant="outline"
+                    className="h-12 border-white/10 bg-white/5 text-slate-300 font-bold rounded-xl hover:bg-white/10 transition-all flex items-center justify-center gap-2"
                     onClick={() => {
                         // Add an extra set by incrementing targetSets
                         setRunnerExercises(prev => {
@@ -313,7 +484,8 @@ export default function SessionRunnerPage({ params }: { params: Promise<{ sessio
                         setTimeout(() => window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' }), 100)
                     }}
                 >
-                    + Aggiungi Set Extra
+                    <Plus className="h-4 w-4" />
+                    Set Extra
                 </Button>
             </div>
 

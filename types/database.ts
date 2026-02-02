@@ -9,6 +9,12 @@ export type Json =
 export type ExerciseType = 'barbell' | 'dumbbell' | 'cable' | 'machine' | 'bodyweight' | 'other'
 export type BodyPart = 'chest' | 'back' | 'legs' | 'shoulders' | 'arms' | 'core' | 'full_body'
 export type SetType = 'straight' | 'top_set' | 'backoff' | 'warmup' | 'myorep'
+export interface TemplateSet {
+    reps_min: number
+    reps_max: number
+    rir: number
+    type: SetType
+}
 
 export interface Profile {
     id: string
@@ -56,6 +62,7 @@ export interface TemplateExercise {
     target_reps_max: number | null
     target_rir: number | null
     type: SetType
+    sets_data: TemplateSet[]
     order: number
     // Joins
     exercise?: Exercise
@@ -67,6 +74,7 @@ export interface WorkoutSession {
     workout_template_id: string | null
     date: string
     duration_seconds: number | null
+    session_rpe: number | null
     notes: string | null
     created_at: string
     // Joins
@@ -77,6 +85,7 @@ export interface ExerciseLog {
     id: string
     session_id: string
     exercise_id: string
+    set_type: 'work' | 'warmup' | 'drop' | 'failure'
     set_number: number
     reps: number
     weight: number

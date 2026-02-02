@@ -26,7 +26,8 @@ export async function logSet(
     setNumber: number,
     reps: number,
     weight: number,
-    rir: number | null
+    rir: number | null,
+    setType: 'work' | 'warmup' | 'drop' | 'failure' = 'work'
 ) {
     const supabase = createClient()
 
@@ -50,7 +51,8 @@ export async function logSet(
             .update({
                 reps,
                 weight,
-                rir
+                rir,
+                set_type: setType
             })
             .eq('id', existing.id)
             .select()
@@ -68,6 +70,7 @@ export async function logSet(
                 reps,
                 weight,
                 rir,
+                set_type: setType,
             }])
             .select()
             .single()
@@ -79,18 +82,104 @@ export async function logSet(
     return data
 }
 
-export async function finishSession(sessionId: string, durationSeconds: number, notes?: string) {
+export async function finishSession(sessionId: string, durationSeconds: number, notes?: string, rpe?: number) {
     const supabase = createClient()
 
     const { error } = await supabase
         .from('workout_sessions')
         .update({
             duration_seconds: durationSeconds,
-            notes: notes
+            notes: notes,
+            session_rpe: rpe
         })
         .eq('id', sessionId)
 
     if (error) throw error
+}
+
+export async function getWorkoutRecap(sessionId: string) {
+    const supabase = createClient()
+
+    // 1. Get current session logs and template
+    const { session, logs } = await getSessionWithLogs(sessionId)
+
+    // 2. Calculate current stats
+    const currentVolume = logs.reduce((acc, log) => acc + (log.weight * log.reps), 0)
+    const currentReps = logs.reduce((acc, log) => acc + log.reps, 0)
+
+    // 3. Find PRs (Best 1RM in this session vs history)
+    const prs: { exerciseName: string, weight: number, reps: number, old1rm: number, new1rm: number }[] = []
+
+    // Group logs by exercise for PR check
+    const logsByEx = new Map<string, ExerciseLog[]>()
+    logs.forEach(l => {
+        const current = logsByEx.get(l.exercise_id) || []
+        current.push(l)
+        logsByEx.set(l.exercise_id, current)
+    })
+
+    for (const [exId, exLogs] of logsByEx.entries()) {
+        const sessionMax1rm = Math.max(...exLogs.map(l => l.estimated_1rm))
+        const sessionBestLog = exLogs.find(l => l.estimated_1rm === sessionMax1rm)!
+
+        // Find historical max 1RM BEFORE this session
+        const { data: history } = await supabase
+            .from('exercise_logs')
+            .select('estimated_1rm')
+            .eq('exercise_id', exId)
+            .neq('session_id', sessionId)
+            .lt('created_at', session.created_at)
+            .order('estimated_1rm', { ascending: false })
+            .limit(1)
+            .maybeSingle()
+
+        const historicalMax = history?.estimated_1rm || 0
+
+        if (sessionMax1rm > historicalMax) {
+            prs.push({
+                exerciseName: (sessionBestLog as any).exercise.name,
+                weight: sessionBestLog.weight,
+                reps: sessionBestLog.reps,
+                old1rm: historicalMax,
+                new1rm: sessionMax1rm
+            })
+        }
+    }
+
+    // 4. Get Volume Delta (same template, previous session)
+    let volumeDelta = 0
+    if (session.workout_template_id) {
+        const { data: lastSession } = await supabase
+            .from('workout_sessions')
+            .select('id')
+            .eq('workout_template_id', session.workout_template_id)
+            .neq('id', sessionId)
+            .lt('date', session.date)
+            .order('date', { ascending: false })
+            .limit(1)
+            .maybeSingle()
+
+        if (lastSession) {
+            const { data: lastLogs } = await supabase
+                .from('exercise_logs')
+                .select('weight, reps')
+                .eq('session_id', lastSession.id)
+
+            if (lastLogs) {
+                const lastVolume = lastLogs.reduce((acc, l) => acc + (l.weight * l.reps), 0)
+                volumeDelta = currentVolume - lastVolume
+            }
+        }
+    }
+
+    return {
+        session,
+        logs,
+        currentVolume,
+        currentReps,
+        volumeDelta,
+        prs
+    }
 }
 
 export async function getPreviousLogs(exerciseId: string, limit: number = 5) {

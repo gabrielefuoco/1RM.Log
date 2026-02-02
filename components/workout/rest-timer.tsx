@@ -26,6 +26,14 @@ export function RestTimer({ initialSeconds = 90, onComplete, onClose, isOpen }: 
     }, [isOpen, initialSeconds])
 
     useEffect(() => {
+        if (typeof window !== 'undefined' && 'Notification' in window) {
+            if (Notification.permission === 'default') {
+                Notification.requestPermission()
+            }
+        }
+    }, [])
+
+    useEffect(() => {
         let interval: NodeJS.Timeout
         if (isOpen && isRunning && seconds > 0) {
             interval = setInterval(() => {
@@ -34,7 +42,17 @@ export function RestTimer({ initialSeconds = 90, onComplete, onClose, isOpen }: 
         } else if (seconds <= 0 && isRunning) {
             setIsRunning(false)
             if (onComplete) onComplete()
-            // Optional: Play sound or vibrate
+
+            // Background Notification logic
+            if (document.visibilityState === 'hidden' && Notification.permission === 'granted') {
+                new Notification("Logbook: Recupero Completato! 💥", {
+                    body: "È ora della prossima serie. Forza!",
+                    icon: "/icons/icon-192x192.png",
+                    tag: 'rest-timer'
+                })
+            }
+
+            // Haptic Feedback
             if (navigator.vibrate) navigator.vibrate([200, 100, 200])
         }
         return () => clearInterval(interval)

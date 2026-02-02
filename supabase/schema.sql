@@ -60,6 +60,7 @@ create table public.template_exercises (
   target_reps_max integer,
   target_rir integer, -- Reps In Reserve target
   type set_type default 'straight',
+  sets_data jsonb default '[]', -- JSON array for per-set configuration
   
   "order" integer not null default 0
 );
@@ -71,6 +72,7 @@ create table public.workout_sessions (
   workout_template_id uuid references public.workout_templates(id), -- Nullable if ad-hoc
   date timestamp with time zone default timezone('utc'::text, now()) not null,
   duration_seconds integer,
+  session_rpe integer,
   notes text,
   created_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
@@ -81,6 +83,7 @@ create table public.exercise_logs (
   session_id uuid references public.workout_sessions(id) on delete cascade not null,
   exercise_id uuid references public.exercises(id) not null,
   
+  set_type text default 'work' check (set_type in ('work', 'warmup', 'drop', 'failure')),
   set_number integer not null,
   reps integer not null,
   weight numeric not null, -- kg
@@ -135,6 +138,7 @@ create table public.progression_settings (
   progression_rate numeric not null default 0.025, -- 2.5% increment
   deload_rate numeric not null default 0.10, -- 10% decrease
   target_rir integer not null default 2,
+  max_plate_weight numeric not null default 20, -- 20kg or 25kg common max
   enable_auto_progression boolean default true,
   updated_at timestamp with time zone default timezone('utc'::text, now()) not null
 );

@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Exercise History</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#13ec6d",
+                        "background-light": "#f6f8f7",
+                        "background-dark": "#0a0f0d",
+                        "card-dark": "#161b18",
+                    },
+                    fontFamily: {
+                        "display": ["Lexend"]
+                    },
+                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+<style type="text/tailwindcss">
+        body {
+            font-family: 'Lexend', sans-serif;
+        }
+        .chart-gradient {
+            background: linear-gradient(180deg, rgba(19, 236, 109, 0.1) 0%, rgba(19, 236, 109, 0) 100%);
+        }
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 min-h-screen">
+<div class="sticky top-0 z-50 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800/50">
+<div class="flex items-center p-4 justify-between max-w-md mx-auto">
+<div class="flex size-10 items-center justify-center rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors cursor-pointer">
+<span class="material-symbols-outlined text-2xl">arrow_back_ios_new</span>
+</div>
+<div class="flex-1"></div>
+<div class="flex size-10 items-center justify-end">
+<button class="flex items-center justify-center rounded-lg hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors">
+<span class="material-symbols-outlined text-2xl">more_horiz</span>
+</button>
+</div>
+</div>
+</div>
+<main class="max-w-md mx-auto pb-24">
+<div class="px-5 pt-8 pb-4">
+<h1 class="text-4xl font-bold tracking-tight text-slate-900 dark:text-white">Panca Piana</h1>
+<p class="text-slate-500 dark:text-slate-400 text-sm mt-1">Barbell Bench Press</p>
+</div>
+<div class="px-5 pt-4">
+<div class="flex items-end justify-between mb-6">
+<div class="flex flex-col">
+<p class="text-slate-400 text-[10px] font-bold uppercase tracking-[0.15em] mb-1">Estimated 1RM</p>
+<div class="flex items-baseline gap-2">
+<span class="text-4xl font-bold">115.5</span>
+<span class="text-lg font-medium text-slate-500">kg</span>
+<span class="ml-2 flex items-center text-primary text-xs font-bold px-2 py-0.5 rounded bg-primary/10">
+                            +5.2%
+                        </span>
+</div>
+</div>
+<div class="flex p-1 bg-slate-200 dark:bg-slate-800/50 rounded-lg">
+<div class="px-3 py-1 text-[10px] font-bold rounded bg-white dark:bg-slate-700 shadow-sm">1M</div>
+<div class="px-3 py-1 text-[10px] font-bold text-slate-500">6M</div>
+<div class="px-3 py-1 text-[10px] font-bold text-slate-500">ALL</div>
+</div>
+</div>
+<div class="relative h-[160px] w-full mb-2">
+<svg class="w-full h-full" fill="none" preserveAspectRatio="none" viewBox="0 0 400 150">
+<path d="M0 130 C 50 120, 80 40, 100 60 C 130 90, 170 30, 200 50 C 230 70, 270 140, 300 130 C 330 120, 360 20, 400 30 L 400 150 L 0 150 Z" fill="url(#chartGradient)"></path>
+<path d="M0 130 C 50 120, 80 40, 100 60 C 130 90, 170 30, 200 50 C 230 70, 270 140, 300 130 C 330 120, 360 20, 400 30" stroke="#13ec6d" stroke-linecap="round" stroke-width="2.5"></path>
+<defs>
+<linearGradient id="chartGradient" x1="0" x2="0" y1="0" y2="1">
+<stop offset="0%" stop-color="#13ec6d" stop-opacity="0.15"></stop>
+<stop offset="100%" stop-color="#13ec6d" stop-opacity="0"></stop>
+</linearGradient>
+</defs>
+</svg>
+<div class="absolute top-0 left-[75%] bottom-0 w-[1px] bg-primary/30 border-dashed border-r flex items-center justify-center">
+<div class="size-2 rounded-full bg-primary -ml-[0.5px]"></div>
+</div>
+</div>
+<div class="flex justify-between text-[10px] font-bold text-slate-400 uppercase tracking-widest border-t border-slate-100 dark:border-slate-800/50 pt-2">
+<span>Jun</span>
+<span>Aug</span>
+<span class="text-primary">Oct</span>
+<span>Dec</span>
+</div>
+</div>
+<div class="px-5 mt-8">
+<div class="p-5 rounded-2xl bg-white dark:bg-card-dark border border-slate-200 dark:border-slate-800/80 shadow-sm">
+<div class="flex items-center gap-3 mb-3">
+<span class="material-symbols-outlined text-primary text-xl">workspace_premium</span>
+<span class="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400">Personal Best</span>
+</div>
+<div class="flex items-baseline justify-between">
+<div>
+<span class="text-3xl font-bold">115</span>
+<span class="text-sm font-medium text-slate-500 ml-1">kg</span>
+<p class="text-xs text-slate-500 mt-1">Achieved on Oct 12, 2023</p>
+</div>
+<div class="text-right">
+<span class="text-sm font-bold text-slate-900 dark:text-slate-200">5 @ 100 @ 0</span>
+<p class="text-[10px] text-slate-400 uppercase tracking-wider">Reps @ Weight @ RIR</p>
+</div>
+</div>
+</div>
+</div>
+<div class="px-5 mt-4">
+<div class="flex items-center gap-3 p-4 rounded-xl bg-primary/5 border border-primary/20">
+<span class="material-symbols-outlined text-primary text-xl">psychology</span>
+<div class="flex-1">
+<p class="text-[10px] font-bold text-primary uppercase tracking-widest mb-0.5">Next Target</p>
+<p class="text-sm text-slate-600 dark:text-slate-300">Targeting RIR 1: <span class="font-bold text-slate-900 dark:text-white">8 @ 87.5 @ 1</span></p>
+</div>
+</div>
+</div>
+<div class="mt-10">
+<div class="flex items-center justify-between px-5 mb-5">
+<h3 class="text-lg font-bold">Session Logs</h3>
+<span class="text-primary text-xs font-bold uppercase tracking-widest">Sort: Newest</span>
+</div>
+<div class="flex flex-col divide-y divide-slate-100 dark:divide-slate-800/50">
+<div class="px-5 py-4 flex items-center justify-between bg-white dark:bg-transparent transition-colors">
+<div>
+<p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Yesterday</p>
+<div class="flex items-baseline gap-3">
+<span class="text-lg font-bold text-slate-900 dark:text-white">8 @ 85 @ 1</span>
+<span class="text-xs text-slate-500 italic">3 sets</span>
+</div>
+</div>
+<div class="text-right">
+<p class="text-sm font-bold text-slate-700 dark:text-slate-300">108.3 <span class="text-[10px] font-normal text-slate-500">1RM</span></p>
+</div>
+</div>
+<div class="px-5 py-4 flex items-center justify-between">
+<div>
+<p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Oct 24, 2023</p>
+<div class="flex items-baseline gap-3">
+<span class="text-lg font-bold text-slate-900 dark:text-white">6 @ 90 @ 2</span>
+<span class="text-xs text-slate-500 italic">4 sets</span>
+</div>
+</div>
+<div class="text-right">
+<p class="text-sm font-bold text-slate-700 dark:text-slate-300">111.4 <span class="text-[10px] font-normal text-slate-500">1RM</span></p>
+</div>
+</div>
+<div class="px-5 py-4 flex items-center justify-between bg-primary/5">
+<div>
+<p class="text-[10px] font-bold text-primary uppercase tracking-widest mb-1">Oct 12, 2023</p>
+<div class="flex items-baseline gap-3">
+<span class="text-lg font-bold text-primary">5 @ 100 @ 0</span>
+<span class="px-1.5 py-0.5 rounded-[4px] text-[8px] font-bold bg-primary/20 text-primary border border-primary/20 uppercase tracking-tighter">New PB</span>
+</div>
+</div>
+<div class="text-right">
+<p class="text-sm font-bold text-primary">115.0 <span class="text-[10px] font-normal text-primary/70">1RM</span></p>
+</div>
+</div>
+<div class="px-5 py-4 flex items-center justify-between opacity-60">
+<div>
+<p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Oct 05, 2023</p>
+<div class="flex items-baseline gap-3">
+<span class="text-lg font-bold text-slate-900 dark:text-white">10 @ 80 @ 3</span>
+<span class="text-xs text-slate-500 italic">3 sets</span>
+</div>
+</div>
+<div class="text-right">
+<p class="text-sm font-bold text-slate-700 dark:text-slate-300">106.7 <span class="text-[10px] font-normal text-slate-500">1RM</span></p>
+</div>
+</div>
+</div>
+</div>
+</main>
+<div class="fixed bottom-24 right-6 z-50">
+<button class="bg-primary text-black size-14 rounded-full shadow-xl shadow-primary/20 flex items-center justify-center active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-3xl font-bold">add</span>
+</button>
+</div>
+<div class="fixed bottom-0 left-0 right-0 bg-white/80 dark:bg-background-dark/80 backdrop-blur-xl border-t border-slate-200 dark:border-slate-800/80 pb-8 pt-3 z-40">
+<div class="flex justify-around max-w-md mx-auto items-center">
+<div class="flex flex-col items-center gap-1 text-slate-400">
+<span class="material-symbols-outlined">calendar_today</span>
+<span class="text-[10px] font-semibold">Log</span>
+</div>
+<div class="flex flex-col items-center gap-1 text-primary">
+<span class="material-symbols-outlined fill-1">monitoring</span>
+<span class="text-[10px] font-semibold">History</span>
+</div>
+<div class="flex flex-col items-center gap-1 text-slate-400">
+<span class="material-symbols-outlined">fitness_center</span>
+<span class="text-[10px] font-semibold">Exercises</span>
+</div>
+<div class="flex flex-col items-center gap-1 text-slate-400">
+<span class="material-symbols-outlined">person</span>
+<span class="text-[10px] font-semibold">Profile</span>
+</div>
+</div>
+</div>
+
+</body></html>

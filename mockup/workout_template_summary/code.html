@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Workout Template Summary</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#10b981", // Emerald 500
+                        "primary-dark": "#059669", // Emerald 600
+                        "surface": "#171717", // Neutral 900
+                        "surface-light": "#262626", // Neutral 800
+                        "background-dark": "#0a0a0a", // Deep Charcoal/Midnight
+                        "border-subtle": "#262626", // Subtle divider
+                    },
+                    fontFamily: {
+                        "display": ["Lexend", "sans-serif"]
+                    },
+                    borderRadius: { 
+                        "DEFAULT": "0.5rem", 
+                        "lg": "0.75rem", 
+                        "xl": "1rem", 
+                        "2xl": "1.25rem",
+                        "full": "9999px" 
+                    },
+                },
+            },
+        }
+    </script>
+<style type="text/tailwindcss">
+        @layer base {
+            .material-symbols-outlined {
+                font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            }
+        }
+        body {
+            -webkit-tap-highlight-color: transparent;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-white dark:bg-background-dark font-display text-slate-900 dark:text-neutral-100 min-h-screen flex flex-col">
+<header class="sticky top-0 z-50 bg-white/90 dark:bg-background-dark/95 backdrop-blur-md border-b border-slate-100 dark:border-neutral-800/50">
+<div class="flex items-center p-4 justify-between max-w-md mx-auto h-16">
+<div class="flex items-center gap-2">
+<button class="w-10 h-10 flex items-center justify-center -ml-2 rounded-full active:bg-neutral-800 transition-colors">
+<span class="material-symbols-outlined text-slate-600 dark:text-neutral-400 text-2xl">chevron_left</span>
+</button>
+<h2 class="text-lg font-semibold leading-tight tracking-tight">Giorno 2 - Upper</h2>
+</div>
+<div class="flex items-center">
+<button class="p-2 hover:bg-slate-100 dark:hover:bg-surface-light rounded-full transition-colors">
+<span class="material-symbols-outlined text-slate-600 dark:text-neutral-400">more_horiz</span>
+</button>
+</div>
+</div>
+</header>
+<main class="flex-1 max-w-md mx-auto w-full pb-32">
+<section class="p-4">
+<div class="bg-white dark:bg-surface border border-slate-200 dark:border-neutral-800 rounded-2xl p-5 shadow-sm">
+<div class="grid grid-cols-2 gap-4 mb-5">
+<div>
+<p class="text-slate-500 dark:text-neutral-500 text-[11px] uppercase tracking-wider font-bold mb-1">Total Sets</p>
+<p class="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">18</p>
+</div>
+<div>
+<p class="text-slate-500 dark:text-neutral-500 text-[11px] uppercase tracking-wider font-bold mb-1">Est. Duration</p>
+<p class="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">75 <span class="text-sm font-medium text-neutral-500">min</span></p>
+</div>
+</div>
+<div class="pt-5 border-t border-slate-100 dark:border-neutral-800">
+<p class="text-slate-500 dark:text-neutral-500 text-[11px] uppercase tracking-wider font-bold mb-3">Muscles Targeted</p>
+<div class="flex gap-1.5 flex-wrap">
+<span class="px-3 py-1 bg-primary/10 text-primary rounded-full text-[11px] font-semibold border border-primary/20">Chest</span>
+<span class="px-3 py-1 bg-primary/10 text-primary rounded-full text-[11px] font-semibold border border-primary/20">Back</span>
+<span class="px-3 py-1 bg-primary/10 text-primary rounded-full text-[11px] font-semibold border border-primary/20">Triceps</span>
+<span class="px-3 py-1 bg-slate-100 dark:bg-neutral-800 text-slate-600 dark:text-neutral-400 rounded-full text-[11px] font-semibold">+2 more</span>
+</div>
+</div>
+</div>
+</section>
+<section>
+<div class="px-5 py-2 flex justify-between items-end">
+<h3 class="text-xs font-bold uppercase tracking-[0.1em] text-slate-500 dark:text-neutral-500">Exercise Sequence</h3>
+<span class="text-[11px] text-primary font-bold">7 Movements</span>
+</div>
+<div class="space-y-4 p-4">
+<div class="bg-white dark:bg-surface border border-slate-200 dark:border-neutral-800 rounded-2xl overflow-hidden shadow-sm">
+<div class="p-4 flex justify-between items-start">
+<div>
+<h4 class="font-bold text-[15px] mb-0.5 tracking-tight dark:text-white">Incline Barbell Bench Press</h4>
+<p class="text-[11px] font-medium text-slate-400 dark:text-neutral-500 uppercase tracking-wide">Compound • Chest &amp; Shoulders</p>
+</div>
+<button class="p-1.5 hover:bg-slate-50 dark:hover:bg-neutral-800 rounded-lg transition-colors text-slate-400 dark:text-neutral-500">
+<span class="material-symbols-outlined text-[20px]">edit</span>
+</button>
+</div>
+<div class="px-4 pb-4 space-y-2">
+<div class="flex items-center justify-between p-3 bg-slate-50 dark:bg-neutral-800/40 rounded-xl border border-slate-100 dark:border-neutral-800/60">
+<span class="text-[10px] font-bold text-primary tracking-widest">SET 1</span>
+<span class="text-[13px] font-medium dark:text-neutral-200">Top Set: 5-8 reps @ <span class="text-primary font-bold">RIR 1</span></span>
+</div>
+<div class="flex items-center justify-between p-3 bg-slate-50 dark:bg-neutral-800/40 rounded-xl border border-slate-100 dark:border-neutral-800/60">
+<span class="text-[10px] font-bold text-slate-400 dark:text-neutral-500 tracking-widest">SET 2-3</span>
+<span class="text-[13px] font-medium dark:text-neutral-200">Backoff: 8-10 reps @ <span class="text-slate-400 dark:text-neutral-500 font-bold">RIR 2</span></span>
+</div>
+</div>
+</div>
+<div class="bg-white dark:bg-surface border border-slate-200 dark:border-neutral-800 rounded-2xl overflow-hidden shadow-sm">
+<div class="p-4 flex justify-between items-start">
+<div>
+<h4 class="font-bold text-[15px] mb-0.5 tracking-tight dark:text-white">Weighted Pull Ups</h4>
+<p class="text-[11px] font-medium text-slate-400 dark:text-neutral-500 uppercase tracking-wide">Compound • Latissimus Dorsi</p>
+</div>
+<button class="p-1.5 hover:bg-slate-50 dark:hover:bg-neutral-800 rounded-lg transition-colors text-slate-400 dark:text-neutral-500">
+<span class="material-symbols-outlined text-[20px]">edit</span>
+</button>
+</div>
+<div class="px-4 pb-4 space-y-2">
+<div class="flex items-center justify-between p-3 bg-slate-50 dark:bg-neutral-800/40 rounded-xl border border-slate-100 dark:border-neutral-800/60">
+<span class="text-[10px] font-bold text-primary tracking-widest">SET 1-2</span>
+<span class="text-[13px] font-medium dark:text-neutral-200">Working: 6-8 reps @ <span class="text-primary font-bold">RIR 1</span></span>
+</div>
+<div class="flex items-center justify-between p-3 bg-slate-50 dark:bg-neutral-800/40 rounded-xl border border-slate-100 dark:border-neutral-800/60">
+<span class="text-[10px] font-bold text-slate-400 dark:text-neutral-500 tracking-widest">SET 3</span>
+<span class="text-[13px] font-medium dark:text-neutral-200">To Failure: 10+ reps @ <span class="text-rose-500 font-bold">RIR 0</span></span>
+</div>
+</div>
+</div>
+<div class="bg-white dark:bg-surface border border-slate-200 dark:border-neutral-800 rounded-2xl overflow-hidden shadow-sm">
+<div class="p-4 flex justify-between items-start">
+<div>
+<h4 class="font-bold text-[15px] mb-0.5 tracking-tight dark:text-white">Cable Seated Row</h4>
+<p class="text-[11px] font-medium text-slate-400 dark:text-neutral-500 uppercase tracking-wide">Isolation • Mid-Back</p>
+</div>
+<button class="p-1.5 hover:bg-slate-50 dark:hover:bg-neutral-800 rounded-lg transition-colors text-slate-400 dark:text-neutral-500">
+<span class="material-symbols-outlined text-[20px]">edit</span>
+</button>
+</div>
+<div class="px-4 pb-4 space-y-2">
+<div class="flex items-center justify-between p-3 bg-slate-50 dark:bg-neutral-800/40 rounded-xl border border-slate-100 dark:border-neutral-800/60">
+<span class="text-[10px] font-bold text-slate-400 dark:text-neutral-500 tracking-widest">SET 1-3</span>
+<span class="text-[13px] font-medium dark:text-neutral-200">Hypertrophy: 10-12 reps @ <span class="text-slate-400 dark:text-neutral-500 font-bold">RIR 2</span></span>
+</div>
+</div>
+</div>
+<div class="bg-white/50 dark:bg-neutral-900/40 border border-slate-200/50 dark:border-neutral-800/50 rounded-2xl overflow-hidden opacity-50">
+<div class="p-4 flex justify-between items-start">
+<div>
+<h4 class="font-bold text-[15px] mb-0.5 tracking-tight dark:text-white">Tricep Pushdowns</h4>
+<p class="text-[11px] font-medium text-slate-400 dark:text-neutral-500 uppercase tracking-wide">Accessory • Triceps</p>
+</div>
+<button class="p-1.5">
+<span class="material-symbols-outlined text-[20px] text-slate-400 dark:text-neutral-600">edit</span>
+</button>
+</div>
+<div class="px-4 pb-4">
+<p class="text-[11px] italic text-slate-400 dark:text-neutral-600">Click to view 3 programmed sets...</p>
+</div>
+</div>
+</div>
+</section>
+</main>
+<div class="fixed bottom-0 left-0 right-0 p-4 pb-8 bg-gradient-to-t from-white via-white/95 dark:from-background-dark dark:via-background-dark/95 to-transparent backdrop-blur-sm z-50">
+<div class="max-w-md mx-auto flex gap-3">
+<button class="flex-[3] h-14 bg-primary text-white rounded-2xl font-bold text-[15px] shadow-lg shadow-primary/20 flex items-center justify-center gap-2 hover:bg-primary-dark active:scale-[0.98] transition-all">
+<span class="material-symbols-outlined font-bold text-xl">save</span>
+            Save Template
+        </button>
+<button class="flex-1 h-14 bg-white dark:bg-surface-light text-slate-900 dark:text-white border border-slate-200 dark:border-neutral-700 rounded-2xl flex items-center justify-center hover:bg-slate-50 dark:hover:bg-neutral-700 active:scale-[0.98] transition-all shadow-sm">
+<span class="material-symbols-outlined text-2xl">add</span>
+</button>
+</div>
+</div>
+
+</body></html>

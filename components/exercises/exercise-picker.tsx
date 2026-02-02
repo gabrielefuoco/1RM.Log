@@ -1,0 +1,96 @@
+"use client"
+
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer"
+import { Button } from "@/components/ui/button"
+import { useEffect, useState } from "react"
+import { Exercise } from "@/types/database"
+import { getExercises, searchExercises } from "@/services/exercises" // Need to ensure searchExercises is available
+import { Input } from "@/components/ui/input"
+import { Search, Plus, Dumbbell } from "lucide-react"
+import { ScrollArea } from "@/components/ui/scroll-area"
+
+interface ExercisePickerProps {
+    onSelect: (exercise: Exercise) => void
+    trigger?: React.ReactNode
+    open?: boolean
+    onOpenChange?: (open: boolean) => void
+}
+
+export function ExercisePicker({ onSelect, trigger, open, onOpenChange }: ExercisePickerProps) {
+    const [query, setQuery] = useState("")
+    const [exercises, setExercises] = useState<Exercise[]>([])
+    const [isLoading, setIsLoading] = useState(false)
+
+    // Initial load
+    useEffect(() => {
+        if (open) {
+            loadExercises()
+        }
+    }, [open])
+
+    const loadExercises = async () => {
+        setIsLoading(true)
+        try {
+            const data = await getExercises()
+            setExercises(data || [])
+        } catch (e) {
+            console.error(e)
+        } finally {
+            setIsLoading(false)
+        }
+    }
+
+    const filteredExercises = exercises.filter(ex =>
+        ex.name.toLowerCase().includes(query.toLowerCase())
+    )
+
+    return (
+        <Drawer open={open} onOpenChange={onOpenChange}>
+            {trigger && <DrawerTrigger asChild>{trigger}</DrawerTrigger>}
+            <DrawerContent className="h-[85vh] bg-zinc-950 border-white/10">
+                <DrawerHeader>
+                    <DrawerTitle className="text-center mb-4">Aggiungi Esercizio</DrawerTitle>
+                    <div className="relative">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                        <Input
+                            value={query}
+                            onChange={(e) => setQuery(e.target.value)}
+                            placeholder="Cerca..."
+                            className="bg-zinc-900 border-white/10 pl-10"
+                        />
+                    </div>
+                </DrawerHeader>
+
+                <div className="px-4 pb-4 flex-1 overflow-hidden flex flex-col">
+                    <ScrollArea className="flex-1">
+                        <div className="grid gap-2">
+                            {exercises.length === 0 && !isLoading && (
+                                <div className="text-center text-slate-500 py-10">
+                                    Nessun esercizio trovato.
+                                </div>
+                            )}
+
+                            {filteredExercises.map(ex => (
+                                <Button
+                                    key={ex.id}
+                                    variant="ghost"
+                                    className="w-full justify-start h-auto py-3 px-3 hover:bg-zinc-900 border border-transparent hover:border-primary/20 rounded-xl"
+                                    onClick={() => onSelect(ex)}
+                                >
+                                    <div className="h-10 w-10 rounded-full bg-zinc-800 flex items-center justify-center mr-4 shrink-0">
+                                        <Dumbbell className="h-5 w-5 text-primary" />
+                                    </div>
+                                    <div className="text-left">
+                                        <div className="font-bold text-white">{ex.name}</div>
+                                        <div className="text-xs text-slate-400 capitalize">{ex.body_part} • {ex.type}</div>
+                                    </div>
+                                    <Plus className="ml-auto h-5 w-5 text-slate-500" />
+                                </Button>
+                            ))}
+                        </div>
+                    </ScrollArea>
+                </div>
+            </DrawerContent>
+        </Drawer>
+    )
+}

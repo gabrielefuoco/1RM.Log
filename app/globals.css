@@ -1,0 +1,180 @@
+@import "tailwindcss";
+
+@plugin "tailwindcss-animate";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme {
+  --font-sans: var(--font-inter), sans-serif;
+  --font-heading: var(--font-oswald), sans-serif;
+  --font-mono: var(--font-jetbrains-mono), monospace;
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --radius-lg: var(--radius);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 4px);
+
+  --animate-accordion-down: accordion-down 0.2s ease-out;
+  --animate-accordion-up: accordion-up 0.2s ease-out;
+
+  @keyframes accordion-down {
+    from {
+      height: 0
+    }
+
+    to {
+      height: var(--radix-accordion-content-height)
+    }
+  }
+
+  @keyframes accordion-up {
+    from {
+      height: var(--radix-accordion-content-height)
+    }
+
+    to {
+      height: 0
+    }
+  }
+}
+
+:root {
+  /* CONSTANTS */
+  --radius: 0.5rem;
+  /* Rounded-lg (8px) - Softened Brutalist */
+
+  /* LIGHT MODE (Not prioritized but defined) */
+  --background: #ffffff;
+  --foreground: #020a07;
+
+  --card: #f4f5f4;
+  --card-foreground: #020a07;
+
+  --popover: #ffffff;
+  --popover-foreground: #020a07;
+
+  --primary: #00ffa3;
+  --primary-foreground: #020a07;
+
+  --secondary: #f4f5f4;
+  --secondary-foreground: #020a07;
+
+  --muted: #f4f5f4;
+  --muted-foreground: #737373;
+
+  --accent: #f4f5f4;
+  --accent-foreground: #020a07;
+
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+
+  --border: #e5e5e5;
+  --input: #e5e5e5;
+  --ring: #00ffa3;
+}
+
+.dark {
+  /* FUSION MODE: Industrial Jungle */
+  /* Background: Deep Organic Black */
+  --background: #020a07;
+  --foreground: #ffffff;
+
+  /* Card: Dark Jungle Green */
+  --card: #0a1f18;
+  --card-foreground: #ffffff;
+
+  --popover: #0a1f18;
+  --popover-foreground: #ffffff;
+
+  /* Primary: Electric Mint (The User's Neon) */
+  --primary: #00ffa3;
+  --primary-foreground: #020a07;
+
+  --secondary: #10b981;
+  /* Emerald 500 */
+  --secondary-foreground: #ffffff;
+
+  --muted: #0f291e;
+  --muted-foreground: #6ee7b7;
+  /* Emerald 300 */
+
+  --accent: #0f291e;
+  --accent-foreground: #00ffa3;
+
+  --destructive: #aa2e2e;
+  --destructive-foreground: #ffffff;
+
+  /* Borders: Visible but subtle Emerald */
+  --border: #10b98133;
+  /* Emerald 500 at 20% opacity */
+  --input: #10b98133;
+  --ring: #00ffa3;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  body {
+    @apply bg-background text-foreground transition-colors duration-300;
+    font-feature-settings: "rlig" 1, "calt" 1;
+    /* Subtle Grid Texture */
+    background-image: linear-gradient(rgba(16, 185, 129, 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(16, 185, 129, 0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-heading uppercase tracking-wide;
+  }
+}
+
+/* UTILITIES */
+@utility fusion-card {
+  @apply bg-card border border-border rounded-lg transition-all duration-200;
+}
+
+@utility fusion-card-hover {
+  @apply hover:border-primary hover:shadow-[4px_4px_0px_0px_rgba(0, 255, 163, 0.3)] hover:-translate-y-[2px] hover:-translate-x-[2px];
+}
+
+@utility text-neon {
+  @apply text-primary drop-shadow-[0_0_10px_rgba(0, 255, 163, 0.4)];
+}
+
+@utility container-padding {
+  @apply px-5 sm:px-6;
+}

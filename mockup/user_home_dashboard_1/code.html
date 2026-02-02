@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="it"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Bodybuilding Progress Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              colors: {
+                "primary": "#13ec6d",
+                "background-light": "#f6f8f7",
+                "background-dark": "#102218",
+              },
+              fontFamily: {
+                "display": ["Lexend"]
+              },
+              borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+            },
+          },
+        }
+      </script>
+<style>
+        body {
+            font-family: 'Lexend', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 min-h-screen pb-24">
+<!-- Header Section -->
+<header class="px-6 pt-12 pb-6">
+<div class="flex justify-between items-end">
+<div>
+<h1 class="text-3xl font-bold tracking-tight">Ciao, Marco! 👋</h1>
+<p class="text-slate-500 dark:text-slate-400 font-medium mt-1 uppercase text-xs tracking-widest">Giovedì, 24 Ottobre</p>
+</div>
+<div class="w-12 h-12 rounded-full overflow-hidden border-2 border-primary/30">
+<img class="w-full h-full object-cover" data-alt="User profile picture of an athletic male" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAp-emlbIvDb8RXy6VGHfv32gz5r2vK_FoaCbrZxp7GD0MzEGhL19_wJtPiENxVh_1RjT4CoAqJBKogSu9IeD04w6jTn6r1hALTVbesAIRaIxP3fzNb1bob1mjBh_JpQuJ69LhwoOlpZR2jnaJ2jj7PI0WfOb1v720eeILwoemilmsJZHDjcW4bEuYfvQojJILOdVpJCvSU-FYAWc5uT7pEnQNSwet5O7nnbj7noAzIMe9ALFmfu2z969sX7MgaE5xaJre7a2ZR_oE"/>
+</div>
+</div>
+</header>
+<main class="px-6 space-y-8">
+<!-- Next Workout Hero Card -->
+<section>
+<h2 class="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-3">Prossimo Allenamento</h2>
+<div class="relative overflow-hidden rounded-xl bg-slate-900 dark:bg-zinc-900/50 p-6 shadow-xl border border-white/5">
+<!-- Background Pattern -->
+<div class="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 bg-primary/10 rounded-full blur-3xl"></div>
+<div class="relative z-10">
+<div class="flex justify-between items-start mb-4">
+<div>
+<h3 class="text-2xl font-bold text-white">Giorno 2 - Upper</h3>
+<p class="text-slate-400 text-sm mt-1">Focus: Petto, Schiena e Spalle</p>
+</div>
+<span class="bg-white/10 text-white px-3 py-1 rounded-full text-xs font-medium">60 min</span>
+</div>
+<div class="flex items-center gap-4 mb-6">
+<div class="flex -space-x-2">
+<div class="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center border border-primary/40">
+<span class="material-icons text-primary text-sm">fitness_center</span>
+</div>
+<div class="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center border border-primary/40">
+<span class="material-icons text-primary text-sm">timer</span>
+</div>
+</div>
+<p class="text-xs text-slate-400">Intensità stimata: <span class="text-primary font-semibold">RPE 8.5</span></p>
+</div>
+<button class="w-full bg-primary hover:bg-primary/90 text-background-dark font-bold py-4 rounded-lg flex items-center justify-center gap-2 transition-colors">
+<span class="material-icons">play_arrow</span>
+                        INIZIA ALLENAMENTO
+                    </button>
+</div>
+</div>
+</section>
+<!-- Weekly Progress Tracker -->
+<section>
+<div class="flex justify-between items-end mb-4">
+<h2 class="text-sm font-semibold text-slate-400 uppercase tracking-wider">Progressi Settimanali</h2>
+<p class="text-xs text-primary font-medium">Settimana 3 (75%)</p>
+</div>
+<div class="bg-white dark:bg-zinc-900/30 p-4 rounded-xl border border-slate-200 dark:border-white/5">
+<div class="flex justify-between items-center px-2">
+<!-- Days -->
+<div class="flex flex-col items-center gap-2">
+<div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center shadow-[0_0_15px_rgba(19,236,109,0.3)]">
+<span class="material-icons text-background-dark text-sm">check</span>
+</div>
+<span class="text-[10px] font-medium text-slate-500">LUN</span>
+</div>
+<div class="flex flex-col items-center gap-2">
+<div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center shadow-[0_0_15px_rgba(19,236,109,0.3)]">
+<span class="material-icons text-background-dark text-sm">check</span>
+</div>
+<span class="text-[10px] font-medium text-slate-500">MAR</span>
+</div>
+<div class="flex flex-col items-center gap-2">
+<div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center shadow-[0_0_15px_rgba(19,236,109,0.3)]">
+<span class="material-icons text-background-dark text-sm">check</span>
+</div>
+<span class="text-[10px] font-medium text-slate-500">MER</span>
+</div>
+<div class="flex flex-col items-center gap-2">
+<div class="w-10 h-10 rounded-full border-2 border-slate-300 dark:border-zinc-700 flex items-center justify-center">
+<span class="text-xs font-bold text-slate-400">4</span>
+</div>
+<span class="text-[10px] font-medium text-slate-500">GIO</span>
+</div>
+</div>
+<div class="mt-4 pt-4 border-t border-slate-100 dark:border-white/5 flex items-center justify-between text-xs">
+<span class="text-slate-500">Volume totale: <span class="text-slate-900 dark:text-white font-semibold">24,500 kg</span></span>
+<span class="text-slate-500">Sessioni: <span class="text-slate-900 dark:text-white font-semibold">3 di 4</span></span>
+</div>
+</div>
+</section>
+<!-- Stats Quick-View Card -->
+<section class="grid grid-cols-2 gap-4">
+<div class="bg-white dark:bg-zinc-900/30 p-4 rounded-xl border border-slate-200 dark:border-white/5">
+<div class="flex items-center gap-2 mb-2">
+<span class="material-icons text-primary text-lg">trending_up</span>
+<span class="text-[10px] font-semibold text-slate-400 uppercase">Growth 1RM</span>
+</div>
+<div class="flex items-baseline gap-1">
+<span class="text-2xl font-bold">+4.2%</span>
+<span class="text-[10px] text-primary font-bold">↑</span>
+</div>
+<p class="text-[10px] text-slate-500 mt-1">Ultimi 30 giorni</p>
+</div>
+<div class="bg-white dark:bg-zinc-900/30 p-4 rounded-xl border border-slate-200 dark:border-white/5">
+<div class="flex items-center gap-2 mb-2">
+<span class="material-icons text-primary text-lg">stars</span>
+<span class="text-[10px] font-semibold text-slate-400 uppercase">Best Lift</span>
+</div>
+<div class="flex items-baseline gap-1">
+<span class="text-2xl font-bold">180kg</span>
+</div>
+<p class="text-[10px] text-slate-500 mt-1">Stacco da terra</p>
+</div>
+</section>
+<!-- Recent Activity -->
+<section class="pb-8">
+<h2 class="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-4">Attività Recente</h2>
+<div class="space-y-3">
+<!-- Activity Item 1 -->
+<div class="flex items-center justify-between p-4 bg-white dark:bg-zinc-900/30 rounded-lg border border-slate-200 dark:border-white/5">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded bg-background-light dark:bg-background-dark flex items-center justify-center">
+<span class="material-icons text-primary">emoji_events</span>
+</div>
+<div>
+<h4 class="text-sm font-semibold">Nuovo PR: Stacco</h4>
+<p class="text-xs text-slate-500">2 giorni fa • 1x180kg</p>
+</div>
+</div>
+<span class="material-icons text-slate-400 text-sm">chevron_right</span>
+</div>
+<!-- Activity Item 2 -->
+<div class="flex items-center justify-between p-4 bg-white dark:bg-zinc-900/30 rounded-lg border border-slate-200 dark:border-white/5">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded bg-background-light dark:bg-background-dark flex items-center justify-center">
+<span class="material-icons text-slate-400">task_alt</span>
+</div>
+<div>
+<h4 class="text-sm font-semibold">Sessione Giorno 1: Lower</h4>
+<p class="text-xs text-slate-500">3 giorni fa • 1h 15m</p>
+</div>
+</div>
+<span class="material-icons text-slate-400 text-sm">chevron_right</span>
+</div>
+<!-- Activity Item 3 -->
+<div class="flex items-center justify-between p-4 bg-white dark:bg-zinc-900/30 rounded-lg border border-slate-200 dark:border-white/5">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded bg-background-light dark:bg-background-dark flex items-center justify-center">
+<span class="material-icons text-slate-400">history</span>
+</div>
+<div>
+<h4 class="text-sm font-semibold">Calcolo 1RM Aggiornato</h4>
+<p class="text-xs text-slate-500">5 giorni fa • Bench Press</p>
+</div>
+</div>
+<span class="material-icons text-slate-400 text-sm">chevron_right</span>
+</div>
+</div>
+</section>
+</main>
+<!-- Bottom Navigation Bar (iOS style) -->
+<nav class="fixed bottom-0 left-0 right-0 glass-card bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-xl border-t border-slate-200 dark:border-white/5 px-8 pt-3 pb-8 flex justify-between items-center z-50">
+<button class="flex flex-col items-center gap-1 text-primary">
+<span class="material-icons">home</span>
+<span class="text-[10px] font-bold uppercase tracking-tighter">Home</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-slate-400 hover:text-primary transition-colors">
+<span class="material-icons">insights</span>
+<span class="text-[10px] font-bold uppercase tracking-tighter">Stats</span>
+</button>
+<button class="flex flex-col items-center gap-1 -mt-8">
+<div class="w-14 h-14 bg-primary rounded-full shadow-lg shadow-primary/30 flex items-center justify-center border-4 border-background-light dark:border-background-dark">
+<span class="material-icons text-background-dark text-3xl">add</span>
+</div>
+</button>
+<button class="flex flex-col items-center gap-1 text-slate-400 hover:text-primary transition-colors">
+<span class="material-icons">inventory_2</span>
+<span class="text-[10px] font-bold uppercase tracking-tighter">Logbook</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-slate-400 hover:text-primary transition-colors">
+<span class="material-icons">settings</span>
+<span class="text-[10px] font-bold uppercase tracking-tighter">Profilo</span>
+</button>
+</nav>
+</body></html>

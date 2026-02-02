@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Progression Rules Configuration</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#13ec6d",
+                        "background-light": "#f6f8f7",
+                        "background-dark": "#102218",
+                        "surface-dark": "#193324",
+                        "border-dark": "#234833"
+                    },
+                    fontFamily: {
+                        "display": ["Lexend", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style type="text/tailwindcss">
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            font-family: 'Lexend', sans-serif;
+        }
+        input[type="range"] {
+            @apply accent-primary h-1.5 w-full bg-border-dark rounded-lg appearance-none cursor-pointer;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            @apply appearance-none w-5 h-5 bg-white rounded-full border-2 border-primary cursor-pointer;
+        }
+        .toggle-checkbox:checked {
+            @apply right-0 bg-primary;
+        }
+        .toggle-checkbox:checked + .toggle-label {
+            @apply bg-primary/20;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-white min-h-screen">
+<div class="relative flex h-full min-h-screen w-full flex-col group/design-root overflow-x-hidden max-w-md mx-auto border-x border-slate-200 dark:border-slate-800 shadow-2xl">
+<header class="sticky top-0 z-20 bg-background-light dark:bg-background-dark/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800/50">
+<div class="flex items-center p-4 justify-between">
+<button class="flex size-10 items-center justify-start text-slate-900 dark:text-white">
+<span class="material-symbols-outlined text-2xl">arrow_back_ios</span>
+</button>
+<h2 class="text-slate-900 dark:text-white text-lg font-bold leading-tight font-display">Progression Rules</h2>
+<div class="flex size-10 items-center justify-end">
+<span class="material-symbols-outlined text-primary">auto_fix_high</span>
+</div>
+</div>
+</header>
+<main class="flex-1 overflow-y-auto pb-32">
+<section class="p-4">
+<div class="flex items-center justify-between p-4 rounded-xl bg-primary/10 border border-primary/20">
+<div>
+<h3 class="font-bold text-primary">Auto-Progression</h3>
+<p class="text-xs text-slate-500 dark:text-[#92c9a9]">Allow app to suggest load changes</p>
+</div>
+<div class="relative inline-block w-12 mr-2 align-middle select-none">
+<input checked="" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 border-transparent appearance-none cursor-pointer transition-all duration-300 right-6 checked:right-0 checked:bg-primary" id="auto_prog" name="toggle" type="checkbox"/>
+<label class="toggle-label block overflow-hidden h-6 rounded-full bg-slate-300 dark:bg-border-dark cursor-pointer transition-colors duration-300" for="auto_prog"></label>
+</div>
+</div>
+</section>
+<section class="px-4 py-2 space-y-4">
+<h3 class="text-[11px] font-bold text-slate-500 dark:text-[#92c9a9] uppercase tracking-widest px-1">Soglia di Incremento</h3>
+<div class="bg-slate-100 dark:bg-surface-dark rounded-2xl p-4 space-y-6">
+<div class="space-y-4">
+<div class="flex justify-between items-center">
+<label class="text-sm font-medium">RIR Deviation Threshold</label>
+<span class="text-primary font-bold text-sm">+2 RIR</span>
+</div>
+<input class="w-full" max="4" min="1" type="range" value="2"/>
+<p class="text-[10px] text-slate-400 dark:text-[#92c9a9]/60 leading-relaxed">
+                            Suggest increase if actual RIR is at least 2 points higher than target RIR.
+                        </p>
+</div>
+<div class="pt-4 border-t border-slate-200 dark:border-border-dark flex justify-between items-center">
+<span class="text-sm font-medium">Suggested Load Increase</span>
+<div class="flex items-center gap-2">
+<input class="w-16 h-10 bg-white dark:bg-background-dark border-none rounded-lg text-center text-sm font-bold focus:ring-1 focus:ring-primary" step="0.5" type="number" value="2.5"/>
+<span class="text-xs font-bold text-[#92c9a9]">KG</span>
+</div>
+</div>
+</div>
+</section>
+<section class="px-4 py-6 space-y-4">
+<h3 class="text-[11px] font-bold text-slate-500 dark:text-[#92c9a9] uppercase tracking-widest px-1">Regola Reps Max</h3>
+<div class="bg-slate-100 dark:bg-surface-dark rounded-2xl p-4 space-y-4">
+<div class="flex items-center justify-between">
+<div class="flex-1 pr-4">
+<span class="text-sm font-medium block">All Sets at Max Reps</span>
+<span class="text-[10px] text-slate-400 dark:text-[#92c9a9]/60">Trigger load increase when rep ceiling is reached for all sets.</span>
+</div>
+<div class="relative inline-block w-10 align-middle select-none">
+<input checked="" class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-4 border-transparent appearance-none cursor-pointer transition-all duration-300 right-5 checked:right-0 checked:bg-primary" id="max_reps" type="checkbox"/>
+<label class="toggle-label block overflow-hidden h-5 rounded-full bg-slate-300 dark:bg-border-dark cursor-pointer transition-colors duration-300" for="max_reps"></label>
+</div>
+</div>
+</div>
+</section>
+<section class="px-4 py-2 space-y-4">
+<h3 class="text-[11px] font-bold text-slate-500 dark:text-[#92c9a9] uppercase tracking-widest px-1">Arrotondamento Peso</h3>
+<div class="bg-slate-100 dark:bg-surface-dark rounded-2xl p-2 flex gap-1">
+<button class="flex-1 py-3 text-xs font-bold rounded-xl transition-all bg-white dark:bg-primary text-background-dark shadow-lg">1.25 KG</button>
+<button class="flex-1 py-3 text-xs font-medium rounded-xl transition-all text-slate-500 dark:text-[#92c9a9] hover:bg-white/5">2.5 KG</button>
+<button class="flex-1 py-3 text-xs font-medium rounded-xl transition-all text-slate-500 dark:text-[#92c9a9] hover:bg-white/5">5.0 KG</button>
+</div>
+</section>
+<section class="px-4 py-6">
+<div class="bg-[#234833]/30 border border-primary/10 rounded-2xl p-4 flex gap-3">
+<span class="material-symbols-outlined text-primary">lightbulb</span>
+<p class="text-[11px] text-[#92c9a9] leading-relaxed italic">
+                        "Your current settings will prioritize steady linear progression. For faster strength gains, consider reducing the RIR deviation threshold to +1."
+                    </p>
+</div>
+</section>
+</main>
+<div class="fixed bottom-0 w-full max-w-md bg-white/90 dark:bg-background-dark/90 backdrop-blur-xl border-t border-slate-200 dark:border-slate-800 p-4 z-30">
+<button class="w-full bg-primary hover:bg-primary/90 text-background-dark font-bold py-4 rounded-2xl flex items-center justify-center gap-2 transition-all active:scale-[0.98]">
+<span class="material-symbols-outlined font-bold">save</span>
+                SAVE CONFIGURATION
+            </button>
+</div>
+</div>
+
+</body></html>

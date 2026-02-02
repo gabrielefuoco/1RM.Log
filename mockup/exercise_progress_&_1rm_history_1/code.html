@@ -1,0 +1,222 @@
+<html class="dark" lang="en"><head><style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head><body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 min-h-screen overflow-hidden">```html
+
+
+
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Search &amp; Configure with Clone Feature</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#13ec6d",
+                        "background-light": "#f6f8f7",
+                        "background-dark": "#0a0f0d",
+                        "card-dark": "#161b18",
+                        "surface-dark": "#1c221e",
+                    },
+                    fontFamily: {
+                        "display": ["Lexend"]
+                    },
+                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+<style type="text/tailwindcss">
+        body {
+            font-family: 'Lexend', sans-serif;
+        }
+        .ios-blur {
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+        .modal-overlay-blur {
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+        }
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+        body {
+            min-height: max(884px, 100dvh);
+        }
+    </style>
+
+
+<div class="fixed inset-0 z-0 flex flex-col modal-overlay-blur bg-black/40">
+<div class="sticky top-0 z-50 bg-background-light/90 dark:bg-background-dark/90 ios-blur border-b border-slate-200 dark:border-slate-800/50 pb-4">
+<div class="flex items-center p-4 justify-between max-w-md mx-auto">
+<div class="flex size-10 items-center justify-center rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors cursor-pointer">
+<span class="material-symbols-outlined text-2xl leading-none">close</span>
+</div>
+<div class="text-center">
+<h2 class="text-sm font-bold tracking-tight">Add Exercises</h2>
+</div>
+<div class="flex size-10 items-center justify-center">
+<span class="text-primary font-bold text-sm">Done</span>
+</div>
+</div>
+<div class="px-5 max-w-md mx-auto">
+<div class="relative group">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xl group-focus-within:text-primary transition-colors">search</span>
+<input class="w-full bg-slate-100 dark:bg-card-dark border-none rounded-xl py-3 pl-12 pr-4 text-sm focus:ring-1 focus:ring-primary/50 placeholder:text-slate-500 transition-all" placeholder="Search exercises..." type="text" value="Barbell Bench Press"/>
+</div>
+</div>
+</div>
+<main class="max-w-md mx-auto pb-48 px-5 w-full overflow-y-auto no-scrollbar">
+<div class="mt-6">
+<h3 class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-4 px-1">Chest</h3>
+<div class="space-y-1">
+<div class="flex items-center justify-between py-3 px-1 border-b border-slate-100 dark:border-slate-800/40">
+<div class="flex flex-col">
+<span class="font-medium">Barbell Bench Press</span>
+<span class="text-[10px] text-slate-500 uppercase tracking-wider">Compound</span>
+</div>
+<div class="flex items-center gap-2">
+<button class="size-8 rounded-full bg-slate-800/50 flex items-center justify-center text-slate-400 hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-lg">content_copy</span>
+</button>
+<button class="size-8 rounded-full bg-primary flex items-center justify-center text-black shadow-lg shadow-primary/20">
+<span class="material-symbols-outlined text-xl">add</span>
+</button>
+</div>
+</div>
+<div class="flex items-center justify-between py-3 px-1 border-b border-slate-100 dark:border-slate-800/40 opacity-50">
+<div class="flex flex-col">
+<span class="font-medium">Incline Dumbbell Press</span>
+<span class="text-[10px] text-slate-500 uppercase tracking-wider">Compound</span>
+</div>
+<div class="flex items-center gap-2">
+<button class="size-8 rounded-full bg-slate-800/20 flex items-center justify-center text-slate-600">
+<span class="material-symbols-outlined text-lg">content_copy</span>
+</button>
+<button class="size-8 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-xl">add</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<div class="mt-8 opacity-30">
+<h3 class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-4 px-1">Back</h3>
+<div class="space-y-1">
+<div class="flex items-center justify-between py-3 px-1 border-b border-slate-100 dark:border-slate-800/40">
+<div class="flex flex-col">
+<span class="font-medium">Weighted Pull Ups</span>
+<span class="text-[10px] text-slate-500 uppercase tracking-wider">Compound</span>
+</div>
+<div class="flex items-center gap-2">
+<button class="size-8 rounded-full bg-slate-800/20 flex items-center justify-center text-slate-600">
+<span class="material-symbols-outlined text-lg">content_copy</span>
+</button>
+<button class="size-8 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-xl">add</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+<div class="fixed inset-0 z-[60] flex flex-col justify-end pointer-events-none">
+<div class="w-full max-w-md mx-auto bg-card-dark rounded-t-[2.5rem] shadow-2xl pointer-events-auto border-t border-slate-800/50 pb-safe">
+<div class="flex justify-center pt-3 pb-2">
+<div class="w-12 h-1.5 bg-slate-700 rounded-full"></div>
+</div>
+<div class="px-6 pb-10">
+<div class="flex items-start justify-between mb-8">
+<div>
+<span class="text-[10px] font-bold text-primary uppercase tracking-[0.2em] mb-1 block">Configuring Target</span>
+<h2 class="text-2xl font-bold">Barbell Bench Press</h2>
+</div>
+<div class="flex items-center gap-2">
+<button class="size-12 rounded-2xl bg-surface-dark border border-slate-800 flex items-center justify-center text-slate-400 hover:text-primary transition-colors active:scale-95">
+<span class="material-symbols-outlined text-xl">content_copy</span>
+</button>
+<div class="size-12 rounded-2xl bg-surface-dark border border-slate-800 flex items-center justify-center">
+<span class="material-symbols-outlined text-slate-400">fitness_center</span>
+</div>
+</div>
+</div>
+<div class="bg-surface-dark p-1 rounded-2xl flex mb-8 border border-slate-800/50">
+<button class="flex-1 py-2 text-xs font-bold rounded-xl bg-slate-800 text-white shadow-sm transition-all">Straight Set</button>
+<button class="flex-1 py-2 text-xs font-bold text-slate-500 hover:text-slate-300 transition-colors">Top Set</button>
+<button class="flex-1 py-2 text-xs font-bold text-slate-500 hover:text-slate-300 transition-colors">Backoff</button>
+</div>
+<div class="space-y-6">
+<div class="flex items-center justify-between">
+<div>
+<p class="text-sm font-semibold">Target Sets</p>
+<p class="text-[10px] text-slate-500">Number of work sets</p>
+</div>
+<div class="flex items-center gap-4 bg-surface-dark rounded-xl px-2 py-1 border border-slate-800">
+<button class="size-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-white"><span class="material-symbols-outlined text-sm">remove</span></button>
+<span class="text-lg font-bold w-4 text-center">3</span>
+<button class="size-8 rounded-lg flex items-center justify-center text-primary"><span class="material-symbols-outlined text-sm">add</span></button>
+</div>
+</div>
+<div class="flex items-center justify-between">
+<div>
+<p class="text-sm font-semibold">Rep Range</p>
+<p class="text-[10px] text-slate-500">Min to Max targets</p>
+</div>
+<div class="flex items-center gap-2">
+<div class="w-16 bg-surface-dark rounded-xl px-3 py-2 border border-slate-800 text-center">
+<span class="text-xs text-slate-500 block">Min</span>
+<span class="text-sm font-bold">8</span>
+</div>
+<span class="text-slate-600">-</span>
+<div class="w-16 bg-surface-dark rounded-xl px-3 py-2 border border-slate-800 text-center">
+<span class="text-xs text-slate-500 block">Max</span>
+<span class="text-sm font-bold">12</span>
+</div>
+</div>
+</div>
+<div class="flex items-center justify-between">
+<div>
+<p class="text-sm font-semibold">Target RIR</p>
+<p class="text-[10px] text-slate-500">Reps in Reserve (Intensity)</p>
+</div>
+<div class="flex items-center gap-4 bg-surface-dark rounded-xl px-2 py-1 border border-slate-800">
+<button class="size-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-white"><span class="material-symbols-outlined text-sm">remove</span></button>
+<div class="flex flex-col items-center min-w-[40px]">
+<span class="text-sm font-bold">2</span>
+<span class="text-[8px] text-slate-500 uppercase">RIR</span>
+</div>
+<button class="size-8 rounded-lg flex items-center justify-center text-primary"><span class="material-symbols-outlined text-sm">add</span></button>
+</div>
+</div>
+</div>
+<div class="mt-8 p-4 bg-primary/5 border border-primary/20 rounded-2xl flex items-start gap-3">
+<span class="material-symbols-outlined text-primary text-xl">psychology</span>
+<div>
+<p class="text-[11px] font-bold text-primary uppercase tracking-wider">AI Recommendation</p>
+<p class="text-[11px] text-slate-400 leading-relaxed">Based on your recent 1RM of 225lbs, we'll suggest starting with 185lbs to hit the target RIR of 2.</p>
+</div>
+</div>
+<button class="w-full mt-8 bg-primary text-black py-4 rounded-2xl font-bold text-sm uppercase tracking-widest shadow-xl shadow-primary/20 active:scale-[0.98] transition-transform flex items-center justify-center gap-2">
+<span>Add to Template</span>
+<span class="material-symbols-outlined text-lg">check_circle</span>
+</button>
+</div>
+</div>
+</div>
+
+</body></html>

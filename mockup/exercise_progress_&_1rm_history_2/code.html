@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Create New Program - Step 1</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#13ec6d",
+                        "background-light": "#f6f8f7",
+                        "background-dark": "#0a0f0d",
+                        "card-dark": "#161b18",
+                    },
+                    fontFamily: {
+                        "display": ["Lexend"]
+                    },
+                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+<style type="text/tailwindcss">
+        body {
+            font-family: 'Lexend', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .ios-input {
+            @apply bg-transparent border-none focus:ring-0 w-full p-0 text-lg;
+        }
+        .input-group {
+            @apply bg-white dark:bg-card-dark border border-slate-200 dark:border-slate-800/80 rounded-xl px-4 py-3 mb-6;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 min-h-screen">
+<header class="sticky top-0 z-50 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800/50">
+<div class="flex items-center p-4 justify-between max-w-md mx-auto">
+<button class="flex size-10 items-center justify-center rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors">
+<span class="material-symbols-outlined text-2xl">close</span>
+</button>
+<div class="text-center">
+<p class="text-[10px] font-bold uppercase tracking-widest text-primary">Step 1 of 2</p>
+<h1 class="text-sm font-semibold">New Program</h1>
+</div>
+<div class="size-10"></div>
+</div>
+</header>
+<main class="max-w-md mx-auto px-5 pt-8 pb-32">
+<div class="mb-10">
+<h2 class="text-3xl font-bold tracking-tight mb-2">Build your block</h2>
+<p class="text-slate-500 dark:text-slate-400 text-sm">Define the structure of your macrociclo. We'll use this to calculate progression targets.</p>
+</div>
+<form>
+<div class="flex flex-col gap-1.5 mb-8">
+<label class="text-[10px] font-bold uppercase tracking-wider text-slate-400 px-1">Program Name</label>
+<div class="input-group focus-within:border-primary/50 transition-colors">
+<input class="ios-input font-medium placeholder:text-slate-600" placeholder="e.g. Hypertrophy Block" type="text"/>
+</div>
+</div>
+<div class="flex flex-col gap-1.5 mb-8">
+<label class="text-[10px] font-bold uppercase tracking-wider text-slate-400 px-1">Duration</label>
+<div class="input-group flex items-center gap-3">
+<span class="material-symbols-outlined text-slate-500">calendar_month</span>
+<input class="ios-input font-medium placeholder:text-slate-600" placeholder="Start Date — End Date" readonly="" type="text" value="Oct 24, 2023 — Dec 18, 2023"/>
+</div>
+<p class="text-[10px] text-slate-500 px-1 mt-1 italic">Suggested: 8-12 weeks for optimal results.</p>
+</div>
+<div class="flex flex-col gap-1.5 mb-8">
+<label class="text-[10px] font-bold uppercase tracking-wider text-slate-400 px-1">Training Frequency</label>
+<div class="grid grid-cols-4 gap-2 mt-2">
+<button class="py-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-card-dark text-slate-400 font-bold hover:border-primary/50 transition-all" type="button">2</button>
+<button class="py-4 rounded-xl border border-primary bg-primary/10 text-primary font-bold shadow-[0_0_15px_rgba(19,236,109,0.15)]" type="button">3</button>
+<button class="py-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-card-dark text-slate-400 font-bold hover:border-primary/50 transition-all" type="button">4</button>
+<button class="py-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-card-dark text-slate-400 font-bold hover:border-primary/50 transition-all" type="button">5</button>
+</div>
+<p class="text-center text-[10px] font-medium text-slate-500 mt-3 uppercase tracking-widest">Days per week</p>
+</div>
+<div class="flex flex-col gap-1.5 mb-8">
+<label class="text-[10px] font-bold uppercase tracking-wider text-slate-400 px-1">Main Focus</label>
+<div class="flex flex-wrap gap-2 mt-1">
+<span class="px-3 py-1.5 rounded-full text-[11px] font-semibold bg-primary/10 text-primary border border-primary/20">Hypertrophy</span>
+<span class="px-3 py-1.5 rounded-full text-[11px] font-semibold bg-slate-100 dark:bg-slate-800 text-slate-500">Strength</span>
+<span class="px-3 py-1.5 rounded-full text-[11px] font-semibold bg-slate-100 dark:bg-slate-800 text-slate-500">Cutting</span>
+</div>
+</div>
+</form>
+</main>
+<div class="fixed bottom-0 left-0 right-0 bg-gradient-to-t from-background-light dark:from-background-dark via-background-light/95 dark:via-background-dark/95 to-transparent pt-10 pb-8 px-5 z-40">
+<div class="max-w-md mx-auto">
+<button class="w-full bg-primary text-black font-bold py-4 rounded-xl flex items-center justify-center gap-2 shadow-lg shadow-primary/20 active:scale-[0.98] transition-all">
+<span>Next: Configure Days</span>
+<span class="material-symbols-outlined font-bold">arrow_forward</span>
+</button>
+</div>
+</div>
+
+</body></html>

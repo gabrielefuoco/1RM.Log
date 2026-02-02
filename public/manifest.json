@@ -1,23 +1,58 @@
 {
     "name": "1RM.Log",
     "short_name": "1RM",
-    "description": "Logbook intelligente per l'allenamento di forza.",
+    "description": "Progressione Intelligente. Risultati Scientifici.",
     "start_url": "/",
     "display": "standalone",
+    "orientation": "portrait",
     "background_color": "#09090b",
     "theme_color": "#09090b",
     "icons": [
         {
-            "src": "/web-app-manifest-192x192.png",
+            "src": "/icon-192x192.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "any"
+        },
+        {
+            "src": "/icon-192x192.png",
             "sizes": "192x192",
             "type": "image/png",
             "purpose": "maskable"
         },
         {
-            "src": "/web-app-manifest-512x512.png",
+            "src": "/icon-512x512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any"
+        },
+        {
+            "src": "/icon-512x512.png",
             "sizes": "512x512",
             "type": "image/png",
             "purpose": "maskable"
+        }
+    ],
+    "shortcuts": [
+        {
+            "name": "Nuovo Allenamento",
+            "url": "/",
+            "icons": [
+                {
+                    "src": "/icon-192x192.png",
+                    "sizes": "192x192"
+                }
+            ]
+        },
+        {
+            "name": "I miei Programmi",
+            "url": "/programs",
+            "icons": [
+                {
+                    "src": "/icon-192x192.png",
+                    "sizes": "192x192"
+                }
+            ]
         }
     ]
 }

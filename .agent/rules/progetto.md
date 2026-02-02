@@ -71,3 +71,8 @@ Quando si inizializza una sessione da un template:
 1.  **Non reinventare**: Usa i componenti Shadcn per tutto.
 2.  **Atomic Commits**: Fai task piccoli e verificabili.
 3.  **Type Safety**: Usa Zod per validare ogni input e risposta DB.
+
+> [!IMPORTANT]
+> **Gestione delle Regole**:
+> - **Auto-Aggiornamento**: Ogni file in `.agent/rules/` deve essere aggiornato dall'agente ogni volta che la sua area di competenza cambia.
+> - **Nuove Regole**: Crea un nuovo file specializzato in `.agent/rules/` se un'area del progetto diventa complessa o importante (es. Integrazione AI, Wearables, Analytics Avanzate).

@@ -10,7 +10,7 @@ import { createClient } from "@/lib/supabase/client"
 import { SessionHeader } from "@/components/workout/session-header"
 import { SetLogger } from "@/components/workout/set-logger"
 import { Button } from "@/components/ui/button"
-import { Loader2, ChevronRight, Plus, Trash2 } from "lucide-react"
+import { Loader2, ChevronRight, ChevronLeft, Plus, Trash2 } from "lucide-react"
 import { RestTimer } from "@/components/workout/rest-timer"
 import { ExercisePicker } from "@/components/exercises/exercise-picker"
 import { toast } from "sonner"
@@ -190,10 +190,13 @@ export default function SessionRunnerPage({ params }: { params: Promise<{ sessio
 
 
     const finishWorkout = async () => {
-        const confirmed = window.confirm("Terminare l'allenamento?")
-        if (confirmed) {
+        try {
             await finishSession(sessionId, 3600, "Completed via Runner") // TODO: Calc real duration
-            router.push('/')
+            toast.success("Allenamento completato!")
+            router.replace('/')
+        } catch (e) {
+            console.error(e)
+            toast.error("Errore durante la chiusura dell'allenamento")
         }
     }
 
@@ -226,43 +229,47 @@ export default function SessionRunnerPage({ params }: { params: Promise<{ sessio
 
     return (
         <div className="min-h-screen bg-background pb-32">
-            {/* Header */}
-            <div className="sticky top-0 z-10 bg-background/95 backdrop-blur border-b border-white/5 p-4">
-                <div className="flex justify-between items-start mb-4">
-                    <div>
-                        <h2 className="text-2xl font-bold leading-tight">{currentItem.exercise.name}</h2>
-                        <p className="text-xs text-muted-foreground uppercase tracking-widest mt-1">
-                            {currentItem.exercise.body_part} • {currentItem.exercise.type}
-                        </p>
-                    </div>
-                    <div className="flex gap-2">
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            className="text-red-500 hover:text-red-400 hover:bg-red-500/10"
-                            onClick={() => {
-                                if (confirm("Rimuovere questo esercizio dalla sessione?")) {
-                                    setRunnerExercises(prev => prev.filter((_, idx) => idx !== currentIndex))
-                                    if (currentIndex > 0) setCurrentIndex(c => c - 1)
-                                }
-                            }}
-                        >
-                            <Trash2 className="h-5 w-5" />
-                        </Button>
-                        <Button variant="ghost" size="icon" onClick={() => setIsPickerOpen(true)}>
-                            <Plus className="h-6 w-6 text-primary" />
-                        </Button>
-                    </div>
-                </div>
+            {/* Header Area */}
+            <div className="sticky top-0 z-20 glass-header px-4 py-4 space-y-4">
+                <SessionHeader
+                    exercise={currentItem.exercise}
+                    templateData={currentItem.templateData}
+                    currentExerciseIndex={currentIndex}
+                    totalExercises={runnerExercises.length}
+                    nextExercise={nextItem?.exercise}
+                    onBack={() => {
+                        setAlertConfig({
+                            open: true,
+                            title: "Uscire dalla sessione?",
+                            description: "I progressi fatti finora sono stati salvati, ma l'allenamento rimarrà attivo. Potrai riprenderlo più tardi.",
+                            onConfirm: () => router.push('/')
+                        })
+                    }}
+                    onAddExercise={() => setIsPickerOpen(true)}
+                    onRemoveExercise={() => {
+                        setAlertConfig({
+                            open: true,
+                            title: "Rimuovere esercizio?",
+                            description: `Sei sicuro di voler rimuovere "${currentItem.exercise.name}" da questa sessione?`,
+                            onConfirm: () => {
+                                setRunnerExercises(prev => prev.filter((_, idx) => idx !== currentIndex))
+                                if (currentIndex > 0) setCurrentIndex(c => c - 1)
+                                toast.success("Esercizio rimosso")
+                            }
+                        })
+                    }}
+                />
 
-                {/* Progress Dots */}
-                <div className="flex gap-1 overflow-x-auto pb-2 scrollbar-none">
+                {/* Progress Dots - Integrated but separate for layout control */}
+                <div className="flex gap-1 overflow-x-auto pb-1 scrollbar-none">
                     {runnerExercises.map((_, idx) => (
                         <div
                             key={idx}
                             onClick={() => setCurrentIndex(idx)}
-                            className={`h-1.5 rounded-full transition-all cursor-pointer ${idx === currentIndex ? "w-8 bg-primary" : "w-1.5 bg-white/20"
-                                }`}
+                            className={cn(
+                                "h-1 rounded-full transition-all cursor-pointer",
+                                idx === currentIndex ? "w-8 bg-primary shadow-[0_0_8px_rgba(0,255,163,0.6)]" : "w-2 bg-muted-foreground/20"
+                            )}
                         />
                     ))}
                 </div>
@@ -311,7 +318,7 @@ export default function SessionRunnerPage({ params }: { params: Promise<{ sessio
             </div>
 
             {/* Footer */}
-            <div className="fixed bottom-0 inset-x-0 p-4 bg-background border-t border-white/5 bg-opacity-90 backdrop-blur-md">
+            <div className="fixed bottom-0 inset-x-0 p-4 pb-8 glass-nav">
                 <Button
                     onClick={() => {
                         const setsDone = currentItem.logs.length
@@ -338,12 +345,9 @@ export default function SessionRunnerPage({ params }: { params: Promise<{ sessio
                         } else {
                             setAlertConfig({
                                 open: true,
-                                title: "Terminare Allenamento?",
-                                description: "Sei sicuro di voler concludere la sessione?",
-                                onConfirm: async () => {
-                                    await finishSession(sessionId, 3600, "Completed via Runner")
-                                    router.push('/')
-                                }
+                                title: "Terminare l'allenamento?",
+                                description: "Stai per chiudere questa sessione. Una volta terminata, non potrai più aggiungere set.",
+                                onConfirm: finishWorkout
                             })
                         }
                     }}
@@ -351,19 +355,19 @@ export default function SessionRunnerPage({ params }: { params: Promise<{ sessio
                     className={cn(
                         "w-full h-14 text-base font-bold rounded-xl shadow-lg flex items-center justify-center gap-3 transition-all",
                         currentItem.logs.length >= currentItem.targetSets
-                            ? "bg-primary text-background-dark hover:bg-primary/90 shadow-[0_0_20px_rgba(19,236,109,0.2)]"
-                            : "bg-zinc-800 text-slate-400 hover:bg-zinc-700 hover:text-white border border-white/10"
+                            ? "bg-primary text-primary-foreground hover:bg-primary/90 shadow-[0_0_20px_rgba(0,255,163,0.3)]"
+                            : "bg-muted text-muted-foreground hover:bg-muted/80 border border-border"
                     )}
                 >
                     <div className={cn(
                         "h-8 w-8 rounded-full flex items-center justify-center",
-                        currentItem.logs.length >= currentItem.targetSets ? "bg-background-dark/20" : "bg-black/20"
+                        currentItem.logs.length >= currentItem.targetSets ? "bg-primary-foreground/10" : "bg-background/20"
                     )}>
                         <ChevronRight className="h-5 w-5" />
                     </div>
                     <span>
                         {currentIndex < runnerExercises.length - 1
-                            ? `PROSSIMO: ${nextItem?.exercise.name.slice(0, 15)}...`
+                            ? `PROSSIMO: ${nextItem?.exercise.name.toUpperCase()}`
                             : "TERMINA ALLENAMENTO"
                         }
                     </span>
@@ -385,18 +389,18 @@ export default function SessionRunnerPage({ params }: { params: Promise<{ sessio
             />
 
             <AlertDialog open={alertConfig.open} onOpenChange={(open) => setAlertConfig(prev => ({ ...prev, open }))}>
-                <AlertDialogContent className="bg-zinc-900 border-white/10 text-white w-[90%] rounded-xl">
+                <AlertDialogContent className="bg-card border-border text-foreground w-[90%] rounded-2xl shadow-2xl">
                     <AlertDialogHeader>
-                        <AlertDialogTitle>{alertConfig.title}</AlertDialogTitle>
-                        <AlertDialogDescription className="text-slate-400">
+                        <AlertDialogTitle className="font-heading uppercase tracking-widest text-primary">{alertConfig.title}</AlertDialogTitle>
+                        <AlertDialogDescription className="text-muted-foreground font-sans">
                             {alertConfig.description}
                         </AlertDialogDescription>
                     </AlertDialogHeader>
-                    <AlertDialogFooter>
-                        <AlertDialogCancel className="bg-transparent border-white/10 text-white hover:bg-white/5 hover:text-white">Annulla</AlertDialogCancel>
+                    <AlertDialogFooter className="gap-3 sm:gap-0">
+                        <AlertDialogCancel className="bg-transparent border-border text-foreground hover:bg-muted font-bold rounded-xl">Annulla</AlertDialogCancel>
                         <AlertDialogAction
                             onClick={alertConfig.onConfirm}
-                            className="bg-primary text-background-dark font-bold hover:bg-primary/90"
+                            className="bg-primary text-primary-foreground font-bold hover:bg-primary/90 rounded-xl shadow-[0_0_15px_rgba(0,255,163,0.2)]"
                         >
                             Procedi
                         </AlertDialogAction>

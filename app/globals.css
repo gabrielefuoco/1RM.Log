@@ -167,6 +167,31 @@
   @apply bg-card border border-border rounded-lg transition-all duration-200;
 }
 
+@utility glass-header {
+  @apply sticky top-0 z-40 w-full;
+  @apply bg-background/60 backdrop-blur-xl;
+  border-bottom: 1px solid color-mix(in srgb, var(--color-primary) 20%, transparent);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+
+  &::before {
+    content: '';
+    @apply absolute inset-x-0 bottom-0 h-[1px];
+    background: linear-gradient(to right, transparent, color-mix(in srgb, var(--color-primary) 50%, transparent), transparent);
+  }
+}
+
+@utility glass-nav {
+  @apply bg-background/80 backdrop-blur-2xl;
+  border: 1px solid color-mix(in srgb, var(--color-primary) 20%, transparent);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+
+  &::before {
+    content: '';
+    @apply absolute inset-x-0 top-0 h-[1px];
+    background: linear-gradient(to right, transparent, color-mix(in srgb, var(--color-primary) 50%, transparent), transparent);
+  }
+}
+
 @utility fusion-card-hover {
   @apply hover:border-primary hover:shadow-[4px_4px_0px_0px_#00ffa34d] hover:-translate-y-[2px] hover:-translate-x-[2px];
 }

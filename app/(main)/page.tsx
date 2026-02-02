@@ -7,8 +7,10 @@ import { WeeklyProgress } from "@/components/dashboard/WeeklyProgress"
 import { useDashboardStats } from "@/hooks/use-dashboard-stats"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { useRouter } from "next/navigation"
 
 export default function HomePage() {
+    const router = useRouter()
     const { data: stats, isLoading } = useDashboardStats()
 
     const formatGrowth = (value: number | null | undefined) => {
@@ -72,7 +74,7 @@ export default function HomePage() {
                                         const { toast } = await import("sonner")
                                         try {
                                             const sId = await startSession(null)
-                                            window.location.href = `/workout/session/${sId}`
+                                            router.push(`/workout/session/${sId}`)
                                         } catch (e) {
                                             toast.error("Errore avvio sessione")
                                         }
@@ -83,7 +85,7 @@ export default function HomePage() {
                                 <Button
                                     variant="ghost"
                                     className="w-full justify-start px-4 text-muted-foreground hover:text-primary transition-colors hover:bg-primary/5"
-                                    onClick={() => window.location.href = '/programs'}
+                                    onClick={() => router.push('/programs')}
                                 >
                                     Gestisci Programmi
                                 </Button>

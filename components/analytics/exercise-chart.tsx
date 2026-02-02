@@ -22,21 +22,21 @@ interface ExerciseChartProps {
 export function ExerciseChart({ title, data, color = "#13ec6d" }: ExerciseChartProps) {
     if (data.length === 0) {
         return (
-            <Card className="bg-zinc-900/40 border-white/5">
+            <Card className="bg-muted/30 border-border/50">
                 <CardHeader>
-                    <CardTitle className="text-white text-sm uppercase tracking-wider">{title}</CardTitle>
+                    <CardTitle className="text-foreground text-sm uppercase tracking-widest font-bold">{title}</CardTitle>
                 </CardHeader>
                 <CardContent className="h-48 flex items-center justify-center">
-                    <p className="text-slate-500 text-xs">Dati insufficienti</p>
+                    <p className="text-muted-foreground text-xs font-medium uppercase tracking-tighter">Dati insufficienti</p>
                 </CardContent>
             </Card>
         )
     }
 
     return (
-        <Card className="bg-zinc-900/40 border-white/5">
+        <Card className="bg-muted/30 border-border/50 overflow-hidden relative">
             <CardHeader className="pb-2">
-                <CardTitle className="text-white text-sm uppercase tracking-wider">{title}</CardTitle>
+                <CardTitle className="text-foreground text-sm uppercase tracking-widest font-bold">{title}</CardTitle>
             </CardHeader>
             <CardContent>
                 <div className="h-[200px] w-full min-w-0">
@@ -50,20 +50,21 @@ export function ExerciseChart({ title, data, color = "#13ec6d" }: ExerciseChartP
                                 bottom: 0,
                             }}
                         >
-                            <CartesianGrid strokeDasharray="3 3" stroke="#333" vertical={false} />
+                            <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} strokeOpacity={0.2} />
                             <XAxis
                                 dataKey="date"
-                                stroke="#666"
+                                stroke="var(--muted-foreground)"
                                 fontSize={10}
                                 tickFormatter={(val) => format(new Date(val), 'd MMM', { locale: it })}
                                 minTickGap={30}
+                                opacity={0.5}
                             />
-                            <YAxis stroke="#666" fontSize={10} />
+                            <YAxis stroke="var(--muted-foreground)" fontSize={10} opacity={0.5} />
                             <Tooltip
-                                contentStyle={{ backgroundColor: '#18181b', borderColor: '#333', color: '#fff' }}
-                                itemStyle={{ color: color }}
+                                contentStyle={{ backgroundColor: 'var(--card)', borderColor: 'var(--border)', color: 'var(--foreground)', borderRadius: '12px', border: '1px solid var(--border)' }}
+                                itemStyle={{ color: color, fontWeight: 'bold' }}
                                 labelFormatter={(val) => format(new Date(val), 'd MMM yyyy', { locale: it })}
-                                formatter={(value: any) => [Number(value).toFixed(2), "Kg"]}
+                                formatter={(value: any) => [Number(value).toFixed(1), "Kg"]}
                             />
                             <Line
                                 type="monotone"

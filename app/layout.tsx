@@ -24,6 +24,23 @@ const jetbrainsMono = JetBrains_Mono({
 export const metadata: Metadata = {
   title: "1RM.Log",
   description: "Progressione Intelligente. Risultati Scientifici.",
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "1RM.Log",
+  },
+  formatDetection: {
+    telephone: false,
+  },
+};
+
+export const viewport = {
+  themeColor: "#09090b",
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
 };
 
 export default function RootLayout({

@@ -29,7 +29,7 @@ export function TopHeader() {
     }
 
     return (
-        <header className="flex items-center justify-between px-6 py-6 pt-12 border-b border-border/10 bg-background/50 backdrop-blur-sm sticky top-0 z-40">
+        <header className="glass-header flex items-center justify-between px-6 py-4 pt-8">
             <div>
                 <p className="text-xs font-mono font-bold uppercase tracking-widest text-primary/80 mb-1">
                     {today}
@@ -37,7 +37,7 @@ export function TopHeader() {
                 {isLoading ? (
                     <Skeleton className="h-9 w-48" />
                 ) : (
-                    <h1 className="text-3xl font-heading font-bold tracking-tight text-foreground uppercase">
+                    <h1 className="text-2xl font-heading font-bold tracking-tight text-foreground uppercase">
                         Ciao, <span className="text-white">{profile?.full_name?.split(' ')[0] || "Atleta"}</span>
                     </h1>
                 )}

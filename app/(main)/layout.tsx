@@ -8,7 +8,7 @@ export default function MainLayout({
     children: React.ReactNode
 }) {
     return (
-        <div className="flex min-h-screen flex-col bg-background pb-20 lg:pb-0">
+        <div className="flex min-h-screen flex-col bg-background pb-32 lg:pb-0">
             {/* Desktop Sidebar (Left) */}
             <DesktopSidebar />
 

@@ -76,40 +76,40 @@ export function SetLogger({ setNumber, previousLog, targetRir, isActive = false,
     if (isSaved) {
         return (
             <div
-                className="p-3 rounded-xl border border-primary/30 bg-zinc-900/30 mb-2 cursor-pointer hover:bg-zinc-900/50 transition-colors"
+                className="p-3 rounded-xl border border-primary/20 bg-muted/20 mb-2 cursor-pointer hover:bg-muted/40 transition-colors"
                 onClick={() => setIsSaved(false)}
             >
                 <div className="flex items-center justify-between mb-2">
-                    <h4 className="text-sm font-bold text-slate-300">SET {setNumber}</h4>
+                    <h4 className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">SET {setNumber}</h4>
                     {previousLog && (
-                        <div className="flex items-center gap-1.5 text-xs text-slate-500">
+                        <div className="flex items-center gap-1.5 text-[9px] text-muted-foreground/60 uppercase font-bold">
                             <History className="h-3 w-3" />
-                            <span>Last: {previousLog.weight}kg x {previousLog.reps} @{previousLog.rir}</span>
+                            <span>Last: {previousLog.weight}kg x {previousLog.reps}</span>
                         </div>
                     )}
                 </div>
                 <div className="grid grid-cols-7 gap-2 items-end">
-                    <div className="col-span-2">
-                        <label className="text-[9px] uppercase text-slate-500 font-bold ml-1 mb-1 block">KG</label>
-                        <div className="bg-zinc-900 border border-primary/30 rounded-md h-10 flex items-center justify-center">
+                    <div className="col-span-2 text-center">
+                        <label className="text-[8px] uppercase text-muted-foreground/60 font-bold mb-1 block">KG</label>
+                        <div className="bg-background/50 border border-primary/10 rounded-lg h-10 flex items-center justify-center">
                             <span className="text-base font-bold text-primary">{weight}</span>
                         </div>
                     </div>
-                    <div className="col-span-2">
-                        <label className="text-[9px] uppercase text-slate-500 font-bold ml-1 mb-1 block">REPS</label>
-                        <div className="bg-zinc-900 border border-primary/30 rounded-md h-10 flex items-center justify-center">
-                            <span className="text-base font-bold text-white">{reps}</span>
+                    <div className="col-span-2 text-center">
+                        <label className="text-[8px] uppercase text-muted-foreground/60 font-bold mb-1 block">REPS</label>
+                        <div className="bg-background/50 border border-border rounded-lg h-10 flex items-center justify-center">
+                            <span className="text-base font-bold text-foreground">{reps}</span>
                         </div>
                     </div>
-                    <div className="col-span-2">
-                        <label className="text-[9px] uppercase text-slate-500 font-bold ml-1 mb-1 block">RIR</label>
-                        <div className="bg-zinc-900 border border-primary/30 rounded-md h-10 flex items-center justify-center">
-                            <span className="text-base font-bold text-white">{rir}</span>
+                    <div className="col-span-2 text-center">
+                        <label className="text-[8px] uppercase text-muted-foreground/60 font-bold mb-1 block">RIR</label>
+                        <div className="bg-background/50 border border-border rounded-lg h-10 flex items-center justify-center">
+                            <span className="text-base font-bold text-foreground">{rir}</span>
                         </div>
                     </div>
                     <div className="col-span-1">
-                        <div className="h-10 w-full rounded-md bg-primary flex items-center justify-center">
-                            <Check className="h-5 w-5 text-background-dark" />
+                        <div className="h-10 w-full rounded-lg bg-primary/20 border border-primary/30 flex items-center justify-center">
+                            <Check className="h-5 w-5 text-primary" />
                         </div>
                     </div>
                 </div>
@@ -121,40 +121,40 @@ export function SetLogger({ setNumber, previousLog, targetRir, isActive = false,
     if (!isSaved) {
         return (
             <div className={cn(
-                "p-3 rounded-xl border mb-2 transition-all duration-300",
+                "p-3 rounded-2xl border mb-2 transition-all duration-300",
                 isActive
-                    ? "border-primary bg-zinc-900/50 shadow-[0_0_25px_rgba(19,236,109,0.15)] scale-[1.01]"
-                    : "border-white/10 bg-zinc-900/30"
+                    ? "border-primary bg-muted/40 shadow-[0_0_25px_rgba(0,255,163,0.1)] scale-[1.01]"
+                    : "border-border/50 bg-muted/20"
             )}>
                 <div className="flex items-center justify-between mb-3">
                     <div className="flex items-center gap-2">
-                        <h4 className={cn("text-sm font-black tracking-tight", isActive ? "text-primary" : "text-white")}>
+                        <h4 className={cn("text-xs font-black tracking-widest uppercase", isActive ? "text-primary" : "text-muted-foreground")}>
                             SET {setNumber}
                         </h4>
                         {isActive && (
-                            <div className="flex items-center gap-1.5 text-xs font-mono text-primary bg-primary/10 px-2 py-0.5 rounded-full border border-primary/20 animate-pulse">
+                            <div className="flex items-center gap-1.5 text-[10px] font-mono font-bold text-primary bg-primary/10 px-2 py-0.5 rounded-full border border-primary/20 animate-pulse">
                                 <Timer className="h-3 w-3" />
                                 <span>{formatTime(timer)}</span>
                             </div>
                         )}
                     </div>
                     {previousLog && (
-                        <div className="flex items-center gap-1.5 text-[10px] text-slate-500 uppercase font-bold tracking-tighter">
+                        <div className="flex items-center gap-1.5 text-[9px] text-muted-foreground/60 uppercase font-bold tracking-tight">
                             <History className="h-3 w-3" />
-                            <span>Last: {previousLog.weight}kg x {previousLog.reps} @{previousLog.rir}</span>
+                            <span>Last: {previousLog.weight}kg x {previousLog.reps}</span>
                         </div>
                     )}
                 </div>
                 <div className="grid grid-cols-7 gap-2 items-end">
                     <div className="col-span-2">
-                        <label className="text-[9px] uppercase text-slate-500 font-extrabold ml-1 mb-1 block">KG</label>
+                        <label className="text-[8px] uppercase text-muted-foreground/60 font-black ml-1 mb-1 block">KG</label>
                         <Input
                             type="number"
                             inputMode="decimal"
                             className={cn(
-                                "bg-zinc-950 h-11 text-base font-black text-center transition-all border-white/5",
-                                isActive ? "focus:border-primary/50" : "focus:border-white/20",
-                                isProgression ? "text-primary" : "text-white"
+                                "bg-background h-11 text-base font-black text-center transition-all border-border/50 rounded-xl",
+                                isActive ? "focus:border-primary/50" : "focus:border-border",
+                                isProgression ? "text-primary shadow-[0_0_10px_rgba(0,255,163,0.1)]" : "text-foreground"
                             )}
                             placeholder="0"
                             value={weight}
@@ -162,14 +162,14 @@ export function SetLogger({ setNumber, previousLog, targetRir, isActive = false,
                         />
                     </div>
                     <div className="col-span-2">
-                        <label className="text-[9px] uppercase text-slate-500 font-extrabold ml-1 mb-1 block">REPS</label>
+                        <label className="text-[8px] uppercase text-muted-foreground/60 font-black ml-1 mb-1 block">REPS</label>
                         <Input
                             type="number"
                             inputMode="numeric"
                             className={cn(
-                                "bg-zinc-950 h-11 text-base font-black text-center transition-all border-white/5",
-                                isActive ? "focus:border-primary/50" : "focus:border-white/20",
-                                "text-white"
+                                "bg-background h-11 text-base font-black text-center transition-all border-border/50 rounded-xl",
+                                isActive ? "focus:border-primary/50" : "focus:border-border",
+                                "text-foreground"
                             )}
                             placeholder="0"
                             value={reps}
@@ -177,14 +177,14 @@ export function SetLogger({ setNumber, previousLog, targetRir, isActive = false,
                         />
                     </div>
                     <div className="col-span-2">
-                        <label className="text-[9px] uppercase text-slate-500 font-extrabold ml-1 mb-1 block">RIR</label>
+                        <label className="text-[8px] uppercase text-muted-foreground/60 font-black ml-1 mb-1 block">RIR</label>
                         <Input
                             type="number"
                             inputMode="numeric"
                             className={cn(
-                                "bg-zinc-950 h-11 text-base font-black text-center transition-all border-white/5",
-                                isActive ? "focus:border-primary/50" : "focus:border-white/20",
-                                "text-white"
+                                "bg-background h-11 text-base font-black text-center transition-all border-border/50 rounded-xl",
+                                isActive ? "focus:border-primary/50" : "focus:border-border",
+                                "text-foreground"
                             )}
                             placeholder="-"
                             value={rir}
@@ -199,19 +199,19 @@ export function SetLogger({ setNumber, previousLog, targetRir, isActive = false,
                                 "h-11 w-full p-0 transition-all duration-300 rounded-xl",
                                 (weight && reps)
                                     ? (isActive
-                                        ? "bg-primary hover:bg-primary/90 text-background-dark shadow-[0_0_20px_rgba(19,236,109,0.3)]"
-                                        : "bg-zinc-800 hover:bg-zinc-700 text-slate-300 border border-white/5")
-                                    : "bg-zinc-900/50 text-slate-600 border border-white/5"
+                                        ? "bg-primary hover:bg-primary/90 text-primary-foreground shadow-[0_0_20px_rgba(0,255,163,0.3)]"
+                                        : "bg-muted hover:bg-muted/80 text-muted-foreground border border-border")
+                                    : "bg-muted/30 text-muted-foreground/40 border border-border/20"
                             )}
                         >
-                            <Check className={cn("h-6 w-6 stroke-[3]", isActive ? "opacity-100" : "opacity-60")} />
+                            <Check className={cn("h-6 w-6 stroke-[3]", isActive ? "opacity-100" : "opacity-40")} />
                         </Button>
                     </div>
                 </div>
                 {weight && reps && (
-                    <div className="mt-3 text-center py-1 bg-zinc-950/30 rounded-lg border border-white/5">
-                        <span className="text-[9px] text-slate-500 uppercase tracking-widest font-black">Est. 1RM: </span>
-                        <span className="text-sm font-black text-primary">{calculate1RM(Number(weight), Number(reps))}KG</span>
+                    <div className="mt-3 text-center py-2 bg-primary/5 rounded-xl border border-primary/10">
+                        <span className="text-[8px] text-muted-foreground uppercase tracking-widest font-black">Est. 1RM: </span>
+                        <span className="text-sm font-black text-primary drop-shadow-[0_0_8px_rgba(0,255,163,0.2)]">{calculate1RM(Number(weight), Number(reps))}KG</span>
                     </div>
                 )}
             </div>

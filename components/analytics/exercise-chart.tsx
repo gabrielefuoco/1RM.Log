@@ -63,7 +63,7 @@ export function ExerciseChart({ title, data, color = "#13ec6d" }: ExerciseChartP
                                 contentStyle={{ backgroundColor: '#18181b', borderColor: '#333', color: '#fff' }}
                                 itemStyle={{ color: color }}
                                 labelFormatter={(val) => format(new Date(val), 'd MMM yyyy', { locale: it })}
-                                formatter={(value: number) => [value.toFixed(2), "Kg"]}
+                                formatter={(value: any) => [Number(value).toFixed(2), "Kg"]}
                             />
                             <Line
                                 type="monotone"

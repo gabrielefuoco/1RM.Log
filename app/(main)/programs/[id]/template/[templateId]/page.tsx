@@ -12,6 +12,7 @@ import { deleteWorkoutTemplate } from "@/services/programs"
 import { toast } from "sonner"
 import { EditTemplateExerciseDrawer } from "@/components/programs/edit-template-exercise-drawer"
 import { EditTemplateDrawer } from "@/components/programs/edit-template-drawer"
+import { WorkoutTemplate, TemplateExercise } from "@/types/database"
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -30,28 +31,6 @@ import {
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
 
-interface TemplateExercise {
-    id: string
-    exercise_id: string
-    target_sets: number
-    target_reps_min: number | null
-    target_reps_max: number | null
-    target_rir: number | null
-    order: number
-    exercise: {
-        id: string
-        name: string
-        body_part: string
-        type: string
-    }
-}
-
-interface WorkoutTemplate {
-    id: string
-    name: string
-    order: number
-    program_id: string
-}
 
 export default function TemplateDetailPage({
     params
@@ -97,7 +76,7 @@ export default function TemplateDetailPage({
                 .order('order', { ascending: true })
 
             if (exercisesData) {
-                setExercises(exercisesData as TemplateExercise[])
+                setExercises(exercisesData as any as TemplateExercise[])
             }
         }
         setLoading(false)
@@ -215,7 +194,7 @@ export default function TemplateDetailPage({
                                 {/* <GripVertical className="h-5 w-5 text-slate-600 cursor-grab opacity-0 group-hover:opacity-100" /> */}
 
                                 <div className="flex-1 min-w-0">
-                                    <h3 className="font-bold text-white text-base truncate">{ex.exercise.name}</h3>
+                                    <h3 className="font-bold text-white text-base truncate">{ex.exercise?.name}</h3>
                                     <p className="text-xs text-slate-400 mt-1">
                                         {ex.target_sets} serie × {ex.target_reps_min || "?"}-{ex.target_reps_max || "?"} reps
                                         {ex.target_rir !== null && ` @ RIR ${ex.target_rir}`}
@@ -228,7 +207,7 @@ export default function TemplateDetailPage({
                                     className="h-8 w-8 text-slate-500 hover:text-red-400 hover:bg-red-400/10 z-10"
                                     onClick={(e) => {
                                         e.stopPropagation()
-                                        handleRemoveExercise(ex.id, ex.exercise.name)
+                                        handleRemoveExercise(ex.id, ex.exercise?.name || "Esercizio")
                                     }}
                                 >
                                     <Trash2 className="h-4 w-4" />

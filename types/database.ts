@@ -7,7 +7,24 @@ export type Json =
     | Json[]
 
 export type ExerciseType = 'barbell' | 'dumbbell' | 'cable' | 'machine' | 'bodyweight' | 'other'
-export type BodyPart = 'chest' | 'back' | 'legs' | 'shoulders' | 'arms' | 'core' | 'full_body'
+export type BodyPart =
+    | 'Chest'
+    | 'Back (Lats)'
+    | 'Back (Upper/Traps)'
+    | 'Lower Back'
+    | 'Shoulders (Front)'
+    | 'Shoulders (Side)'
+    | 'Shoulders (Rear)'
+    | 'Biceps'
+    | 'Triceps'
+    | 'Forearms'
+    | 'Quadriceps'
+    | 'Hamstrings'
+    | 'Glutes'
+    | 'Calves'
+    | 'Core'
+    | 'Functional'
+
 export type SetType = 'straight' | 'top_set' | 'backoff' | 'warmup' | 'myorep'
 export type IntensityType = 'RIR' | 'RPE'
 export type UserSex = 'male' | 'female'
@@ -34,7 +51,7 @@ export interface Profile {
 export interface Exercise {
     id: string
     name: string
-    body_part: BodyPart
+    body_parts: BodyPart[]
     type: ExerciseType
     image_url: string | null
     created_at: string

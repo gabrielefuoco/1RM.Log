@@ -5,9 +5,11 @@ import { cn } from "@/lib/utils"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useWeeklyProgress } from "@/hooks/use-weekly-progress"
+import { useTranslations } from "next-intl"
 
 export function WeeklyProgress() {
     const { data, isLoading } = useWeeklyProgress()
+    const t = useTranslations("Dashboard")
 
     if (isLoading) {
         return (
@@ -33,7 +35,7 @@ export function WeeklyProgress() {
         <Card className="">
             <CardHeader className="flex-row items-center justify-between pb-2 border-b border-border/30 mb-4 bg-secondary/5">
                 <CardTitle className="text-sm font-heading font-bold tracking-widest text-muted-foreground uppercase">
-                    Weekly Focus
+                    {t("weeklyFocus")}
                 </CardTitle>
                 <span className="text-lg font-mono font-bold text-primary">{percentage}%</span>
             </CardHeader>

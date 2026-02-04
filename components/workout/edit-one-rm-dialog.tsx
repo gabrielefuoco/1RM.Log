@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useEffect } from "react"
@@ -9,6 +8,7 @@ import { Label } from "@/components/ui/label"
 import { Trophy, RotateCcw, Save } from "lucide-react"
 import { toast } from "sonner"
 import { getUserOneRm, upsertUserOneRm, deleteUserOneRm } from "@/services/one-rm"
+import { useTranslations } from "next-intl"
 
 interface EditOneRmDialogProps {
     exerciseId: string
@@ -19,6 +19,7 @@ interface EditOneRmDialogProps {
 }
 
 export function EditOneRmDialog({ exerciseId, exerciseName, history1RM, onUpdate, trigger }: EditOneRmDialogProps) {
+    const t = useTranslations("Workout")
     const [open, setOpen] = useState(false)
     const [manualOneRm, setManualOneRm] = useState<number | undefined>(undefined)
     const [loading, setLoading] = useState(false)
@@ -50,17 +51,17 @@ export function EditOneRmDialog({ exerciseId, exerciseName, history1RM, onUpdate
 
     const handleSave = async () => {
         if (!manualOneRm || manualOneRm <= 0) {
-            toast.error("Inserisci un valore valido")
+            toast.error(t("invalidValue"))
             return
         }
         setLoading(true)
         try {
             await upsertUserOneRm(exerciseId, manualOneRm)
-            toast.success("Massimale aggiornato")
+            toast.success(t("saved"))
             setOpen(false)
             onUpdate()
         } catch (error) {
-            toast.error("Errore nel salvataggio")
+            toast.error(t("saveError"))
             console.error(error)
         } finally {
             setLoading(false)
@@ -71,13 +72,13 @@ export function EditOneRmDialog({ exerciseId, exerciseName, history1RM, onUpdate
         setLoading(true)
         try {
             await deleteUserOneRm(exerciseId)
-            toast.success("Ripristinato massimale storico")
+            toast.success(t("restored"))
             setManualOneRm(undefined)
             setIsOverrideActive(false)
             setOpen(false)
             onUpdate()
         } catch (error) {
-            toast.error("Errore nel ripristino")
+            toast.error(t("restoreError"))
         } finally {
             setLoading(false)
         }
@@ -89,7 +90,7 @@ export function EditOneRmDialog({ exerciseId, exerciseName, history1RM, onUpdate
                 {trigger || (
                     <Button variant="ghost" size="sm" className="h-6 px-2 text-xs text-muted-foreground gap-1">
                         <Trophy className="h-3 w-3" />
-                        {isOverrideActive ? "Override" : "Storico"}
+                        {isOverrideActive ? t("override") : t("historical")}
                     </Button>
                 )}
             </DialogTrigger>
@@ -97,25 +98,25 @@ export function EditOneRmDialog({ exerciseId, exerciseName, history1RM, onUpdate
                 <DialogHeader>
                     <DialogTitle className="flex items-center gap-2">
                         <Trophy className="h-5 w-5 text-amber-500" />
-                        Gestisci Massimale (1RM)
+                        {t("manage1rm")}
                     </DialogTitle>
                 </DialogHeader>
 
                 <div className="space-y-6 py-2">
                     <div className="bg-muted/30 p-4 rounded-lg space-y-2">
-                        <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Esercizio</span>
+                        <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">{t("exercise")}</span>
                         <p className="font-bold text-lg">{exerciseName}</p>
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2">
-                            <Label className="text-xs text-muted-foreground">Miglior Storico (Stimato)</Label>
+                            <Label className="text-xs text-muted-foreground">{t("bestHistorical")}</Label>
                             <div className="h-10 flex items-center px-3 rounded-md bg-muted/50 border border-transparent font-mono font-bold text-muted-foreground">
                                 {history1RM > 0 ? history1RM : "-"} kg
                             </div>
                         </div>
                         <div className="space-y-2">
-                            <Label className="text-xs text-amber-500 font-bold">Override Manuale (TM)</Label>
+                            <Label className="text-xs text-amber-500 font-bold">{t("manualOverride")}</Label>
                             <Input
                                 type="number"
                                 value={manualOneRm || ''}
@@ -129,19 +130,19 @@ export function EditOneRmDialog({ exerciseId, exerciseName, history1RM, onUpdate
                     <div className="flex flex-col gap-2 pt-2">
                         <Button onClick={handleSave} disabled={loading} className="w-full gap-2 font-bold bg-amber-500 hover:bg-amber-600 text-black">
                             <Save className="h-4 w-4" />
-                            Salva Manualmente
+                            {t("saveManually")}
                         </Button>
 
                         {isOverrideActive && (
                             <Button onClick={handleReset} variant="outline" disabled={loading} className="w-full gap-2 text-muted-foreground">
                                 <RotateCcw className="h-4 w-4" />
-                                Ripristina da Storico
+                                {t("restoreHistorical")}
                             </Button>
                         )}
                     </div>
 
                     <p className="text-[10px] text-muted-foreground text-center px-4 leading-tight">
-                        Impostando un valore manuale, tutti i calcoli percentuali per questo esercizio useranno questo valore invece dello storico.
+                        {t("overrideNotice")}
                     </p>
                 </div>
             </DialogContent>

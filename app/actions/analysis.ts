@@ -1,13 +1,29 @@
 'use server'
 
 import { createClient } from "@/lib/supabase/server"
+import { calculateDOTS } from "@/utils/formulas"
+import { getProgressionSettings } from "@/services/progression"
+
+// --- Helper Interfaces ---
+
+export interface TrendPoint {
+    date: string
+    value: number
+    [key: string]: any
+}
+
+export interface DistributionPoint {
+    category: string
+    count: number
+}
+
+// --- KPI & Basic Trends ---
 
 export async function getKPIs() {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return null
 
-    // 1. Estimated 1RM (Best ever across all exercises? Or average of top 3? Let's do Max Single Lift for now)
     const { data: bestLift } = await supabase
         .from('exercise_logs')
         .select('estimated_1rm')
@@ -15,7 +31,6 @@ export async function getKPIs() {
         .limit(1)
         .single()
 
-    // 2. Total Volume (All time? Or last 30 days? Let's do last 30 days)
     const thirtyDaysAgo = new Date()
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
 
@@ -26,7 +41,6 @@ export async function getKPIs() {
 
     const totalVolume = volumeData?.reduce((acc, log) => acc + (Number(log.weight) * Number(log.reps)), 0) || 0
 
-    // 3. Frequency (Sessions per week, avg last 4 weeks)
     const { count: sessionCount } = await supabase
         .from('workout_sessions')
         .select('*', { count: 'exact', head: true })
@@ -34,21 +48,16 @@ export async function getKPIs() {
 
     const weeklyFrequency = sessionCount ? (sessionCount / 4).toFixed(1) : "0.0"
 
-    // 4. DOTS Score (Requires bodyweight. For now, placeholder or latest bodyweight)
-    // We need latest bodyweight and best lift.
-    // Simplifying for MVP: just return raw stats.
-
     return {
         bestLift: bestLift?.estimated_1rm?.toFixed(1) || "0",
-        volume: (totalVolume / 1000).toFixed(1) + "k", // displayed in k
+        volume: (totalVolume / 1000).toFixed(1) + "k",
         frequency: weeklyFrequency,
-        dots: "N/A" // Complex calc, leave for later
+        dots: "N/A"
     }
 }
 
 export async function get1RMTrend(exerciseId: string, periodDays: number = 90) {
     const supabase = await createClient()
-
     const startDate = new Date()
     startDate.setDate(startDate.getDate() - periodDays)
 
@@ -61,123 +70,493 @@ export async function get1RMTrend(exerciseId: string, periodDays: number = 90) {
         `)
         .eq('exercise_id', exerciseId)
         .gte('workout_sessions.date', startDate.toISOString())
-        .order('created_at', { ascending: true })
+        .order('workout_sessions(date)', { ascending: true })
 
-    // Aggregate by day (best 1RM per day)
     if (!data) return []
 
-    return data.map(log => {
+    const currentPeriod = data.map(log => {
         // @ts-ignore
-        const date = log.workout_sessions?.date || log.created_at
+        const dateStr = log.workout_sessions?.date || log.created_at
         return {
-            date,
+            date: new Date(dateStr).toISOString().split('T')[0],
             value: Number(log.estimated_1rm)
         }
     })
-}
 
-export async function getVolumeStats() {
-    // Weekly volume for last 12 weeks
-    const supabase = await createClient()
-    const { data } = await supabase
-        .rpc('get_weekly_volume') // Check if RPC exists, if not do in JS
+    // Fetch comparison period (optional optimization: can be done in parallel)
+    const compStartDate = new Date(startDate)
+    compStartDate.setDate(compStartDate.getDate() - periodDays)
 
-    // Fallback: Fetch all logs last 90 days and aggregate in JS
-    const ninetyDaysAgo = new Date()
-    ninetyDaysAgo.setDate(ninetyDaysAgo.getDate() - 90)
-
-    const { data: logs } = await supabase
+    const { data: compData } = await supabase
         .from('exercise_logs')
-        .select('weight, reps, workout_sessions!inner(date)')
-        .gte('workout_sessions.date', ninetyDaysAgo.toISOString())
+        .select(`estimated_1rm, workout_sessions!inner(date)`)
+        .eq('exercise_id', exerciseId)
+        .gte('workout_sessions.date', compStartDate.toISOString())
+        .lt('workout_sessions.date', startDate.toISOString())
         .order('workout_sessions(date)', { ascending: true })
 
-    if (!logs) return []
-
-    // Group by week
-    const volumeByWeek: Record<string, number> = {}
-    logs.forEach(log => {
+    const comparisonPeriod = compData?.map(log => {
         // @ts-ignore
-        const date = new Date(log.workout_sessions.date)
-        const weekStart = new Date(date.setDate(date.getDate() - date.getDay())).toISOString().split('T')[0]
-        const vol = Number(log.weight) * Number(log.reps)
-        volumeByWeek[weekStart] = (volumeByWeek[weekStart] || 0) + vol
-    })
+        const d = new Date(log.workout_sessions.date)
+        // Shift date forward to align on chart
+        d.setDate(d.getDate() + periodDays)
+        return {
+            date: d.toISOString().split('T')[0],
+            value: Number(log.estimated_1rm)
+        }
+    }) || []
 
-    return Object.entries(volumeByWeek).map(([date, value]) => ({ date, value }))
+    return { current: currentPeriod, comparison: comparisonPeriod }
 }
 
-export async function getPerformanceFeed() {
-    const supabase = await createClient()
 
-    // Fetch all logs ordered by date
-    // We need to find "improvements".
-    // Strategy: Fetch all logs. Group by Exercise. Iterate chronological.
-    // If estimated_1rm > current_max, push to feed.
+// --- Analysis 2.0 (Normalization & SBD) ---
+
+export async function getNormalizedMultiTrend(exerciseIds: string[], periodDays: number = 90) {
+    if (!exerciseIds.length) return []
+    const supabase = await createClient()
+    const startDate = new Date()
+    startDate.setDate(startDate.getDate() - periodDays)
+
+    const { data } = await supabase
+        .from('exercise_logs')
+        .select(`
+            estimated_1rm,
+            exercise_id,
+            workout_sessions!inner(date)
+        `)
+        .in('exercise_id', exerciseIds)
+        .gte('workout_sessions.date', startDate.toISOString())
+        .order('workout_sessions(date)', { ascending: true })
+
+    if (!data || data.length === 0) return []
+
+    const exerciseBaselines: Record<string, number> = {}
+    const groupedByDate: Record<string, any> = {}
+
+    data.forEach(log => {
+        // @ts-ignore
+        const date = new Date(log.workout_sessions.date).toISOString().split('T')[0]
+        if (!groupedByDate[date]) {
+            groupedByDate[date] = { date }
+        }
+
+        if (!exerciseBaselines[log.exercise_id]) {
+            exerciseBaselines[log.exercise_id] = Number(log.estimated_1rm)
+        }
+
+        const baseline = exerciseBaselines[log.exercise_id]
+        const current = Number(log.estimated_1rm)
+        const normalized = baseline > 0 ? (current / baseline) * 100 : 100
+
+        groupedByDate[date][log.exercise_id] = normalized
+    })
+
+    return Object.values(groupedByDate).sort((a: any, b: any) =>
+        new Date(a.date).getTime() - new Date(b.date).getTime()
+    )
+}
+
+export async function getSBD1RMTrend(periodDays: number = 180) {
+    const supabase = await createClient()
+    const startDate = new Date()
+    startDate.setDate(startDate.getDate() - periodDays)
+
+    const { data: exercises } = await supabase
+        .from('exercises')
+        .select('id, name')
+        .or('name.ilike.%squat%,name.ilike.%bench press%,name.ilike.%deadlift%')
+
+    if (!exercises || exercises.length === 0) return []
+
+    const squatIds = exercises.filter(e => e.name.toLowerCase().includes('squat')).map(e => e.id)
+    const benchIds = exercises.filter(e => e.name.toLowerCase().includes('bench')).map(e => e.id)
+    const deadliftIds = exercises.filter(e => e.name.toLowerCase().includes('deadlift')).map(e => e.id)
+    const allIds = [...squatIds, ...benchIds, ...deadliftIds]
 
     const { data: logs } = await supabase
         .from('exercise_logs')
         .select(`
-            id,
             estimated_1rm,
-            weight,
-            reps,
-            created_at,
-            exercises (name),
+            exercise_id,
             workout_sessions!inner(date)
         `)
+        .in('exercise_id', allIds)
+        .gte('workout_sessions.date', startDate.toISOString())
         .order('workout_sessions(date)', { ascending: true })
 
-    if (!logs) return []
+    if (!logs || logs.length === 0) return []
 
-    const feed: any[] = []
-    const exerciseMaxes: Record<string, number> = {}
+    const dailyData: Record<string, { date: string, squat: number, bench: number, deadlift: number }> = {}
 
     logs.forEach(log => {
         // @ts-ignore
-        const exerciseName = log.exercises?.name || 'Unknown'
-        const current1RM = Number(log.estimated_1rm)
-        const previousMax = exerciseMaxes[exerciseName] || 0
+        const date = new Date(log.workout_sessions.date).toISOString().split('T')[0]
+        const val = Number(log.estimated_1rm)
 
-        if (current1RM > previousMax) {
-            // It's a PR / Improvement
-            const improvement = previousMax > 0 ? ((current1RM - previousMax) / previousMax) * 100 : 100 // 100% if new
+        if (!dailyData[date]) {
+            dailyData[date] = { date, squat: 0, bench: 0, deadlift: 0 }
+        }
 
-            // Only add significant PRs (e.g. not first log ever unless we want "First Log")
-            // Let's exclude "First Log" (improvement = 100) to focus on "Improvements"
-            if (previousMax > 0) {
+        if (squatIds.includes(log.exercise_id)) dailyData[date].squat = Math.max(dailyData[date].squat, val)
+        else if (benchIds.includes(log.exercise_id)) dailyData[date].bench = Math.max(dailyData[date].bench, val)
+        else if (deadliftIds.includes(log.exercise_id)) dailyData[date].deadlift = Math.max(dailyData[date].deadlift, val)
+    })
+
+    const sortedDates = Object.keys(dailyData).sort()
+    const result: any[] = []
+    let lastS = 0, lastB = 0, lastD = 0
+
+    sortedDates.forEach(date => {
+        const e = dailyData[date]
+        if (e.squat > 0) lastS = e.squat
+        if (e.bench > 0) lastB = e.bench
+        if (e.deadlift > 0) lastD = e.deadlift
+        result.push({ date, squat: lastS, bench: lastB, deadlift: lastD, total: lastS + lastB + lastD })
+    })
+
+    return result
+}
+
+// --- Bodyweight & Relative ---
+
+export async function getBodyweightTrend(periodDays: number = 90) {
+    const supabase = await createClient()
+    const startDate = new Date()
+    startDate.setDate(startDate.getDate() - periodDays)
+
+    const { data } = await supabase
+        .from('bodyweight_logs')
+        .select('weight, date')
+        .gte('date', startDate.toISOString())
+        .order('date', { ascending: true })
+
+    return data?.map(log => ({ date: log.date, value: Number(log.weight) })) || []
+}
+
+export async function getRelativeStrengthTrend(exerciseId: string, periodDays: number = 90) {
+    const supabase = await createClient()
+    const startDate = new Date()
+    startDate.setDate(startDate.getDate() - periodDays)
+
+    const { data: logs } = await supabase
+        .from('exercise_logs')
+        .select('estimated_1rm, workout_sessions!inner(date)')
+        .eq('exercise_id', exerciseId)
+        .gte('workout_sessions.date', startDate.toISOString())
+        .order('workout_sessions(date)', { ascending: true })
+
+    if (!logs || logs.length === 0) return []
+
+    const { data: bwLogs } = await supabase
+        .from('bodyweight_logs')
+        .select('weight, date')
+        .gte('date', startDate.toISOString())
+        .order('date', { ascending: true })
+
+    const getBwAtDate = (d: string) => {
+        if (!bwLogs || bwLogs.length === 0) return 75
+        const valid = bwLogs.filter(l => l.date <= d)
+        return valid.length === 0 ? bwLogs[0].weight : valid[valid.length - 1].weight
+    }
+
+    return logs.map(log => {
+        // @ts-ignore
+        const dateStr = new Date(log.workout_sessions.date).toISOString().split('T')[0]
+        const val1RM = Number(log.estimated_1rm)
+        const bw = Number(getBwAtDate(dateStr))
+        return { date: dateStr, value: Number((val1RM / bw).toFixed(2)), bw, lift: val1RM }
+    })
+}
+
+// --- Dots, Volume & Hard Sets ---
+
+export async function getCompetitionPointsTrend(periodDays: number = 180) {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return []
+
+    const settings = await getProgressionSettings(user.id)
+    const sbdData = await getSBD1RMTrend(periodDays)
+    const bwTrend = await getBodyweightTrend(periodDays)
+
+    const getBwAtDate = (d: string) => {
+        if (!bwTrend || bwTrend.length === 0) return 75
+        const valid = bwTrend.filter(l => l.date <= d)
+        return valid.length === 0 ? bwTrend[0]?.value : valid[valid.length - 1].value
+    }
+
+    const { calculateDOTS, calculateWilks, calculateIPFGL } = await import("@/utils/formulas")
+
+    return sbdData.map(e => {
+        const bw = getBwAtDate(e.date)
+        return {
+            date: e.date,
+            dots: calculateDOTS(e.total, bw, settings.sex),
+            wilks: calculateWilks(e.total, bw, settings.sex),
+            ipf: calculateIPFGL(e.total, bw, settings.sex),
+            total: e.total,
+            bw
+        }
+    })
+}
+
+
+export async function getVolumeByBodyPart(periodDays: number = 90) {
+    const supabase = await createClient()
+    const startDate = new Date()
+    startDate.setDate(startDate.getDate() - periodDays)
+
+    const { data: logs } = await supabase
+        .from('exercise_logs')
+        .select('weight, reps, exercises!inner(body_parts), workout_sessions!inner(date)')
+        .gte('workout_sessions.date', startDate.toISOString())
+        .order('workout_sessions(date)', { ascending: true })
+
+    if (!logs) return []
+    const weeklyData: Record<string, any> = {}
+
+    logs.forEach(log => {
+        // @ts-ignore
+        const date = new Date(log.workout_sessions.date)
+        const weekStart = new Date(date.setDate(date.getDate() - date.getDay())).toISOString().split('T')[0]
+
+        // Handle multiple body parts - distribute volume across all target muscles
+        // @ts-ignore
+        const parts = log.exercises?.body_parts || ['Other']
+        const vol = Number(log.weight) * Number(log.reps)
+
+        if (!weeklyData[weekStart]) weeklyData[weekStart] = { date: weekStart }
+
+        parts.forEach((part: string) => {
+            weeklyData[weekStart][part] = (weeklyData[weekStart][part] || 0) + vol
+        })
+    })
+
+    return Object.values(weeklyData).sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime())
+}
+
+export async function getHardSetsTrend(periodDays: number = 90) {
+    const supabase = await createClient()
+    const startDate = new Date()
+    startDate.setDate(startDate.getDate() - periodDays)
+
+    const { data: logs } = await supabase
+        .from('exercise_logs')
+        .select('rir, workout_sessions!inner(date)')
+        .lte('rir', 3)
+        .gte('workout_sessions.date', startDate.toISOString())
+
+    if (!logs) return []
+    const setsByWeek: Record<string, number> = {}
+
+    logs.forEach(log => {
+        // @ts-ignore
+        const session = log.workout_sessions as any
+        // @ts-ignore
+        const date = new Date(session?.date || (log as any).created_at || new Date())
+        const weekStart = new Date(date.setDate(date.getDate() - date.getDay())).toISOString().split('T')[0]
+        setsByWeek[weekStart] = (setsByWeek[weekStart] || 0) + 1
+    })
+
+
+
+    return Object.entries(setsByWeek).map(([date, value]) => ({ date, value }))
+}
+
+export async function getFatigueScatter(periodDays: number = 90) {
+    const supabase = await createClient()
+    const startDate = new Date()
+    startDate.setDate(startDate.getDate() - periodDays)
+
+    const { data: logs } = await supabase
+        .from('exercise_logs')
+        .select('weight, reps, rir, workout_sessions!inner(id, date)')
+        .gte('workout_sessions.date', startDate.toISOString())
+
+    if (!logs) return []
+    const sessionAgg: Record<string, any> = {}
+
+    logs.forEach(log => {
+        // @ts-ignore
+        const sid = log.workout_sessions.id
+        // @ts-ignore
+        const date = log.workout_sessions.date
+        if (!sessionAgg[sid]) sessionAgg[sid] = { volume: 0, rirSum: 0, count: 0, date }
+        sessionAgg[sid].volume += (Number(log.weight) * Number(log.reps))
+        if (log.rir !== null) {
+            sessionAgg[sid].rirSum += (10 - Number(log.rir))
+            sessionAgg[sid].count++
+        }
+    })
+
+    return Object.values(sessionAgg).filter(s => s.count > 0).map(s => ({
+        x: Math.round(s.volume / 100) / 10,
+        y: Number((s.rirSum / s.count).toFixed(1)),
+        date: s.date
+    }))
+}
+
+// --- Utils ---
+
+export async function getMuscleBalance(periodDays: number = 30) {
+    const supabase = await createClient()
+    const startDate = new Date()
+    startDate.setDate(startDate.getDate() - periodDays)
+
+    const { data: logs } = await supabase
+        .from('exercise_logs')
+        .select('exercises!inner(body_parts), workout_sessions!inner(date)')
+        .gte('workout_sessions.date', startDate.toISOString())
+
+    if (!logs) return []
+    const counts: Record<string, number> = {}
+    logs.forEach(log => {
+        // @ts-ignore
+        const parts = log.exercises?.body_parts || ['Other']
+        parts.forEach((part: string) => {
+            counts[part] = (counts[part] || 0) + 1
+        })
+    })
+
+    return Object.entries(counts).map(([part, count]) => ({
+        subject: part,
+        value: count,
+        fullMark: Math.max(...Object.values(counts)) * 1.2
+    }))
+}
+
+export async function getIntensityDistribution(periodDays: number = 90) {
+    const supabase = await createClient()
+    const startDate = new Date()
+    startDate.setDate(startDate.getDate() - periodDays)
+    const { data: logs } = await supabase.from('exercise_logs').select('rir').not('rir', 'is', null).gte('created_at', startDate.toISOString())
+
+    if (!logs) return []
+    const dist: Record<string, number> = { "0": 0, "1": 0, "2": 0, "3": 0, "4+": 0 }
+    logs.forEach(log => {
+        const r = Math.round(Number(log.rir))
+        if (r <= 0) dist["0"]++
+        else if (r === 1) dist["1"]++
+        else if (r === 2) dist["2"]++
+        else if (r === 3) dist["3"]++
+        else dist["4+"]++
+    })
+
+    return Object.entries(dist).map(([rir, count]) => ({ rir: `RIR ${rir}`, count }))
+}
+
+export async function getVolumeStats(periodDays: number = 90) {
+    const supabase = await createClient()
+    const startDate = new Date()
+    startDate.setDate(startDate.getDate() - periodDays)
+
+    const { data: logs } = await supabase
+        .from('exercise_logs')
+        .select('weight, reps, workout_sessions!inner(date)')
+        .gte('workout_sessions.date', startDate.toISOString())
+        .order('workout_sessions(date)', { ascending: true })
+
+    const processLogs = (data: any[]) => {
+        const volByWeek: Record<string, number> = {}
+        data.forEach(log => {
+            const date = new Date(log.workout_sessions.date)
+            const weekStart = new Date(date.setDate(date.getDate() - date.getDay())).toISOString().split('T')[0]
+            volByWeek[weekStart] = (volByWeek[weekStart] || 0) + (Number(log.weight) * Number(log.reps))
+        })
+        return Object.entries(volByWeek).map(([date, value]) => ({ date, value }))
+    }
+
+    const currentPeriod = processLogs(logs || [])
+
+    // Comparison Period
+    const compStartDate = new Date(startDate)
+    compStartDate.setDate(compStartDate.getDate() - periodDays)
+    const { data: compLogs } = await supabase
+        .from('exercise_logs')
+        .select('weight, reps, workout_sessions!inner(date)')
+        .gte('workout_sessions.date', compStartDate.toISOString())
+        .lt('workout_sessions.date', startDate.toISOString())
+
+    const comparisonPeriod = processLogs(compLogs || []).map(d => {
+        const date = new Date(d.date)
+        date.setDate(date.getDate() + periodDays)
+        return { date: date.toISOString().split('T')[0], value: d.value }
+    })
+
+    return { current: currentPeriod, comparison: comparisonPeriod }
+}
+
+
+export async function getPerformanceFeed() {
+    const supabase = await createClient()
+    const { data: logs } = await supabase.from('exercise_logs').select('id, estimated_1rm, weight, reps, exercises(name), workout_sessions!inner(date)').order('workout_sessions(date)', { ascending: true })
+
+    if (!logs) return []
+    const feed: any[] = []
+    const exMaxes: Record<string, number> = {}
+
+    logs.forEach(log => {
+        // @ts-ignore
+        const name = log.exercises?.name || 'Unknown'
+        const cur = Number(log.estimated_1rm)
+        const prev = exMaxes[name] || 0
+
+        if (cur > prev) {
+            if (prev > 0) {
                 feed.push({
-                    id: log.id,
-                    exercise: exerciseName,
+                    id: log.id, exercise: name,
                     // @ts-ignore
                     date: log.workout_sessions?.date,
-                    value: current1RM, // 1RM
-                    raw: `${log.weight}kg x ${log.reps}`,
-                    improvement: improvement.toFixed(1), // %
+                    value: cur, raw: `${log.weight}kg x ${log.reps}`,
+                    improvement: (((cur - prev) / prev) * 100).toFixed(1),
                     // @ts-ignore
                     unixTime: new Date(log.workout_sessions?.date).getTime()
                 })
             }
-
-            exerciseMaxes[exerciseName] = current1RM
+            exMaxes[name] = cur
         }
     })
 
-    const thirtyDaysAgo = new Date()
-    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
-    const thirtyDaysAgoTime = thirtyDaysAgo.getTime()
-
-    // Sort by Date DESC, then Improvement % DESC
-    return feed
-        .filter(item => item.unixTime >= thirtyDaysAgoTime)
-        .sort((a, b) => {
-            if (b.unixTime !== a.unixTime) return b.unixTime - a.unixTime
-            return Number(b.improvement) - Number(a.improvement)
-        })
+    const limit = new Date()
+    limit.setDate(limit.getDate() - 30)
+    return feed.filter(f => f.unixTime >= limit.getTime()).sort((a, b) => b.unixTime - a.unixTime)
 }
 
 export async function getExercisesList() {
     const supabase = await createClient()
-    const { data } = await supabase.from('exercises').select('id, name').order('name')
+    const { data } = await supabase.from('exercises').select('id, name, body_parts').order('name')
     return data || []
+}
+
+// --- CONFIG ACTIONS ---
+
+export async function getDashboardConfig() {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return {}
+
+    const { data } = await supabase
+        .from('progression_settings')
+        .select('dashboard_config')
+        .eq('user_id', user.id)
+        .single()
+
+    return data?.dashboard_config || {}
+}
+
+export async function updateDashboardConfig(config: any) {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return { success: false }
+
+    const { error } = await supabase
+        .from('progression_settings')
+        .upsert({
+            user_id: user.id,
+            dashboard_config: config,
+            updated_at: new Date().toISOString()
+        })
+
+    return { success: !error }
 }

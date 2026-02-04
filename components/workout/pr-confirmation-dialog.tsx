@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/alert-dialog"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Check, Trophy } from "lucide-react"
+import { useTranslations } from "next-intl"
 
 interface PRUpdate {
     exerciseName: string
@@ -34,6 +35,7 @@ export function PRConfirmationDialog({
     onConfirm,
     onCancel
 }: PRConfirmationDialogProps) {
+    const t = useTranslations("Workout")
     if (updates.length === 0) return null
 
     return (
@@ -44,11 +46,10 @@ export function PRConfirmationDialog({
                         <Trophy className="h-6 w-6 text-amber-500" />
                     </div>
                     <AlertDialogTitle className="text-xl font-black uppercase tracking-widest text-center">
-                        Nuovi Record!
+                        {t("newRecords")}
                     </AlertDialogTitle>
                     <AlertDialogDescription className="text-center text-slate-400">
-                        Hai superato i tuoi massimali stimati in {updates.length} esercizi.
-                        Vuoi aggiornare il tuo Training Max?
+                        {t("prDescription", { count: updates.length })}
                     </AlertDialogDescription>
                 </AlertDialogHeader>
 
@@ -78,13 +79,13 @@ export function PRConfirmationDialog({
                         onClick={onConfirm}
                         className="w-full h-12 bg-primary text-primary-foreground font-black text-sm uppercase tracking-wider rounded-xl hover:bg-primary/90"
                     >
-                        <Check className="mr-2 h-4 w-4" /> Aggiorna Tutto
+                        <Check className="mr-2 h-4 w-4" /> {t("updateAll")}
                     </AlertDialogAction>
                     <AlertDialogCancel
                         onClick={onCancel}
                         className="w-full h-12 bg-transparent border-white/10 text-slate-400 hover:bg-white/5 hover:text-white font-bold rounded-xl mt-0"
                     >
-                        Non ora
+                        {t("notNow")}
                     </AlertDialogCancel>
                 </AlertDialogFooter>
             </AlertDialogContent>

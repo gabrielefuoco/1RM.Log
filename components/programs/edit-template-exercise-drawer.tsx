@@ -168,9 +168,9 @@ export function EditTemplateExerciseDrawer({
             <DrawerContent className="bg-background border-t border-white/10 max-h-[90vh]">
                 <div className="mx-auto w-full max-w-md">
                     <DrawerHeader>
-                        <DrawerTitle className="text-white text-xl uppercase italic font-black">Configura Serie</DrawerTitle>
+                        <DrawerTitle className="text-white text-xl uppercase italic font-black">Configure Sets</DrawerTitle>
                         <DrawerDescription>
-                            Modifica la progressione per {templateExercise.exercise?.name}
+                            Edit progression for {templateExercise.exercise?.name}
                         </DrawerDescription>
                     </DrawerHeader>
 
@@ -179,14 +179,14 @@ export function EditTemplateExerciseDrawer({
                             <Dumbbell className="h-5 w-5 text-primary" />
                             <div>
                                 <p className="font-bold text-white leading-tight">{templateExercise.exercise?.name}</p>
-                                <p className="text-[10px] text-slate-500 uppercase font-black">{templateExercise.exercise?.body_part} • {templateExercise.exercise?.type}</p>
+                                <p className="text-[10px] text-slate-500 uppercase font-black">{templateExercise.exercise?.body_parts?.join(', ')} • {templateExercise.exercise?.type}</p>
                             </div>
                         </div>
 
                         {/* Global Config Grid */}
                         <div className="grid grid-cols-2 gap-3">
                             <div className="space-y-1.5">
-                                <Label className="text-[10px] uppercase text-slate-500 font-bold ml-1 tracking-wider">Serie Totali</Label>
+                                <Label className="text-[10px] uppercase text-slate-500 font-bold ml-1 tracking-wider">Total Sets</Label>
                                 <Input
                                     type="number"
                                     min={1}
@@ -197,7 +197,7 @@ export function EditTemplateExerciseDrawer({
                                 />
                             </div>
                             <div className="space-y-1.5">
-                                <Label className="text-[10px] uppercase text-slate-500 font-bold ml-1 tracking-wider">RIR Global Target</Label>
+                                <Label className="text-[10px] uppercase text-slate-500 font-bold ml-1 tracking-wider">Global Target RIR</Label>
                                 <Input
                                     type="number"
                                     min={0}
@@ -210,7 +210,7 @@ export function EditTemplateExerciseDrawer({
                         </div>
 
                         <div className="space-y-1.5">
-                            <Label className="text-[10px] uppercase text-slate-500 font-bold ml-1 tracking-wider">Range Reps Default</Label>
+                            <Label className="text-[10px] uppercase text-slate-500 font-bold ml-1 tracking-wider">Default Rep Range</Label>
                             <div className="flex items-center gap-2">
                                 <Input
                                     type="number"
@@ -234,14 +234,14 @@ export function EditTemplateExerciseDrawer({
 
                         <div className="pt-2 space-y-3">
                             <div className="flex items-center justify-between border-b border-white/5 pb-2">
-                                <h3 className="text-[10px] font-black text-slate-600 uppercase tracking-[0.2em]">Dettaglio Serie</h3>
+                                <h3 className="text-[10px] font-black text-slate-600 uppercase tracking-[0.2em]">Set Details</h3>
                                 <Button
                                     variant="ghost"
                                     size="sm"
                                     className="h-6 text-[10px] text-primary hover:bg-primary/10 font-bold uppercase"
                                     onClick={addSet}
                                 >
-                                    + Aggiungi
+                                    + Add Set
                                 </Button>
                             </div>
 
@@ -261,7 +261,7 @@ export function EditTemplateExerciseDrawer({
                                                     {isImpossible && (
                                                         <span className="flex items-center gap-1 text-[9px] text-red-500 font-bold bg-red-500/10 px-1.5 py-0.5 rounded border border-red-500/20">
                                                             <AlertTriangle className="h-3 w-3" />
-                                                            IMPOSSIBILE
+                                                            IMPOSSIBLE
                                                         </span>
                                                     )}
                                                     {i > 0 && (
@@ -291,11 +291,11 @@ export function EditTemplateExerciseDrawer({
 
                                             <div className="grid grid-cols-4 gap-2">
                                                 <div className="col-span-1">
-                                                    <Label className="text-[8px] uppercase text-slate-600 mb-1 block font-bold text-center">Reps Min</Label>
+                                                    <Label className="text-[8px] uppercase text-slate-600 mb-1 block font-bold text-center">Min Reps</Label>
                                                     <Input type="number" value={set.reps_min} onChange={(e) => updateSingleSet(i, { reps_min: Number(e.target.value) })} className="h-8 text-xs text-center font-bold px-1" />
                                                 </div>
                                                 <div className="col-span-1">
-                                                    <Label className="text-[8px] uppercase text-slate-600 mb-1 block font-bold text-center">Reps Max</Label>
+                                                    <Label className="text-[8px] uppercase text-slate-600 mb-1 block font-bold text-center">Max Reps</Label>
                                                     <Input type="number" value={set.reps_max} onChange={(e) => updateSingleSet(i, { reps_max: Number(e.target.value) })} className="h-8 text-xs text-center font-bold px-1" />
                                                 </div>
                                                 <div className="col-span-1 relative">
@@ -310,7 +310,7 @@ export function EditTemplateExerciseDrawer({
                                                 </div>
                                                 <div className="col-span-1">
                                                     <Label className={cn("text-[9px] uppercase font-bold ml-1", isBackoff ? "text-purple-400" : "text-amber-500")}>
-                                                        {isBackoff ? "Drop %" : "Carico %"}
+                                                        {isBackoff ? "Drop %" : "Load %"}
                                                     </Label>
                                                     <div className="relative">
                                                         <Input
@@ -357,11 +357,11 @@ export function EditTemplateExerciseDrawer({
                             disabled={loading}
                             className="w-full bg-primary text-background-dark font-black uppercase tracking-widest hover:bg-primary/90 py-6"
                         >
-                            {loading ? "Salvataggio..." : "Salva Configurazione"}
+                            {loading ? "Saving..." : "Save Configuration"}
                         </Button>
                         <DrawerClose asChild>
                             <Button variant="ghost" className="w-full text-slate-500 text-xs uppercase font-bold">
-                                Annulla
+                                Cancel
                             </Button>
                         </DrawerClose>
                     </DrawerFooter>

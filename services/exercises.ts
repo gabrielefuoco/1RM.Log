@@ -16,7 +16,7 @@ export async function getExercises(bodyPart?: BodyPart) {
         .order('name', { ascending: true })
 
     if (bodyPart) {
-        query = query.eq('body_part', bodyPart)
+        query = query.contains('body_parts', [bodyPart])
     }
 
     const { data, error } = await query
@@ -90,7 +90,7 @@ export async function addTemplateExercise(input: AddTemplateExerciseInput) {
 
 export interface UpdateExerciseInput {
     name?: string
-    body_part?: BodyPart
+    body_parts?: BodyPart[]
     type?: ExerciseType
 }
 

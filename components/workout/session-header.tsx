@@ -6,6 +6,7 @@ import { MoreVertical, ChevronRight, ChevronLeft, Trash2, Plus, Info, RefreshCcw
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { useState } from "react"
+import { useTranslations } from "next-intl"
 
 interface SessionHeaderProps {
     exercise: Exercise
@@ -34,6 +35,7 @@ export function SessionHeader({
     onSwapExercise,
     className
 }: SessionHeaderProps) {
+    const t = useTranslations("Workout")
     const [isExpanded, setIsExpanded] = useState(false)
 
     return (
@@ -52,7 +54,7 @@ export function SessionHeader({
                         </Button>
                     )}
                     <Badge className="bg-muted text-muted-foreground border-transparent uppercase text-[10px] tracking-widest font-bold px-2 py-0.5">
-                        {exercise.type || 'Esercizio'}
+                        {exercise.type || t("exercise")}
                     </Badge>
                     <span className="text-[10px] text-muted-foreground font-bold tracking-tighter uppercase">
                         {currentExerciseIndex + 1} / {totalExercises}
@@ -102,7 +104,9 @@ export function SessionHeader({
             {/* Exercise Name */}
             <div>
                 <h1 className="text-2xl font-bold text-foreground leading-tight uppercase tracking-tight">{exercise.name}</h1>
-                <p className="text-[10px] text-muted-foreground uppercase tracking-[0.2em] mt-1 font-bold">{exercise.body_part}</p>
+                <p className="text-[10px] text-muted-foreground uppercase tracking-[0.2em] mt-1 font-bold">
+                    {Array.isArray(exercise.body_parts) ? exercise.body_parts.join(', ') : exercise.body_parts}
+                </p>
             </div>
 
             {/* Stats Bar (Only if templateData exists) */}
@@ -112,7 +116,7 @@ export function SessionHeader({
                     <div className="absolute left-0 top-2 bottom-2 w-1 bg-primary rounded-full shadow-[0_0_8px_rgba(0,255,163,0.5)]"></div>
 
                     <div className="flex-1 py-3 pl-4 text-center">
-                        <p className="text-[9px] text-muted-foreground uppercase tracking-widest font-bold">Serie</p>
+                        <p className="text-[9px] text-muted-foreground uppercase tracking-widest font-bold">{t("sets")}</p>
                         <p className="text-xl font-bold text-foreground mt-0.5">{templateData.target_sets}</p>
                     </div>
                     <div className="w-px h-10 bg-border"></div>
@@ -122,7 +126,7 @@ export function SessionHeader({
                     </div>
                     <div className="w-px h-10 bg-border"></div>
                     <div className="flex-1 py-3 text-center">
-                        <p className="text-[9px] text-muted-foreground uppercase tracking-widest font-bold">Reps</p>
+                        <p className="text-[9px] text-muted-foreground uppercase tracking-widest font-bold">{t("reps")}</p>
                         <p className="text-xl font-bold text-foreground mt-0.5">
                             {templateData.target_reps_min}-{templateData.target_reps_max}
                         </p>
@@ -148,7 +152,7 @@ export function SessionHeader({
                             <ChevronRight className={cn("h-4 w-4 text-muted-foreground", isExpanded && "text-primary")} />
                         </div>
                         <div className="flex-1">
-                            <p className="text-[9px] text-muted-foreground uppercase tracking-widest font-bold">Prossimo:</p>
+                            <p className="text-[9px] text-muted-foreground uppercase tracking-widest font-bold">{t("nextPrefix")}:</p>
                             <p className="text-sm text-foreground font-bold">{nextExercise.name}</p>
                         </div>
                         {!isExpanded && <Info className="h-4 w-4 text-muted-foreground/30" />}
@@ -157,11 +161,11 @@ export function SessionHeader({
                     {isExpanded && nextTemplateData && (
                         <div className="grid grid-cols-3 gap-2 pt-2 animate-in fade-in slide-in-from-top-2 duration-300">
                             <div className="bg-background/40 rounded-lg p-2 border border-border/20 text-center">
-                                <p className="text-[8px] text-muted-foreground uppercase font-black">Serie</p>
+                                <p className="text-[8px] text-muted-foreground uppercase font-black">{t("sets")}</p>
                                 <p className="text-sm font-bold text-foreground">{nextTemplateData.target_sets}</p>
                             </div>
                             <div className="bg-background/40 rounded-lg p-2 border border-border/20 text-center">
-                                <p className="text-[8px] text-muted-foreground uppercase font-black">Reps</p>
+                                <p className="text-[8px] text-muted-foreground uppercase font-black">{t("reps")}</p>
                                 <p className="text-sm font-bold text-foreground">{nextTemplateData.target_reps_min}-{nextTemplateData.target_reps_max}</p>
                             </div>
                             <div className="bg-background/40 rounded-lg p-2 border border-border/20 text-center">
@@ -172,7 +176,7 @@ export function SessionHeader({
                     )}
 
                     {isExpanded && !nextTemplateData && (
-                        <p className="text-[10px] text-muted-foreground italic text-center py-1">Nessun obiettivo impostato</p>
+                        <p className="text-[10px] text-muted-foreground italic text-center py-1">{t("noTarget")}</p>
                     )}
                 </div>
             )}

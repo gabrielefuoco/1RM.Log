@@ -6,10 +6,12 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 import { useNextWorkout } from "@/hooks/use-next-workout"
-import Link from "next/link"
+import { Link } from "@/i18n/routing"
+import { useTranslations } from "next-intl"
 
 export function WorkoutCard() {
     const { data: nextWorkout, isLoading } = useNextWorkout()
+    const t = useTranslations("Dashboard")
 
     if (isLoading) {
         return (
@@ -31,10 +33,10 @@ export function WorkoutCard() {
         return (
             <Card className="relative overflow-hidden group">
                 <CardContent className="p-6 relative z-10 text-center">
-                    <h2 className="text-xl font-heading font-bold text-foreground mb-2 uppercase">Nessun programma attivo</h2>
-                    <p className="text-muted-foreground text-sm font-sans mb-4">Crea un programma per iniziare ad allenarti</p>
+                    <h2 className="text-xl font-heading font-bold text-foreground mb-2 uppercase">{t("noActiveProgram")}</h2>
+                    <p className="text-muted-foreground text-sm font-sans mb-4">{t("createProgramToStart")}</p>
                     <Button variant="outline" className="w-full" asChild>
-                        <Link href="/programs">Crea Programma</Link>
+                        <Link href="/programs">{t("createProgram")}</Link>
                     </Button>
                 </CardContent>
             </Card>
@@ -66,7 +68,7 @@ export function WorkoutCard() {
                 </div>
 
                 <Button className="w-full h-12 text-md" asChild>
-                    <Link href={`/workout/${nextWorkout.id}`}>INIZIA ALLENAMENTO</Link>
+                    <Link href={`/workout/${nextWorkout.id}`}>{t("startWorkout")}</Link>
                 </Button>
             </CardContent>
         </Card>

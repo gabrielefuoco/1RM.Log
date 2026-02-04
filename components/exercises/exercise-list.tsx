@@ -139,7 +139,7 @@ function ExerciseCard({ exercise, onEdit, onDelete }: { exercise: Exercise, onEd
                 </div>
                 <div className="flex-1 min-w-0">
                     <h3 className="font-semibold text-white truncate text-base">{exercise.name}</h3>
-                    <p className="text-xs text-slate-400 capitalize">{exercise.body_part} • {exercise.type}</p>
+                    <p className="text-xs text-slate-400 capitalize">{exercise.body_parts?.join(', ')} • {exercise.type}</p>
                 </div>
 
                 <div className="shrink-0">

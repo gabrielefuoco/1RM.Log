@@ -13,26 +13,33 @@ interface DataPoint {
 
 interface TrendChartProps {
     data: DataPoint[]
+    comparisonData?: DataPoint[]
     primaryColor?: string
     unit?: string
 }
 
+
 export function TrendChart({
     data,
+    comparisonData,
     primaryColor = "#00ffa3",
     unit = "kg"
 }: TrendChartProps) {
+
 
     // Fallback if no primary color is passed, utilize CSS variable if possible or default hex
     // Since we are in client component, we use the hex provided or default neon
 
     const formattedData = useMemo(() => {
-        return data.map(d => ({
+        // Find longest array or handle mismatch
+        const base = data.map((d, i) => ({
             ...d,
             dateStr: format(new Date(d.date), 'dd MMM', { locale: it }),
-            fullDate: format(new Date(d.date), 'dd MMMM yyyy', { locale: it })
+            fullDate: format(new Date(d.date), 'dd MMMM yyyy', { locale: it }),
+            compareValue: comparisonData?.[i]?.value ?? null
         }))
-    }, [data])
+        return base
+    }, [data, comparisonData])
 
     if (!data || data.length === 0) {
         return (
@@ -41,6 +48,7 @@ export function TrendChart({
             </div>
         )
     }
+
 
     return (
         <div className="w-full h-[350px] w-full">
@@ -86,6 +94,17 @@ export function TrendChart({
                             return null
                         }}
                     />
+                    {comparisonData && (
+                        <Area
+                            type="monotone"
+                            dataKey="compareValue"
+                            stroke="#71717a"
+                            strokeWidth={1}
+                            strokeDasharray="4 4"
+                            fill="transparent"
+                            activeDot={false}
+                        />
+                    )}
                     <Area
                         type="monotone"
                         dataKey="value"

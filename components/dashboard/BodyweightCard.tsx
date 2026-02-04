@@ -6,16 +6,21 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Scale, Plus, History as HistoryIcon, Loader2 } from "lucide-react"
 import { useBodyweight } from "@/hooks/use-bodyweight"
-import { useRouter } from "next/navigation"
+import { useRouter } from "@/i18n/routing"
 import { LineChart, Line, ResponsiveContainer, YAxis, Tooltip, XAxis } from "recharts"
 import { format } from "date-fns"
-import { it } from "date-fns/locale"
+import { it, enUS } from "date-fns/locale"
+import { useTranslations, useLocale } from "next-intl"
 
 export function BodyweightCard() {
     const router = useRouter()
     const { history, latest, addWeight, isAdding, isLoading } = useBodyweight(7)
     const [newWeight, setNewWeight] = useState("")
     const [isExpanded, setIsExpanded] = useState(false)
+    const t = useTranslations("Dashboard")
+    const locale = useLocale()
+
+    const dateLocale = locale === "it" ? it : enUS
 
     const handleAdd = async () => {
         if (!newWeight || isAdding) return
@@ -39,7 +44,7 @@ export function BodyweightCard() {
                 <div className="flex items-center gap-2">
                     <Scale className="w-4 h-4 text-primary" />
                     <CardTitle className="text-xs font-heading font-bold tracking-widest text-muted-foreground uppercase">
-                        Peso Corporeo
+                        {t("bodyweight")}
                     </CardTitle>
                 </div>
                 <Button
@@ -68,7 +73,7 @@ export function BodyweightCard() {
                                 disabled={!newWeight || isAdding}
                                 className="h-10 px-6 font-bold"
                             >
-                                {isAdding ? <Loader2 className="w-4 h-4 animate-spin" /> : "SALVA"}
+                                {isAdding ? <Loader2 className="w-4 h-4 animate-spin" /> : t("save")}
                             </Button>
                         </div>
                     </div>
@@ -80,7 +85,7 @@ export function BodyweightCard() {
                                 <span className="text-sm font-bold text-muted-foreground ml-1 uppercase">kg</span>
                             </div>
                             <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider mt-1">
-                                {latest ? format(new Date(latest.date), "eeee d MMMM", { locale: it }) : "Nessun dato"}
+                                {latest ? format(new Date(latest.date), "eeee d MMMM", { locale: dateLocale }) : t("noData")}
                             </p>
                         </div>
 
@@ -111,7 +116,7 @@ export function BodyweightCard() {
                         onClick={() => router.push('/bodyweight')}
                     >
                         <HistoryIcon className="w-3 h-3 mr-2" />
-                        Vedi Storico Completo
+                        {t("seeFullHistory")}
                     </Button>
                 )}
             </CardContent>

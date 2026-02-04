@@ -27,7 +27,7 @@ export function PerformanceRail({ items }: { items: PerformanceItem[] }) {
     if (!items || items.length === 0) {
         return (
             <div className="bg-card border border-border rounded-lg p-6 text-center text-muted-foreground">
-                <p>Nessun miglioramento recente registrato.</p>
+                <p>No recent improvements recorded.</p>
             </div>
         )
     }
@@ -54,7 +54,7 @@ export function PerformanceRail({ items }: { items: PerformanceItem[] }) {
 
                                     <div className="flex items-baseline justify-between">
                                         <span className="text-[10px] text-muted-foreground font-mono uppercase">
-                                            {format(new Date(item.date), 'd MMM', { locale: it })}
+                                            {format(new Date(item.date), 'd MMM')}
                                         </span>
                                         <p className="text-lg font-heading leading-none text-foreground">
                                             {item.value.toFixed(1)}<span className="text-[10px] text-muted-foreground ml-0.5">kg</span>
@@ -66,10 +66,10 @@ export function PerformanceRail({ items }: { items: PerformanceItem[] }) {
                                 <DialogHeader>
                                     <DialogTitle className="flex items-center gap-2 text-xl font-heading uppercase">
                                         <Flame className="size-5 text-primary fill-primary/20" />
-                                        Miglioramento Registrato
+                                        New Achievement
                                     </DialogTitle>
                                     <DialogDescription>
-                                        Dettagli del nuovo record personale.
+                                        Details of your new personal record.
                                     </DialogDescription>
                                 </DialogHeader>
 
@@ -78,7 +78,7 @@ export function PerformanceRail({ items }: { items: PerformanceItem[] }) {
                                         <div>
                                             <p className="text-sm font-bold text-foreground">{item.exercise}</p>
                                             <p className="text-xs text-muted-foreground font-mono">
-                                                {format(new Date(item.date), 'dd MMMM yyyy, HH:mm', { locale: it })}
+                                                {format(new Date(item.date), 'dd MMMM yyyy, HH:mm')}
                                             </p>
                                         </div>
                                         <div className="text-right">
@@ -90,18 +90,18 @@ export function PerformanceRail({ items }: { items: PerformanceItem[] }) {
 
                                     <div className="grid grid-cols-2 gap-4">
                                         <div className="p-4 rounded-lg bg-muted/50 border border-border text-center">
-                                            <p className="text-xs text-muted-foreground uppercase tracking-widest mb-1">Precedente</p>
+                                            <p className="text-xs text-muted-foreground uppercase tracking-widest mb-1">Previous</p>
                                             <p className="text-2xl font-heading text-muted-foreground/70">{prev1RM.toFixed(1)}</p>
                                         </div>
                                         <div className="p-4 rounded-lg bg-primary/5 border border-primary/20 text-center relative overflow-hidden">
                                             <div className="absolute inset-0 bg-primary/5 animate-pulse" />
-                                            <p className="text-xs text-primary font-bold uppercase tracking-widest mb-1 relative z-10">Nuovo Record</p>
+                                            <p className="text-xs text-primary font-bold uppercase tracking-widest mb-1 relative z-10">New Record</p>
                                             <p className="text-2xl font-heading text-primary relative z-10">{item.value.toFixed(1)}</p>
                                         </div>
                                     </div>
 
                                     <div className="mt-2 text-center p-3 rounded-md bg-muted/20">
-                                        <p className="text-xs text-muted-foreground font-mono mb-1">Set Effettivo</p>
+                                        <p className="text-xs text-muted-foreground font-mono mb-1">Raw Set</p>
                                         <p className="text-lg font-bold font-mono">{item.raw}</p>
                                     </div>
                                 </div>

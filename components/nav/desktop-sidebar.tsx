@@ -1,36 +1,38 @@
 "use client"
 
-import Link from "next/link"
+import { Link } from "@/i18n/routing"
 import { usePathname } from "next/navigation"
 import { LayoutDashboard, ChartNoAxesCombined, BookOpen, History, Settings, Dumbbell } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { useTranslations } from "next-intl"
 
 export function DesktopSidebar() {
     const pathname = usePathname()
+    const t = useTranslations("Navigation")
 
     const navItems = [
         {
-            name: "Home",
+            name: t("home"),
             href: "/",
             icon: LayoutDashboard,
         },
         {
-            name: "Analisi",
+            name: t("analysis"),
             href: "/analysis",
             icon: ChartNoAxesCombined,
         },
         {
-            name: "Programmi",
+            name: t("programs"),
             href: "/programs",
             icon: BookOpen,
         },
         {
-            name: "Storico",
+            name: t("history"),
             href: "/history",
             icon: History,
         },
         {
-            name: "Config",
+            name: t("settings"),
             href: "/settings",
             icon: Settings,
         },
@@ -58,10 +60,18 @@ export function DesktopSidebar() {
             {/* Navigation */}
             <nav className="flex-1 px-4 py-8 space-y-2">
                 <p className="px-4 text-xs font-mono font-bold text-slate-500 uppercase tracking-widest mb-4">
-                    Menu
+                    {t("menu")}
                 </p>
                 {navItems.map((item) => {
-                    const isActive = pathname === item.href || pathname?.startsWith(item.href + "/")
+                    // Normalize pathname and href for comparison
+                    const currentPath = pathname || "/"
+                    const itemHref = item.href === "/" ? "/" : item.href
+
+                    // Simple check for active state
+                    const isActive = itemHref === "/"
+                        ? (currentPath === "/" || currentPath.match(/^\/(en|it)\/?$/))
+                        : (currentPath.includes(itemHref))
+
                     return (
                         <Link
                             key={item.href}

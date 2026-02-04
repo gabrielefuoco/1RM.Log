@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button"
 import { Minimize2, Maximize2, X, Plus, Minus, Timer as TimerIcon } from "lucide-react"
 import { useState, useEffect } from "react"
 import { cn } from "@/lib/utils"
+import { useTranslations } from "next-intl"
 
 interface RestTimerProps {
     initialSeconds?: number
@@ -13,6 +14,7 @@ interface RestTimerProps {
 }
 
 export function RestTimer({ initialSeconds = 90, onComplete, onClose, isOpen }: RestTimerProps) {
+    const t = useTranslations("Workout")
     const [seconds, setSeconds] = useState(initialSeconds)
     const [isMinimized, setIsMinimized] = useState(false)
     const [isRunning, setIsRunning] = useState(true)
@@ -45,8 +47,8 @@ export function RestTimer({ initialSeconds = 90, onComplete, onClose, isOpen }: 
 
             // Background Notification logic
             if (document.visibilityState === 'hidden' && Notification.permission === 'granted') {
-                new Notification("Logbook: Recupero Completato! 💥", {
-                    body: "È ora della prossima serie. Forza!",
+                new Notification(t("notificationTitle"), {
+                    body: t("notificationBody"),
                     icon: "/icons/icon-192x192.png",
                     tag: 'rest-timer'
                 })
@@ -56,7 +58,7 @@ export function RestTimer({ initialSeconds = 90, onComplete, onClose, isOpen }: 
             if (navigator.vibrate) navigator.vibrate([200, 100, 200])
         }
         return () => clearInterval(interval)
-    }, [isOpen, isRunning, seconds, onComplete])
+    }, [isOpen, isRunning, seconds, onComplete, t])
 
     if (!isOpen) return null
 
@@ -99,7 +101,7 @@ export function RestTimer({ initialSeconds = 90, onComplete, onClose, isOpen }: 
                         <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
                             <TimerIcon className="h-5 w-5 text-primary" />
                         </div>
-                        <h3 className="font-bold text-white text-xl">Recupero</h3>
+                        <h3 className="font-bold text-white text-xl">{t("restTitle")}</h3>
                     </div>
                     <div className="flex items-center gap-1">
                         <Button variant="ghost" size="icon" className="rounded-full hover:bg-white/5" onClick={() => setIsMinimized(true)}>
@@ -118,7 +120,7 @@ export function RestTimer({ initialSeconds = 90, onComplete, onClose, isOpen }: 
                     )}>
                         {formatTime(seconds)}
                     </div>
-                    <p className="text-slate-500 text-xs mt-2 uppercase tracking-widest font-bold">Tempo Rimanente</p>
+                    <p className="text-slate-500 text-xs mt-2 uppercase tracking-widest font-bold">{t("remainingTime")}</p>
                 </div>
 
                 <div className="grid grid-cols-4 gap-2 mt-8">
@@ -140,7 +142,7 @@ export function RestTimer({ initialSeconds = 90, onComplete, onClose, isOpen }: 
                     className="w-full mt-6 h-14 bg-primary text-background-dark font-black text-lg rounded-2xl hover:bg-primary/90 shadow-[0_0_20px_rgba(19,236,109,0.2)]"
                     onClick={onClose}
                 >
-                    SALTA RECUPERO
+                    {t("skipRest")}
                 </Button>
             </div>
         </div>

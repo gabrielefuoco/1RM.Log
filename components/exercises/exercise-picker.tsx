@@ -49,13 +49,13 @@ export function ExercisePicker({ onSelect, trigger, open, onOpenChange }: Exerci
             {trigger && <DrawerTrigger asChild>{trigger}</DrawerTrigger>}
             <DrawerContent className="h-[85vh] bg-zinc-950 border-white/10">
                 <DrawerHeader>
-                    <DrawerTitle className="text-center mb-4">Aggiungi Esercizio</DrawerTitle>
+                    <DrawerTitle className="text-center mb-4">Add Exercise</DrawerTitle>
                     <div className="relative">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
                         <Input
                             value={query}
                             onChange={(e) => setQuery(e.target.value)}
-                            placeholder="Cerca..."
+                            placeholder="Search..."
                             className="bg-zinc-900 border-white/10 pl-10"
                         />
                     </div>
@@ -66,7 +66,7 @@ export function ExercisePicker({ onSelect, trigger, open, onOpenChange }: Exerci
                         <div className="grid gap-2">
                             {exercises.length === 0 && !isLoading && (
                                 <div className="text-center text-slate-500 py-10">
-                                    Nessun esercizio trovato.
+                                    No exercises found.
                                 </div>
                             )}
 
@@ -82,7 +82,7 @@ export function ExercisePicker({ onSelect, trigger, open, onOpenChange }: Exerci
                                     </div>
                                     <div className="text-left">
                                         <div className="font-bold text-white">{ex.name}</div>
-                                        <div className="text-xs text-slate-400 capitalize">{ex.body_part} • {ex.type}</div>
+                                        <div className="text-xs text-slate-400 capitalize">{ex.body_parts?.join(', ')} • {ex.type}</div>
                                     </div>
                                     <Plus className="ml-auto h-5 w-5 text-slate-500" />
                                 </Button>

@@ -16,6 +16,26 @@ import {
     DrawerClose,
 } from "@/components/ui/drawer"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { MultiSelect, Option } from "@/components/ui/multi-select"
+
+const BODY_PART_OPTIONS: Option[] = [
+    { label: 'Chest', value: 'Chest' },
+    { label: 'Back (Lats)', value: 'Back (Lats)' },
+    { label: 'Back (Upper/Traps)', value: 'Back (Upper/Traps)' },
+    { label: 'Lower Back', value: 'Lower Back' },
+    { label: 'Shoulders (Front)', value: 'Shoulders (Front)' },
+    { label: 'Shoulders (Side)', value: 'Shoulders (Side)' },
+    { label: 'Shoulders (Rear)', value: 'Shoulders (Rear)' },
+    { label: 'Biceps', value: 'Biceps' },
+    { label: 'Triceps', value: 'Triceps' },
+    { label: 'Forearms', value: 'Forearms' },
+    { label: 'Quadriceps', value: 'Quadriceps' },
+    { label: 'Hamstrings', value: 'Hamstrings' },
+    { label: 'Glutes', value: 'Glutes' },
+    { label: 'Calves', value: 'Calves' },
+    { label: 'Core', value: 'Core' },
+    { label: 'Functional', value: 'Functional' },
+]
 
 interface EditExerciseDrawerProps {
     exercise: Exercise | null
@@ -29,33 +49,33 @@ export function EditExerciseDrawer({ exercise, open, onOpenChange, onSuccess }: 
 
     // Form State
     const [name, setName] = useState("")
-    const [bodyPart, setBodyPart] = useState<BodyPart>("chest")
+    const [bodyParts, setBodyParts] = useState<string[]>([])
     const [type, setType] = useState<ExerciseType>("barbell")
 
     // Sync form with exercise prop
     useEffect(() => {
         if (exercise) {
             setName(exercise.name)
-            setBodyPart(exercise.body_part)
+            setBodyParts(exercise.body_parts || [])
             setType(exercise.type)
         }
     }, [exercise])
 
     const handleSubmit = async () => {
-        if (!exercise || !name.trim()) return
+        if (!exercise || !name.trim() || bodyParts.length === 0) return
 
         setLoading(true)
         try {
             await updateExercise(exercise.id, {
                 name,
-                body_part: bodyPart,
+                body_parts: bodyParts as BodyPart[],
                 type: type,
             })
             onOpenChange(false)
             onSuccess()
         } catch (error) {
             console.error(error)
-            alert("Errore durante la modifica dell'esercizio")
+            alert("Error during exercise modification")
         } finally {
             setLoading(false)
         }
@@ -66,59 +86,61 @@ export function EditExerciseDrawer({ exercise, open, onOpenChange, onSuccess }: 
             <DrawerContent className="bg-background border-t border-white/10">
                 <div className="mx-auto w-full max-w-sm">
                     <DrawerHeader>
-                        <DrawerTitle className="text-white text-xl">Modifica Esercizio</DrawerTitle>
-                        <DrawerDescription>Modifica i dettagli dell'esercizio.</DrawerDescription>
+                        <DrawerTitle className="text-white text-xl">Edit Exercise</DrawerTitle>
+                        <DrawerDescription>Modify exercise details.</DrawerDescription>
                     </DrawerHeader>
 
                     <div className="p-4 space-y-4">
                         <div className="space-y-2">
-                            <Label htmlFor="edit-name" className="text-white">Nome Esercizio</Label>
+                            <Label htmlFor="edit-name" className="text-white">Exercise Name</Label>
                             <Input
                                 id="edit-name"
-                                placeholder="es. Panca Piana Manubri"
+                                placeholder="e.g. Incline Dumbbell Press"
                                 className="bg-zinc-900/50 border-white/10 text-white"
                                 value={name}
                                 onChange={(e) => setName(e.target.value)}
                             />
                         </div>
 
-                        <div className="grid grid-cols-2 gap-4">
-                            <div className="space-y-2">
-                                <Label className="text-white">Body Part</Label>
-                                <Select value={bodyPart} onValueChange={(v) => setBodyPart(v as BodyPart)}>
-                                    <SelectTrigger className="bg-zinc-900/50 border-white/10 text-white">
-                                        <SelectValue />
-                                    </SelectTrigger>
-                                    <SelectContent className="bg-zinc-900 border-white/10 text-white">
-                                        {['chest', 'back', 'legs', 'shoulders', 'arms', 'core', 'full_body'].map(bp => (
-                                            <SelectItem key={bp} value={bp} className="capitalize focus:bg-primary/20 focus:text-primary">{bp}</SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                            </div>
+                        <div className="space-y-2">
+                            <Label className="text-white">Body Parts</Label>
+                            <MultiSelect
+                                options={BODY_PART_OPTIONS}
+                                selected={bodyParts}
+                                onChange={setBodyParts}
+                                placeholder="Choose categories..."
+                                className="bg-zinc-900/50 border-white/10 text-white"
+                            />
+                        </div>
 
-                            <div className="space-y-2">
-                                <Label className="text-white">Tipologia</Label>
-                                <Select value={type} onValueChange={(v) => setType(v as ExerciseType)}>
-                                    <SelectTrigger className="bg-zinc-900/50 border-white/10 text-white">
-                                        <SelectValue />
-                                    </SelectTrigger>
-                                    <SelectContent className="bg-zinc-900 border-white/10 text-white">
-                                        {['barbell', 'dumbbell', 'cable', 'machine', 'bodyweight', 'other'].map(t => (
-                                            <SelectItem key={t} value={t} className="capitalize focus:bg-primary/20 focus:text-primary">{t}</SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                            </div>
+                        <div className="space-y-2">
+                            <Label className="text-white">Equipment Type</Label>
+                            <Select value={type} onValueChange={(v) => setType(v as ExerciseType)}>
+                                <SelectTrigger className="bg-zinc-900/50 border-white/10 text-white">
+                                    <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent className="bg-zinc-900 border-white/10 text-white">
+                                    {[
+                                        { value: 'barbell', label: 'Barbell' },
+                                        { value: 'dumbbell', label: 'Dumbbell' },
+                                        { value: 'cable', label: 'Cable' },
+                                        { value: 'machine', label: 'Machine' },
+                                        { value: 'bodyweight', label: 'Bodyweight' },
+                                        { value: 'other', label: 'Other' }
+                                    ].map(t => (
+                                        <SelectItem key={t.value} value={t.value} className="capitalize focus:bg-primary/20 focus:text-primary">{t.label}</SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
                         </div>
                     </div>
 
                     <DrawerFooter>
                         <Button onClick={handleSubmit} disabled={loading} className="w-full bg-primary text-background-dark font-bold hover:bg-primary/90">
-                            {loading ? "Salvataggio..." : "Salva Modifiche"}
+                            {loading ? "Saving..." : "Save Changes"}
                         </Button>
                         <DrawerClose asChild>
-                            <Button variant="outline" className="w-full border-white/10 text-white hover:bg-white/5 hover:text-white">Annulla</Button>
+                            <Button variant="outline" className="w-full border-white/10 text-white hover:bg-white/5 hover:text-white">Cancel</Button>
                         </DrawerClose>
                     </DrawerFooter>
                 </div>

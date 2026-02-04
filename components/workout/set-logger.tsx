@@ -19,6 +19,7 @@ import {
     DialogTrigger,
     DialogDescription
 } from "@/components/ui/dialog"
+import { useTranslations } from "next-intl"
 
 interface SetLoggerProps {
     setNumber: number
@@ -59,6 +60,7 @@ export function SetLogger({
     previousSetWeight,
     isDeload = false
 }: SetLoggerProps) {
+    const t = useTranslations("Workout")
     // Progression Algorithm
     const calculateSuggestion = () => {
         const rounding = settings?.rounding_increment || 2.5
@@ -75,11 +77,6 @@ export function SetLogger({
             // If no explicit %, try to calculate from RPE/RIR + Reps
             if (!percent && targetRir !== undefined && (targetRepsMin || targetRepsMax)) {
                 const reps = targetRepsMin || targetRepsMax || 5; // Fallback to 5
-                // Import helper dynamically or assume it's imported at top
-                // calculatePercentFromRepsAndRir(reps, rir)
-                // We need to make sure calculatePercentFromRepsAndRir is imported.
-                // For now, I will use the formula inline or assume import.
-                // It is imported from '@/utils/formulas' in previews view.
                 const totalEffort = reps + targetRir;
                 const decimal = 1 / (1 + totalEffort / 30);
                 percent = decimal * 100;
@@ -113,7 +110,6 @@ export function SetLogger({
     }
 
     const [weight, setWeight] = useState<string>(initialValues?.weight.toString() || calculateSuggestion() || (previousLog?.weight?.toString() ?? ""))
-    // ... existing state ...
     const [reps, setReps] = useState<string>(initialValues?.reps.toString() || previousLog?.reps?.toString() || "")
     const [rir, setRir] = useState<string>(initialValues?.rir?.toString() || (targetRir !== undefined ? targetRir.toString() : "0"))
 
@@ -168,10 +164,10 @@ export function SetLogger({
                         "text-xs font-black tracking-widest uppercase shrink-0",
                         isActive ? "text-primary" : "text-muted-foreground"
                     )}>
-                        SET {setNumber}
+                        {t("set")} {setNumber}
                     </h4>
                     {setType === 'warmup' && (
-                        <span className="text-[8px] bg-amber-500/10 text-amber-500 px-1.5 py-0.5 rounded border border-amber-500/20 font-black uppercase tracking-tighter shrink-0">WARMUP</span>
+                        <span className="text-[8px] bg-amber-500/10 text-amber-500 px-1.5 py-0.5 rounded border border-amber-500/20 font-black uppercase tracking-tighter shrink-0">{t("warmup")}</span>
                     )}
                     {isActive && (
                         <div className="flex items-center gap-1 text-[10px] font-mono font-bold text-primary bg-primary/10 px-2 py-0.5 rounded-full border border-primary/20 animate-pulse shrink-0">
@@ -193,12 +189,12 @@ export function SetLogger({
                                         "flex items-center gap-1 text-[9px] font-bold uppercase tracking-tight px-2 py-1 rounded-lg border transition-colors hover:bg-white/10",
                                         isActive ? "text-slate-200 bg-white/5 border-white/10" : "text-slate-400 bg-white/5 border-white/5"
                                     )}>
-                                        <span className="text-slate-500 text-[8px]">TARGET:</span>
+                                        <span className="text-slate-500 text-[8px]">{t("target")}:</span>
                                         <span>
                                             {targetPercentage ? (
                                                 <span className="text-amber-500 mr-1">{targetPercentage}%</span>
                                             ) : null}
-                                            {targetRepsMin}{targetRepsMax ? `-${targetRepsMax}` : ''} <span className="text-slate-500 font-normal">REPS</span>
+                                            {targetRepsMin}{targetRepsMax ? `-${targetRepsMax}` : ''} <span className="text-slate-500 font-normal">{t("reps")}</span>
                                             {targetRir !== undefined && (
                                                 <>
                                                     <span className="mx-1 text-white/20">|</span>
@@ -232,24 +228,24 @@ export function SetLogger({
                             <DialogHeader>
                                 <DialogTitle className="text-xl font-black uppercase tracking-widest text-primary flex items-center gap-2">
                                     <History className="h-5 w-5" />
-                                    DETTAGLI SET {setNumber}
+                                    {t("setDetails")} {setNumber}
                                 </DialogTitle>
                                 <DialogDescription className="text-slate-500 font-bold uppercase text-[10px]">
-                                    Informazioni sulla programmazione e performance passate
+                                    {t("infoDetails")}
                                 </DialogDescription>
                             </DialogHeader>
 
                             <div className="grid gap-6 py-4">
                                 {(targetRepsMin || targetRir !== undefined || targetPercentage) && setType !== 'warmup' && (
                                     <div className="space-y-2">
-                                        <h5 className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Target Odierno</h5>
+                                        <h5 className="text-[10px] font-black text-slate-500 uppercase tracking-widest">{t("targetToday")}</h5>
                                         <div className="bg-white/5 border border-white/10 rounded-2xl p-4 flex items-center justify-between">
                                             <div>
                                                 <div className="text-3xl font-black text-white flex items-baseline gap-2">
                                                     {targetPercentage ? <span className="text-amber-500 text-lg">{targetPercentage}%</span> : null}
                                                     <span>{targetRepsMin}{targetRepsMax ? `-${targetRepsMax}` : ''}</span>
                                                 </div>
-                                                <div className="text-[10px] font-bold text-slate-500 uppercase">Obiettivo</div>
+                                                <div className="text-[10px] font-bold text-slate-500 uppercase">{t("objective")}</div>
                                             </div>
                                             <div className="text-right">
                                                 <div className="text-3xl font-black text-primary">
@@ -257,12 +253,12 @@ export function SetLogger({
                                                         ? (settings?.intensity_type === 'RPE' ? `RPE ${rirToRpe(targetRir)}` : `RIR ${targetRir}`)
                                                         : '-'}
                                                 </div>
-                                                <div className="text-[10px] font-bold text-slate-500 uppercase">Sforzo Target</div>
+                                                <div className="text-[10px] font-bold text-slate-500 uppercase">{t("targetEffort")}</div>
                                             </div>
                                         </div>
                                         {targetPercentage && userBest1RM && (
                                             <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-3 flex items-center justify-between">
-                                                <span className="text-[10px] font-bold text-amber-500 uppercase">Base Calcolo (1RM)</span>
+                                                <span className="text-[10px] font-bold text-amber-500 uppercase">{t("calculationBase")} (1RM)</span>
                                                 <span className="text-sm font-black text-amber-500">{userBest1RM}KG</span>
                                             </div>
                                         )}
@@ -271,7 +267,7 @@ export function SetLogger({
 
                                 {previousLog && (
                                     <div className="space-y-2">
-                                        <h5 className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Ultima Performance</h5>
+                                        <h5 className="text-[10px] font-black text-slate-500 uppercase tracking-widest">{t("lastPerformance")}</h5>
                                         <div className="bg-primary/5 border border-primary/10 rounded-2xl p-4 flex items-center justify-between gap-2">
                                             <div className="shrink-0">
                                                 <div className="text-2xl font-black text-white">
@@ -279,7 +275,7 @@ export function SetLogger({
                                                     <span className="mx-1.5 text-slate-700">×</span>
                                                     {previousLog.reps}
                                                 </div>
-                                                <div className="text-[10px] font-bold text-slate-500 uppercase">Performance</div>
+                                                <div className="text-[10px] font-bold text-slate-500 uppercase">{t("performance")}</div>
                                             </div>
                                             <div className="text-center shrink-0">
                                                 <div className="text-2xl font-black text-primary">
@@ -287,13 +283,13 @@ export function SetLogger({
                                                         ? (settings?.intensity_type === 'RPE' ? `RPE ${rirToRpe(previousLog.rir)}` : `RIR ${previousLog.rir}`)
                                                         : '-'}
                                                 </div>
-                                                <div className="text-[10px] font-bold text-slate-500 uppercase">Sforzo</div>
+                                                <div className="text-[10px] font-bold text-slate-500 uppercase">{t("effort")}</div>
                                             </div>
                                             <div className="text-right shrink-0">
                                                 <div className="text-2xl font-black text-primary/80">
                                                     {(previousLog.weight * (1 + (previousLog.reps || 0) / 30)).toFixed(1)}<span className="text-xs ml-0.5 uppercase">kg</span>
                                                 </div>
-                                                <div className="text-[10px] font-bold text-slate-500 uppercase">Est. 1RM</div>
+                                                <div className="text-[10px] font-bold text-slate-500 uppercase">{t("est1rm")}</div>
                                             </div>
                                         </div>
                                     </div>
@@ -311,7 +307,7 @@ export function SetLogger({
                         <span className="text-xs font-bold text-slate-500 uppercase tracking-tighter">kg</span>
                         <span className="text-xs text-slate-700 mx-1">/</span>
                         <span className="text-2xl font-black text-white">{reps}</span>
-                        <span className="text-xs font-bold text-slate-500 uppercase tracking-tighter">reps</span>
+                        <span className="text-xs font-bold text-slate-500 uppercase tracking-tighter">{t("reps")}</span>
                     </div>
                     <div className="flex items-center gap-3">
                         <div className="text-right">
@@ -330,7 +326,7 @@ export function SetLogger({
                     <div className="grid grid-cols-7 gap-2 items-end">
                         <div className="col-span-2">
                             <div className="flex items-center justify-between mb-1.5 px-1">
-                                <span className="text-[8px] font-black text-muted-foreground/60 uppercase tracking-tighter">KG</span>
+                                <span className="text-[8px] font-black text-muted-foreground/60 uppercase tracking-tighter">{t("weight")}</span>
                                 {isActive && <PlateCalculator weight={Number(weight) || 0} maxPlateWeight={settings?.max_plate_weight} />}
                             </div>
                             {isFuture ? (
@@ -354,7 +350,7 @@ export function SetLogger({
 
                         <div className="col-span-2">
                             <div className="flex items-center gap-1 mb-1.5 ml-1">
-                                <span className="text-[8px] font-black text-muted-foreground/60 uppercase tracking-tighter">REPS</span>
+                                <span className="text-[8px] font-black text-muted-foreground/60 uppercase tracking-tighter">{t("reps")}</span>
                             </div>
                             {isFuture ? (
                                 <div className="h-11 w-full bg-white/5 rounded-xl border border-white/5 flex items-center justify-center font-black text-white/20">

@@ -10,9 +10,7 @@ const withPWA = withPWAInit({
 });
 
 const nextConfig: NextConfig = {
-  turbopack: {
-    root: 'c:/Users/gabri/APP/1RM.Log'
-  },
+  turbopack: {},
 };
 
 export default withPWA(withNextIntl(nextConfig));

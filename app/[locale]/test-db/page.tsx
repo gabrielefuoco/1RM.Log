@@ -24,7 +24,7 @@ export default function TestDbPage() {
         try {
             await createExercise({
                 name: "Test Push Up",
-                body_part: "chest",
+                body_parts: ["Chest"],
                 type: "bodyweight",
                 image_url: null
             })

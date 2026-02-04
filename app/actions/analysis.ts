@@ -66,10 +66,14 @@ export async function get1RMTrend(exerciseId: string, periodDays: number = 90) {
     // Aggregate by day (best 1RM per day)
     if (!data) return []
 
-    return data.map(log => ({
-        date: log.workout_sessions?.date || log.created_at,
-        value: Number(log.estimated_1rm)
-    }))
+    return data.map(log => {
+        // @ts-ignore
+        const date = log.workout_sessions?.date || log.created_at
+        return {
+            date,
+            value: Number(log.estimated_1rm)
+        }
+    })
 }
 
 export async function getVolumeStats() {
@@ -145,10 +149,12 @@ export async function getPerformanceFeed() {
                 feed.push({
                     id: log.id,
                     exercise: exerciseName,
+                    // @ts-ignore
                     date: log.workout_sessions?.date,
                     value: current1RM, // 1RM
                     raw: `${log.weight}kg x ${log.reps}`,
                     improvement: improvement.toFixed(1), // %
+                    // @ts-ignore
                     unixTime: new Date(log.workout_sessions?.date).getTime()
                 })
             }

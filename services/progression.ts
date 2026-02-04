@@ -89,6 +89,8 @@ export async function getProgressionSettings(userId: string): Promise<Progressio
             max_plate_weight: 20,
             intensity_type: 'RIR',
             sex: 'male',
+            rounding_increment: 2.5,
+            one_rm_update_policy: 'confirm',
             updated_at: new Date().toISOString()
         }
     }

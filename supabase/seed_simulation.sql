@@ -60,40 +60,40 @@ BEGIN
     -- Helper function not available in DO block, so we do manual checks or insert if not exists
     
     -- Bench Press
-    INSERT INTO public.exercises (name, body_part, type, user_id) 
-    SELECT 'Bench Press (Barbell)', 'chest', 'barbell', v_user_id 
+    INSERT INTO public.exercises (name, body_parts, type, user_id) 
+    SELECT 'Bench Press (Barbell)', ARRAY['chest'], 'barbell', v_user_id 
     WHERE NOT EXISTS (SELECT 1 FROM public.exercises WHERE name = 'Bench Press (Barbell)' AND user_id = v_user_id)
     RETURNING id INTO v_ex_bench;
     
     IF v_ex_bench IS NULL THEN SELECT id INTO v_ex_bench FROM public.exercises WHERE name = 'Bench Press (Barbell)' AND user_id = v_user_id; END IF;
 
     -- Squat
-    INSERT INTO public.exercises (name, body_part, type, user_id) 
-    SELECT 'Back Squat', 'legs', 'barbell', v_user_id 
+    INSERT INTO public.exercises (name, body_parts, type, user_id) 
+    SELECT 'Back Squat', ARRAY['legs'], 'barbell', v_user_id 
     WHERE NOT EXISTS (SELECT 1 FROM public.exercises WHERE name = 'Back Squat' AND user_id = v_user_id)
     RETURNING id INTO v_ex_squat;
     
     IF v_ex_squat IS NULL THEN SELECT id INTO v_ex_squat FROM public.exercises WHERE name = 'Back Squat' AND user_id = v_user_id; END IF;
 
     -- Deadlift
-    INSERT INTO public.exercises (name, body_part, type, user_id) 
-    SELECT 'Deadlift', 'back', 'barbell', v_user_id 
+    INSERT INTO public.exercises (name, body_parts, type, user_id) 
+    SELECT 'Deadlift', ARRAY['back'], 'barbell', v_user_id 
     WHERE NOT EXISTS (SELECT 1 FROM public.exercises WHERE name = 'Deadlift' AND user_id = v_user_id)
     RETURNING id INTO v_ex_dl;
     
     IF v_ex_dl IS NULL THEN SELECT id INTO v_ex_dl FROM public.exercises WHERE name = 'Deadlift' AND user_id = v_user_id; END IF;
 
     -- OHP
-    INSERT INTO public.exercises (name, body_part, type, user_id) 
-    SELECT 'Overhead Press', 'shoulders', 'barbell', v_user_id 
+    INSERT INTO public.exercises (name, body_parts, type, user_id) 
+    SELECT 'Overhead Press', ARRAY['shoulders'], 'barbell', v_user_id 
     WHERE NOT EXISTS (SELECT 1 FROM public.exercises WHERE name = 'Overhead Press' AND user_id = v_user_id)
     RETURNING id INTO v_ex_ohp;
     
     IF v_ex_ohp IS NULL THEN SELECT id INTO v_ex_ohp FROM public.exercises WHERE name = 'Overhead Press' AND user_id = v_user_id; END IF;
 
     -- Row
-    INSERT INTO public.exercises (name, body_part, type, user_id) 
-    SELECT 'Barbell Row', 'back', 'barbell', v_user_id 
+    INSERT INTO public.exercises (name, body_parts, type, user_id) 
+    SELECT 'Barbell Row', ARRAY['back'], 'barbell', v_user_id 
     WHERE NOT EXISTS (SELECT 1 FROM public.exercises WHERE name = 'Barbell Row' AND user_id = v_user_id)
     RETURNING id INTO v_ex_row;
     

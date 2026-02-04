@@ -252,7 +252,7 @@ export async function getSessionRunnerData(sessionId: string) {
                 *,
                 template_exercises (
                     *,
-                    exercise:exercises(*)
+                    exercise:exercises(name, body_parts, type)
                 )
             )
         `)
@@ -307,7 +307,7 @@ export async function getSessionWithLogs(sessionId: string) {
         .from('exercise_logs')
         .select(`
             *,
-            exercise:exercises(name, body_part)
+            exercise:exercises(name, body_parts)
         `)
         .eq('session_id', sessionId)
         .order('created_at', { ascending: true })

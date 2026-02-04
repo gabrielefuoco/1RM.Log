@@ -219,7 +219,7 @@ export function AddTemplateExerciseDrawer({
                                             </div>
                                             <div>
                                                 <p className="font-medium text-white">{exercise.name}</p>
-                                                <p className="text-xs text-slate-500 capitalize">{exercise.body_part} • {exercise.type}</p>
+                                                <p className="text-xs text-slate-500 capitalize">{exercise.body_parts?.join(', ')} • {exercise.type}</p>
                                             </div>
                                         </button>
                                     ))}

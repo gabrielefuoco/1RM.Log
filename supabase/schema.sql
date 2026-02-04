@@ -18,7 +18,7 @@ create policy "Users can update own profile" on profiles for update using (auth.
 create table if not exists public.exercises (
   id uuid default gen_random_uuid() primary key,
   name text not null,
-  body_part text not null,
+  body_parts text[] default '{}'::text[],
   type text not null,
   image_url text,
   user_id uuid references auth.users(id), -- Null for system/global exercises

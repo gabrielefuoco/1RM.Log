@@ -38,10 +38,10 @@ for (let i = 0; i < lines.length; i++) {
                 exercise[header.toLowerCase()] = cells[index];
             });
 
-            // Map to schema: name, body_part, type
+            // Map to schema: name, body_parts, type
             const mapped = {
                 name: exercise['esercizio'] || exercise['exercise'] || cells[0],
-                body_part: currentSection.split(':')[0].trim(), // e.g. "Il Complesso Toracico"
+                body_parts: [currentSection.split(':')[0].trim()], // e.g. ["Il Complesso Toracico"]
                 type: 'unknown',
                 notes: exercise['note biomeccaniche'] || exercise['dettaglio biomeccanico'] || exercise['note tecniche'] || exercise['note'] || ''
             };
@@ -73,9 +73,10 @@ for (let i = 0; i < lines.length; i++) {
 // Generate SQL
 const sql = exercises.map(ex => {
     const name = ex.name.replace(/'/g, "''");
-    const bodyPart = ex.body_part.replace(/'/g, "''");
+    // Convert body_parts array to PostgreSQL array literal: ARRAY['item1', 'item2']
+    const bodyPartsSql = `ARRAY[${ex.body_parts.map(p => `'${p.replace(/'/g, "''")}'`).join(', ')}]`;
     const type = ex.type.replace(/'/g, "''");
-    return `INSERT INTO exercises (name, body_part, type, user_id) VALUES ('${name}', '${bodyPart}', '${type}', NULL);`;
+    return `INSERT INTO exercises (name, body_parts, type, user_id) VALUES ('${name}', ${bodyPartsSql}, '${type}', NULL);`;
 }).join('\n');
 
 fs.writeFileSync(path.join(__dirname, '../supabase/seed_exercises.sql'), sql);

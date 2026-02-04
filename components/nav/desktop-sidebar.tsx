@@ -4,7 +4,6 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { LayoutDashboard, ChartNoAxesCombined, BookOpen, History, Settings, Dumbbell } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
 
 export function DesktopSidebar() {
     const pathname = usePathname()
@@ -17,7 +16,7 @@ export function DesktopSidebar() {
         },
         {
             name: "Analisi",
-            href: "/analytics",
+            href: "/analysis",
             icon: ChartNoAxesCombined,
         },
         {
@@ -62,7 +61,7 @@ export function DesktopSidebar() {
                     Menu
                 </p>
                 {navItems.map((item) => {
-                    const isActive = pathname === item.href
+                    const isActive = pathname === item.href || pathname?.startsWith(item.href + "/")
                     return (
                         <Link
                             key={item.href}
@@ -92,8 +91,6 @@ export function DesktopSidebar() {
                     )
                 })}
             </nav>
-
-
         </div>
     )
 }

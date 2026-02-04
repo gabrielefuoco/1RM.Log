@@ -17,7 +17,7 @@ export default function MainLayout({
                 <TopHeader />
 
                 {/* Main Content Area - Centered max width on desktop */}
-                <main className="flex-1 px-4 lg:px-8 max-w-7xl mx-auto w-full">
+                <main className="flex-1 px-4 lg:px-8 w-full">
                     {children}
                 </main>
             </div>

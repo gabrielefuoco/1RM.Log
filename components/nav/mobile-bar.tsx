@@ -16,7 +16,7 @@ export function MobileNav() {
         },
         {
             name: "Analisi",
-            href: "/analytics",
+            href: "/analysis",
             icon: ChartNoAxesCombined,
         },
         {

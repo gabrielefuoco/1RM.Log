@@ -1,15 +1,15 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { ExerciseLog } from "@/types/database"
+import { ExerciseLog, ProgressionSettings, TemplateSet } from "@/types/database"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { calculate1RM } from "@/utils/formulas"
+import { calculate1RM, rirToRpe, rpeToRir } from "@/utils/formulas"
 import { Check, History, Timer } from "lucide-react"
 import { cn } from "@/lib/utils"
 
-import { ProgressionSettings, ProgressionCalculator } from "@/services/progression"
+import { ProgressionCalculator } from "@/services/progression"
 import { PlateCalculator } from "./plate-calculator"
 import {
     Dialog,
@@ -26,6 +26,8 @@ interface SetLoggerProps {
     targetRir: number
     targetRepsMin?: number
     targetRepsMax?: number
+    targetPercentage?: number // New
+    userBest1RM?: number // New
     isActive?: boolean
     isFuture?: boolean
     onSave: (weight: number, reps: number, rir: number, setType: 'work' | 'warmup' | 'drop' | 'failure') => void
@@ -33,6 +35,9 @@ interface SetLoggerProps {
     settings: ProgressionSettings | null
     intensityMultiplier?: number
     setType?: 'work' | 'warmup' | 'drop' | 'failure'
+    isDeload?: boolean
+    templateSet?: TemplateSet
+    previousSetWeight?: number
 }
 
 export function SetLogger({
@@ -41,32 +46,82 @@ export function SetLogger({
     targetRir,
     targetRepsMin,
     targetRepsMax,
+    targetPercentage,
+    userBest1RM,
     isActive = false,
     isFuture = false,
     onSave,
     initialValues,
     settings,
     intensityMultiplier = 1.0,
-    setType = 'work'
+    setType = 'work',
+    templateSet,
+    previousSetWeight,
+    isDeload = false
 }: SetLoggerProps) {
     // Progression Algorithm
     const calculateSuggestion = () => {
-        if (!previousLog || !settings) return ""
+        const rounding = settings?.rounding_increment || 2.5
+        let suggestedWeight = 0;
 
-        const result = ProgressionCalculator.calculate(
-            previousLog.weight,
-            previousLog.reps,
-            previousLog.rir ?? null,
-            { ...settings, target_rir: targetRir },
-        )
+        // Priority 0: Back-off Set
+        if (templateSet?.is_backoff && templateSet?.backoff_percent && previousSetWeight && previousSetWeight > 0) {
+            suggestedWeight = previousSetWeight * (1 - templateSet.backoff_percent / 100)
+        }
+        // Priority 1: Percentage Target (Explicit or RPE-derived)
+        else if (userBest1RM && userBest1RM > 0) {
+            let percent = targetPercentage;
 
-        const suggested = result.suggestedWeight * intensityMultiplier
-        return suggested.toFixed(1)
+            // If no explicit %, try to calculate from RPE/RIR + Reps
+            if (!percent && targetRir !== undefined && (targetRepsMin || targetRepsMax)) {
+                const reps = targetRepsMin || targetRepsMax || 5; // Fallback to 5
+                // Import helper dynamically or assume it's imported at top
+                // calculatePercentFromRepsAndRir(reps, rir)
+                // We need to make sure calculatePercentFromRepsAndRir is imported.
+                // For now, I will use the formula inline or assume import.
+                // It is imported from '@/utils/formulas' in previews view.
+                const totalEffort = reps + targetRir;
+                const decimal = 1 / (1 + totalEffort / 30);
+                percent = decimal * 100;
+            }
+
+            if (percent) {
+                suggestedWeight = userBest1RM * (percent / 100) * intensityMultiplier
+            }
+        }
+
+        // Priority 2: Progression Algorithm (Previous Log)
+        if (suggestedWeight === 0 && previousLog && settings) {
+            const result = ProgressionCalculator.calculate(
+                previousLog.weight,
+                previousLog.reps,
+                previousLog.rir ?? null,
+                { ...settings, target_rir: targetRir },
+            )
+            suggestedWeight = result.suggestedWeight * intensityMultiplier
+        }
+
+        if (suggestedWeight === 0) return ""
+
+        // Apply Deload
+        if (isDeload) {
+            suggestedWeight = suggestedWeight * (1 - (settings?.deload_rate || 0.10))
+        }
+
+        // Apply Rounding
+        return (Math.round(suggestedWeight / rounding) * rounding).toFixed(rounding < 1 ? 1 : 1) // Keep decimals clean
     }
 
     const [weight, setWeight] = useState<string>(initialValues?.weight.toString() || calculateSuggestion() || (previousLog?.weight?.toString() ?? ""))
+    // ... existing state ...
     const [reps, setReps] = useState<string>(initialValues?.reps.toString() || previousLog?.reps?.toString() || "")
     const [rir, setRir] = useState<string>(initialValues?.rir?.toString() || (targetRir !== undefined ? targetRir.toString() : "0"))
+
+    // Display value for intensity (RIR or RPE)
+    const intensityValue = settings?.intensity_type === 'RPE'
+        ? rir !== "" ? rirToRpe(Number(rir)).toString() : ""
+        : rir
+
     const [isSaved, setIsSaved] = useState(!!initialValues)
     const [timer, setTimer] = useState(0)
 
@@ -133,18 +188,23 @@ export function SetLogger({
                                 className="flex flex-wrap items-center gap-1.5 cursor-zoom-in"
                                 onClick={(e) => e.stopPropagation()}
                             >
-                                {(targetRepsMin || targetRir !== undefined) && setType !== 'warmup' && (
+                                {(targetRepsMin || targetRir !== undefined || targetPercentage) && setType !== 'warmup' && (
                                     <div className={cn(
                                         "flex items-center gap-1 text-[9px] font-bold uppercase tracking-tight px-2 py-1 rounded-lg border transition-colors hover:bg-white/10",
                                         isActive ? "text-slate-200 bg-white/5 border-white/10" : "text-slate-400 bg-white/5 border-white/5"
                                     )}>
                                         <span className="text-slate-500 text-[8px]">TARGET:</span>
                                         <span>
+                                            {targetPercentage ? (
+                                                <span className="text-amber-500 mr-1">{targetPercentage}%</span>
+                                            ) : null}
                                             {targetRepsMin}{targetRepsMax ? `-${targetRepsMax}` : ''} <span className="text-slate-500 font-normal">REPS</span>
                                             {targetRir !== undefined && (
                                                 <>
                                                     <span className="mx-1 text-white/20">|</span>
-                                                    <span className="text-primary/70">RIR {targetRir}</span>
+                                                    <span className="text-primary/70">
+                                                        {settings?.intensity_type === 'RPE' ? `RPE ${rirToRpe(targetRir)}` : `RIR ${targetRir}`}
+                                                    </span>
                                                 </>
                                             )}
                                         </span>
@@ -156,7 +216,14 @@ export function SetLogger({
                                         isActive ? "text-primary/80 bg-primary/5 border-primary/10" : "text-primary/40 bg-primary/5 border-transparent"
                                     )}>
                                         <History className="h-3 w-3 opacity-50" />
-                                        <span>{previousLog.weight}KG <span className="opacity-50">×</span> {previousLog.reps} {previousLog.rir !== null ? ` @ RIR ${previousLog.rir}` : ''}</span>
+                                        <span>
+                                            {previousLog.weight}KG <span className="opacity-50">×</span> {previousLog.reps}
+                                            {previousLog.rir !== null ? (
+                                                settings?.intensity_type === 'RPE'
+                                                    ? ` @ RPE ${rirToRpe(previousLog.rir)}`
+                                                    : ` @ RIR ${previousLog.rir}`
+                                            ) : ''}
+                                        </span>
                                     </div>
                                 )}
                             </div>
@@ -173,23 +240,32 @@ export function SetLogger({
                             </DialogHeader>
 
                             <div className="grid gap-6 py-4">
-                                {(targetRepsMin || targetRir !== undefined) && setType !== 'warmup' && (
+                                {(targetRepsMin || targetRir !== undefined || targetPercentage) && setType !== 'warmup' && (
                                     <div className="space-y-2">
                                         <h5 className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Target Odierno</h5>
                                         <div className="bg-white/5 border border-white/10 rounded-2xl p-4 flex items-center justify-between">
                                             <div>
-                                                <div className="text-3xl font-black text-white">
-                                                    {targetRepsMin}{targetRepsMax ? `-${targetRepsMax}` : ''}
+                                                <div className="text-3xl font-black text-white flex items-baseline gap-2">
+                                                    {targetPercentage ? <span className="text-amber-500 text-lg">{targetPercentage}%</span> : null}
+                                                    <span>{targetRepsMin}{targetRepsMax ? `-${targetRepsMax}` : ''}</span>
                                                 </div>
-                                                <div className="text-[10px] font-bold text-slate-500 uppercase">Ripetizioni</div>
+                                                <div className="text-[10px] font-bold text-slate-500 uppercase">Obiettivo</div>
                                             </div>
                                             <div className="text-right">
                                                 <div className="text-3xl font-black text-primary">
-                                                    {targetRir !== undefined ? `RIR ${targetRir}` : '-'}
+                                                    {targetRir !== undefined
+                                                        ? (settings?.intensity_type === 'RPE' ? `RPE ${rirToRpe(targetRir)}` : `RIR ${targetRir}`)
+                                                        : '-'}
                                                 </div>
                                                 <div className="text-[10px] font-bold text-slate-500 uppercase">Sforzo Target</div>
                                             </div>
                                         </div>
+                                        {targetPercentage && userBest1RM && (
+                                            <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-3 flex items-center justify-between">
+                                                <span className="text-[10px] font-bold text-amber-500 uppercase">Base Calcolo (1RM)</span>
+                                                <span className="text-sm font-black text-amber-500">{userBest1RM}KG</span>
+                                            </div>
+                                        )}
                                     </div>
                                 )}
 
@@ -207,7 +283,9 @@ export function SetLogger({
                                             </div>
                                             <div className="text-center shrink-0">
                                                 <div className="text-2xl font-black text-primary">
-                                                    {previousLog.rir !== null ? `RIR ${previousLog.rir}` : '-'}
+                                                    {previousLog.rir !== null
+                                                        ? (settings?.intensity_type === 'RPE' ? `RPE ${rirToRpe(previousLog.rir)}` : `RIR ${previousLog.rir}`)
+                                                        : '-'}
                                                 </div>
                                                 <div className="text-[10px] font-bold text-slate-500 uppercase">Sforzo</div>
                                             </div>
@@ -242,8 +320,8 @@ export function SetLogger({
                                 {calculate1RM(Number(weight), Number(reps))}KG
                             </div>
                         </div>
-                        <div className="h-10 w-10 flex items-center justify-center rounded-xl bg-primary/10 text-primary border border-primary/20 font-black">
-                            R{rir}
+                        <div className="h-10 min-w-[3rem] px-2 flex items-center justify-center rounded-xl bg-primary/10 text-primary border border-primary/20 font-black text-xs">
+                            {settings?.intensity_type === 'RPE' ? `RPE ${rirToRpe(Number(rir))}` : `RIR ${rir}`}
                         </div>
                     </div>
                 </div>
@@ -292,11 +370,27 @@ export function SetLogger({
                                     placeholder="0"
                                 />
                             )}
-                        </div>
+                            {/* Suggestion Badge */}
+                            {(targetPercentage || (templateSet?.is_backoff && templateSet?.backoff_percent)) && (
+                                <div className="flex items-center gap-2 mb-2 justify-center">
+                                    {templateSet?.is_backoff && (
+                                        <Badge variant="outline" className="text-[10px] h-5 bg-purple-500/10 text-purple-400 border-purple-500/20 px-1.5">
+                                            Drop {templateSet.backoff_percent}%
+                                        </Badge>
+                                    )}
+                                    {targetPercentage && (
+                                        <Badge variant="outline" className="text-[10px] h-5 bg-amber-500/10 text-amber-500 border-amber-500/20 px-1.5">
+                                            {targetPercentage}% 1RM
+                                        </Badge>
+                                    )}
+                                </div>
+                            )}        </div>
 
                         <div className="col-span-2">
                             <div className="flex items-center gap-1 mb-1.5 ml-1">
-                                <span className="text-[8px] font-black text-muted-foreground/60 uppercase tracking-tighter">RIR</span>
+                                <span className="text-[8px] font-black text-muted-foreground/60 uppercase tracking-tighter">
+                                    {settings?.intensity_type === 'RPE' ? 'RPE' : 'RIR'}
+                                </span>
                             </div>
                             {isFuture ? (
                                 <div className="h-11 w-full bg-white/5 rounded-xl border border-white/5 flex items-center justify-center font-black text-white/20">
@@ -306,8 +400,19 @@ export function SetLogger({
                                 <Input
                                     type="number"
                                     inputMode="numeric"
-                                    value={rir}
-                                    onChange={(e) => setRir(e.target.value)}
+                                    value={intensityValue}
+                                    onChange={(e) => {
+                                        const val = e.target.value
+                                        if (settings?.intensity_type === 'RPE') {
+                                            const rpe = Number(val)
+                                            if (val === "" || (rpe >= 0 && rpe <= 10)) {
+                                                const mappedRir = val === "" ? "" : rpeToRir(rpe).toString()
+                                                setRir(mappedRir)
+                                            }
+                                        } else {
+                                            setRir(val)
+                                        }
+                                    }}
                                     className="h-11 bg-white/5 border-white/10 text-base font-black rounded-xl text-center focus:border-primary/50 transition-colors"
                                     placeholder="-"
                                 />

@@ -4,6 +4,8 @@ import { TrendingUp, Trophy } from "lucide-react"
 import { WorkoutCard } from "@/components/dashboard/WorkoutCard"
 import { StatsCard } from "@/components/dashboard/StatsCard"
 import { WeeklyProgress } from "@/components/dashboard/WeeklyProgress"
+import { BodyweightCard } from "@/components/dashboard/BodyweightCard"
+import { CompetitionPointsCard } from "@/components/dashboard/CompetitionPointsCard"
 import { useDashboardStats } from "@/hooks/use-dashboard-stats"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -57,6 +59,8 @@ export default function HomePage() {
 
                 {/* Right Side: Widgets Column (Weekly Progress + Quick Actions) */}
                 <div className="flex flex-col gap-6">
+                    <CompetitionPointsCard />
+                    <BodyweightCard />
                     <WeeklyProgress />
 
                     <Card className="flex-1 flex flex-col overflow-hidden">

@@ -16,6 +16,7 @@
 
 ### Mutazioni & Sync
 - **Pattern Imperativo**: Le mutazioni pesanti (come salvare un set nel runner) utilizzano chiamate dirette ai `services/` seguite da aggiornamenti manuali dello stato locale del componente per garantire reattività istantanea senza attendere l'invalidazione della query.
+- **Stable React Keys**: Nelle liste dinamiche (es. `SetLogger` nel runner), usa sempre chiavi stabili basate sull'identità logica (`set-${type}-${number}`) invece dell'indice dell'array per preservare lo stato interno dei componenti (timer, input manuali) durante i re-render.
 
 ## 3. Service Layer
 - **Percorso**: `services/*.ts`.

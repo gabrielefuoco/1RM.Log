@@ -1,12 +1,5 @@
 import { createClient } from "@/lib/supabase/client"
-
-export interface ProgressionSettings {
-    progression_rate: number
-    deload_rate: number
-    target_rir: number
-    enable_auto_progression: boolean
-    max_plate_weight: number
-}
+import { ProgressionSettings } from "@/types/database"
 
 export interface ProgressionResult {
     suggestedWeight: number
@@ -88,11 +81,15 @@ export async function getProgressionSettings(userId: string): Promise<Progressio
     if (error || !data) {
         // Return defaults if not found
         return {
+            user_id: userId,
             progression_rate: 0.025,
             deload_rate: 0.10,
             target_rir: 2,
             enable_auto_progression: true,
-            max_plate_weight: 20
+            max_plate_weight: 20,
+            intensity_type: 'RIR',
+            sex: 'male',
+            updated_at: new Date().toISOString()
         }
     }
 

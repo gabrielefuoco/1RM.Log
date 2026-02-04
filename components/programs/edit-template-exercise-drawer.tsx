@@ -1,5 +1,3 @@
-"use client"
-
 import { useState, useEffect } from "react"
 import { updateTemplateExercise } from "@/services/exercises"
 import { TemplateSet } from "@/types/database"
@@ -15,11 +13,13 @@ import {
     DrawerTitle,
     DrawerClose,
 } from "@/components/ui/drawer"
-import { Dumbbell, Trash2 } from "lucide-react"
+import { Trash2, Plus, Dumbbell, AlertTriangle, ArrowDownRight, Percent } from "lucide-react"
 import { useAutoAnimate } from "@formkit/auto-animate/react"
+import { calculatePercentFromRepsAndRir, estimateRIR } from "@/utils/formulas"
+import { cn } from "@/lib/utils"
 
 interface EditTemplateExerciseDrawerProps {
-    templateExercise: any // TemplateExercise joined with Exercise
+    templateExercise: any
     open: boolean
     onOpenChange: (open: boolean) => void
     onSuccess: () => void
@@ -48,11 +48,9 @@ export function EditTemplateExerciseDrawer({
             setTargetRepsMax(templateExercise.target_reps_max || 12)
             setTargetRir(templateExercise.target_rir ?? 2)
 
-            // Load sets data or generate from defaults if missing
             if (templateExercise.sets_data && Array.isArray(templateExercise.sets_data) && templateExercise.sets_data.length > 0) {
                 setSetsData(templateExercise.sets_data)
             } else {
-                // Backward compatibility: generate from global targets
                 const generated = Array.from({ length: templateExercise.target_sets }, () => ({
                     reps_min: templateExercise.target_reps_min || 8,
                     reps_max: templateExercise.target_reps_max || 12,
@@ -64,26 +62,68 @@ export function EditTemplateExerciseDrawer({
         }
     }, [templateExercise, open])
 
-    // Sync global to all sets
     const updateGlobal = (count: number, min: number, max: number, rir: number) => {
         setTargetSets(count)
         setTargetRepsMin(min)
         setTargetRepsMax(max)
         setTargetRir(rir)
 
-        const newSets: TemplateSet[] = Array.from({ length: count }, () => ({
-            reps_min: min,
-            reps_max: max,
-            rir: rir,
-            type: 'straight'
-        }))
+        const newSets: TemplateSet[] = Array.from({ length: count }, () => {
+            // Keep existing sets if possible to preserve overrides? 
+            // For now, hard reset to global defaults for simplicity as user is changing "Global" target.
+            return {
+                reps_min: min,
+                reps_max: max,
+                rir: rir,
+                type: 'straight'
+            }
+        })
         setSetsData(newSets)
     }
 
     const updateSingleSet = (index: number, updates: Partial<TemplateSet>) => {
         setSetsData(prev => {
             const next = [...prev]
-            next[index] = { ...next[index], ...updates }
+            const updatedSet = { ...next[index], ...updates }
+
+            // Handle toggling is_backoff
+            if (updates.is_backoff !== undefined) {
+                updatedSet.weight_mode = updates.is_backoff ? 'percent' : 'absolute';
+                // Clear percentage/backoff_percent when toggling type
+                updatedSet.percentage = undefined;
+                updatedSet.backoff_percent = undefined;
+            }
+
+            // Smart Logic: Update coupled variables
+            if (updatedSet.is_backoff) {
+                // If it's a back-off set, only backoff_percent matters for percentage-based calculation
+                if (updates.backoff_percent !== undefined) {
+                    updatedSet.weight_mode = 'percent';
+                    updatedSet.percentage = undefined; // Ensure percentage is cleared if backoff_percent is set
+                } else if ((updates.reps_max !== undefined || updates.rir !== undefined) && !updatedSet.backoff_percent) {
+                    updatedSet.weight_mode = 'absolute';
+                }
+            } else {
+                // If not a back-off set, handle regular percentage logic
+                if (updates.percentage !== undefined && updates.percentage > 0) {
+                    const repsAvg = (updatedSet.reps_min + updatedSet.reps_max) / 2
+                    const estimatedRir = estimateRIR(updates.percentage, repsAvg, 100)
+                    updatedSet.rir = Math.max(0, estimatedRir)
+                    updatedSet.weight_mode = 'percent'
+                    updatedSet.backoff_percent = undefined; // Ensure backoff_percent is cleared if percentage is set
+                } else if ((updates.reps_max !== undefined || updates.rir !== undefined) && !updatedSet.percentage) {
+                    updatedSet.weight_mode = 'absolute'
+                }
+            }
+
+            // If RIR is manually changed, clear any percentage/backoff_percent
+            if (updates.rir !== undefined) {
+                updatedSet.percentage = undefined;
+                updatedSet.backoff_percent = undefined;
+                updatedSet.weight_mode = 'absolute';
+            }
+
+            next[index] = updatedSet
             return next
         })
     }
@@ -102,7 +142,6 @@ export function EditTemplateExerciseDrawer({
 
     const handleSubmit = async () => {
         if (!templateExercise) return
-
         setLoading(true)
         try {
             await updateTemplateExercise(templateExercise.id, {
@@ -127,7 +166,7 @@ export function EditTemplateExerciseDrawer({
     return (
         <Drawer open={open} onOpenChange={onOpenChange}>
             <DrawerContent className="bg-background border-t border-white/10 max-h-[90vh]">
-                <div className="mx-auto w-full max-w-sm">
+                <div className="mx-auto w-full max-w-md">
                     <DrawerHeader>
                         <DrawerTitle className="text-white text-xl uppercase italic font-black">Configura Serie</DrawerTitle>
                         <DrawerDescription>
@@ -158,7 +197,7 @@ export function EditTemplateExerciseDrawer({
                                 />
                             </div>
                             <div className="space-y-1.5">
-                                <Label className="text-[10px] uppercase text-slate-500 font-bold ml-1 tracking-wider">RIR Target</Label>
+                                <Label className="text-[10px] uppercase text-slate-500 font-bold ml-1 tracking-wider">RIR Global Target</Label>
                                 <Input
                                     type="number"
                                     min={0}
@@ -193,7 +232,6 @@ export function EditTemplateExerciseDrawer({
                             </div>
                         </div>
 
-                        {/* Per-Set Detail */}
                         <div className="pt-2 space-y-3">
                             <div className="flex items-center justify-between border-b border-white/5 pb-2">
                                 <h3 className="text-[10px] font-black text-slate-600 uppercase tracking-[0.2em]">Dettaglio Serie</h3>
@@ -208,51 +246,107 @@ export function EditTemplateExerciseDrawer({
                             </div>
 
                             <div className="space-y-2 pr-1" ref={parent}>
-                                {setsData.map((set, i) => (
-                                    <div key={i} className="bg-zinc-900/40 rounded-xl p-3 border border-white/5 space-y-3">
-                                        <div className="flex items-center justify-between">
-                                            <span className="text-[10px] font-black text-primary/40 uppercase italic">Serie {i + 1}</span>
-                                            <Button
-                                                variant="ghost"
-                                                size="icon"
-                                                className="h-5 w-5 text-red-500/30 hover:text-red-500 hover:bg-red-500/10"
-                                                onClick={() => removeSet(i)}
-                                            >
-                                                <Trash2 className="h-3 w-3" />
-                                            </Button>
-                                        </div>
+                                {setsData.map((set, i) => {
+                                    // Calc validation info
+                                    const avgReps = (set.reps_min + set.reps_max) / 2
+                                    const suggestedPercent = calculatePercentFromRepsAndRir(avgReps, set.rir)
+                                    const isImpossible = set.percentage ? (estimateRIR(set.percentage, avgReps, 100) < 0) : false
+                                    const isBackoff = set.is_backoff
 
-                                        <div className="grid grid-cols-3 gap-3">
-                                            <div>
-                                                <Label className="text-[8px] uppercase text-slate-600 mb-1 block font-bold text-center">Min</Label>
-                                                <Input
-                                                    type="number"
-                                                    value={set.reps_min}
-                                                    onChange={(e) => updateSingleSet(i, { reps_min: Number(e.target.value) })}
-                                                    className="h-8 bg-zinc-950/50 border-white/5 text-xs text-center font-bold"
-                                                />
+                                    return (
+                                        <div key={i} className="bg-zinc-900/40 rounded-xl p-3 border border-white/5 space-y-3 relative group">
+                                            <div className="flex items-center justify-between">
+                                                <div className="flex items-center gap-2">
+                                                    <span className="text-[10px] font-black text-primary/40 uppercase italic">Set {i + 1}</span>
+                                                    {isImpossible && (
+                                                        <span className="flex items-center gap-1 text-[9px] text-red-500 font-bold bg-red-500/10 px-1.5 py-0.5 rounded border border-red-500/20">
+                                                            <AlertTriangle className="h-3 w-3" />
+                                                            IMPOSSIBILE
+                                                        </span>
+                                                    )}
+                                                    {i > 0 && (
+                                                        <button
+                                                            onClick={() => updateSingleSet(i, { is_backoff: !set.is_backoff })}
+                                                            className={cn(
+                                                                "flex items-center gap-1 px-1.5 py-0.5 rounded text-[9px] font-bold border transition-colors",
+                                                                isBackoff
+                                                                    ? "bg-purple-500/20 text-purple-400 border-purple-500/30"
+                                                                    : "bg-white/5 text-slate-500 border-white/5 hover:bg-white/10"
+                                                            )}
+                                                        >
+                                                            <ArrowDownRight className="h-3 w-3" />
+                                                            BACK-OFF
+                                                        </button>
+                                                    )}
+                                                </div>
+                                                <Button
+                                                    variant="ghost"
+                                                    size="icon"
+                                                    className="h-5 w-5 text-red-500/30 hover:text-red-500 hover:bg-red-500/10"
+                                                    onClick={() => removeSet(i)}
+                                                >
+                                                    <Trash2 className="h-3 w-3" />
+                                                </Button>
                                             </div>
-                                            <div>
-                                                <Label className="text-[8px] uppercase text-slate-600 mb-1 block font-bold text-center">Max</Label>
-                                                <Input
-                                                    type="number"
-                                                    value={set.reps_max}
-                                                    onChange={(e) => updateSingleSet(i, { reps_max: Number(e.target.value) })}
-                                                    className="h-8 bg-zinc-950/50 border-white/5 text-xs text-center font-bold"
-                                                />
+
+                                            <div className="grid grid-cols-4 gap-2">
+                                                <div className="col-span-1">
+                                                    <Label className="text-[8px] uppercase text-slate-600 mb-1 block font-bold text-center">Reps Min</Label>
+                                                    <Input type="number" value={set.reps_min} onChange={(e) => updateSingleSet(i, { reps_min: Number(e.target.value) })} className="h-8 text-xs text-center font-bold px-1" />
+                                                </div>
+                                                <div className="col-span-1">
+                                                    <Label className="text-[8px] uppercase text-slate-600 mb-1 block font-bold text-center">Reps Max</Label>
+                                                    <Input type="number" value={set.reps_max} onChange={(e) => updateSingleSet(i, { reps_max: Number(e.target.value) })} className="h-8 text-xs text-center font-bold px-1" />
+                                                </div>
+                                                <div className="col-span-1 relative">
+                                                    <Label className="text-[8px] uppercase text-slate-600 mb-1 block font-bold text-center">RIR</Label>
+                                                    <Input
+                                                        type="number"
+                                                        value={set.rir}
+                                                        onChange={(e) => updateSingleSet(i, { rir: Number(e.target.value) })} // Clearing percent if manual RIR
+                                                        className={cn("h-8 text-xs text-center font-bold px-1", set.percentage && "text-amber-400 border-amber-500/30")}
+                                                    />
+                                                    {/* {set.percentage && <div className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-amber-500" />} */}
+                                                </div>
+                                                <div className="col-span-1">
+                                                    <Label className={cn("text-[9px] uppercase font-bold ml-1", isBackoff ? "text-purple-400" : "text-amber-500")}>
+                                                        {isBackoff ? "Drop %" : "Carico %"}
+                                                    </Label>
+                                                    <div className="relative">
+                                                        <Input
+                                                            type="number"
+                                                            placeholder={isBackoff ? "10" : suggestedPercent.toFixed(0)}
+                                                            value={isBackoff ? (set.backoff_percent || '') : (set.percentage || '')}
+                                                            onChange={(e) => updateSingleSet(i, isBackoff
+                                                                ? { backoff_percent: e.target.value ? Number(e.target.value) : undefined }
+                                                                : { percentage: e.target.value ? Number(e.target.value) : undefined }
+                                                            )}
+                                                            className={cn(
+                                                                "h-8 text-xs text-center font-bold px-1",
+                                                                isBackoff
+                                                                    ? "text-purple-400 border-purple-500/20 focus:border-purple-500 placeholder:text-purple-500/20"
+                                                                    : "text-amber-500 border-amber-500/20 focus:border-amber-500/50"
+                                                            )}
+                                                        />
+                                                        {!isBackoff && (
+                                                            <Percent className="absolute right-1 top-2 h-3 w-3 text-amber-500/30" />
+                                                        )}
+                                                        {isBackoff && (
+                                                            <span className="absolute right-2 top-2 text-[10px] text-purple-500/50 font-bold">%</span>
+                                                        )}
+                                                    </div>
+                                                </div>
                                             </div>
-                                            <div>
-                                                <Label className="text-[8px] uppercase text-slate-600 mb-1 block font-bold text-center">RIR</Label>
-                                                <Input
-                                                    type="number"
-                                                    value={set.rir}
-                                                    onChange={(e) => updateSingleSet(i, { rir: Number(e.target.value) })}
-                                                    className="h-8 bg-zinc-950/50 border-white/5 text-xs text-center font-bold"
-                                                />
+
+                                            {/* Smart Hint Line */}
+                                            <div className="flex justify-between items-center px-1">
+                                                <span className="text-[9px] text-slate-500">
+                                                    Intensity Est: <span className="text-slate-300 font-mono">~{suggestedPercent}%</span>
+                                                </span>
                                             </div>
                                         </div>
-                                    </div>
-                                ))}
+                                    )
+                                })}
                             </div>
                         </div>
                     </div>

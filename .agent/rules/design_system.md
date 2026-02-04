@@ -27,7 +27,9 @@ Utilizziamo Tailwind v4 con plugin `tailwindcss-animate`.
 - **Input Numerici**: Usa sempre `inputMode="decimal"` o `numeric` per tastiere immediate.
 - **Navigazione**: Bottom bar su mobile con FAB centrale per azioni principali.
 
-## 5. Componenti Core
+## 5. Componenti Core & Pattern Avanzati
 - **Shadcn/ui**: Base per tutti i componenti atomici (Button, Card, Dialog).
+- **Detail Popups**: Per informazioni secondarie o storiche (es. Target/Last performance), usa un `Dialog` triggerato da badge cliccabili invece di sovraffollare la UI principale.
+- **Explicit Labels**: Evitare abbreviazioni criptiche (es. preferire "RIR 2" a "R2") per garantire chiarezza immediata sotto sforzo intenso.
 - **Sonner**: Per notifiche toast.
 - **Recharts**: Per grafici (colore neon `#13ec6d`).

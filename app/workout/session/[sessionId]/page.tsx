@@ -3,8 +3,8 @@
 import { use, useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { getSessionRunnerData, logSet, finishSession, getPreviousLogs } from "@/services/workout"
-import { Exercise, ExerciseLog, WorkoutTemplate } from "@/types/database"
-import { getProgressionSettings, ProgressionSettings } from "@/services/progression" // Integration
+import { Exercise, ExerciseLog, WorkoutTemplate, ProgressionSettings } from "@/types/database"
+import { getProgressionSettings } from "@/services/progression" // Integration
 import { createClient } from "@/lib/supabase/client"
 
 import { SessionHeader } from "@/components/workout/session-header"
@@ -19,6 +19,9 @@ import { useWakeLock } from "@/hooks/use-wake-lock"
 import { DailyReadiness } from "@/components/workout/daily-readiness"
 
 import { WarmupCalculator } from "@/services/warmup"
+import { getSessionOneRms } from "@/services/one-rm"
+import { EditOneRmDialog } from "@/components/workout/edit-one-rm-dialog"
+import { PRConfirmationDialog } from "@/components/workout/pr-confirmation-dialog"
 
 interface RunnerExerciseState {
     exercise: Exercise
@@ -49,6 +52,7 @@ export default function SessionRunnerPage({ params }: { params: Promise<{ sessio
     const [runnerExercises, setRunnerExercises] = useState<RunnerExerciseState[]>([])
     const [currentIndex, setCurrentIndex] = useState(0)
     const [progressionSettings, setProgressionSettings] = useState<ProgressionSettings | null>(null)
+    const [userOneRmsMap, setUserOneRmsMap] = useState<Record<string, number>>({})
 
     // Timer State
     const [showTimer, setShowTimer] = useState(false)
@@ -137,6 +141,15 @@ export default function SessionRunnerPage({ params }: { params: Promise<{ sessio
                             })
                         }
                     }
+                }
+
+                // Fetch User 1RMs (Training Max / Overrides)
+                const allExerciseIds = Array.from(exercisesMap.keys())
+                if (allExerciseIds.length > 0) {
+                    const oneRms = await getSessionOneRms(allExerciseIds)
+                    const map: Record<string, number> = {}
+                    oneRms.forEach(r => map[r.exercise_id] = Number(r.one_rm))
+                    setUserOneRmsMap(map)
                 }
 
                 setRunnerExercises(Array.from(exercisesMap.values()))
@@ -254,13 +267,31 @@ export default function SessionRunnerPage({ params }: { params: Promise<{ sessio
     const handleAddWarmup = async () => {
         const currentItem = runnerExercises[currentIndex]
         const bestHistoryLog = currentItem.historyLogs.reduce((prev, curr) => (prev.weight > curr.weight) ? prev : curr, currentItem.historyLogs[0])
+        const best1RM = currentItem.historyLogs.length > 0 ? Math.max(...currentItem.historyLogs.map(l => Number(l.estimated_1rm) || 0)) : 0
 
-        if (!bestHistoryLog) {
-            toast.info("Nessuna cronologia trovata per generare warmup automatico.")
+        // Find if we have a target percentage in the first working set
+        // Note: setsData maps to all sets (1-based index usually aligns with 0-based array if carefully managed, but here setsData is array of configurations)
+        // We look at the first set's config.
+        const firstSetConfig = currentItem.setsData?.[0]
+        const firstSetPercent = firstSetConfig?.percentage
+
+        let referenceWeight = 0;
+
+        if (firstSetPercent && best1RM > 0) {
+            // Calculate based on %
+            const raw = best1RM * (firstSetPercent / 100) * intensityMultiplier
+            referenceWeight = Math.round(raw / 2.5) * 2.5
+        } else if (bestHistoryLog) {
+            // Fallback to history best weight
+            referenceWeight = bestHistoryLog.weight
+        }
+
+        if (referenceWeight <= 0) {
+            toast.info("Impossibile calcolare il warmup: nessuna cronologia o percentuale valida.")
             return
         }
 
-        const warmups = WarmupCalculator.calculate(bestHistoryLog.weight)
+        const warmups = WarmupCalculator.calculate(referenceWeight)
         setRunnerExercises(prev => {
             const copy = [...prev]
             const target = { ...copy[currentIndex] }
@@ -268,16 +299,83 @@ export default function SessionRunnerPage({ params }: { params: Promise<{ sessio
             copy[currentIndex] = target
             return copy
         })
-        toast.success(`${warmups.length} set di warmup aggiunti`)
+        toast.success(`${warmups.length} set di warmup aggiunti per target ${referenceWeight}kg`)
     }
 
+    // Deload State
+    const [isDeload, setIsDeload] = useState(false)
+
+    // PR Dialog State
+    const [prUpdates, setPrUpdates] = useState<{ exerciseName: string, old1Rm: number, new1Rm: number, exerciseId: string }[]>([])
+    const [showPrDialog, setShowPrDialog] = useState(false)
+
+    const handleConfirmPRs = async () => {
+        try {
+            const supabase = createClient()
+            for (const update of prUpdates) {
+                await supabase.from('user_one_rms').upsert({
+                    user_id: (await supabase.auth.getUser()).data.user?.id!,
+                    exercise_id: update.exerciseId,
+                    one_rm: update.new1Rm,
+                    type: 'training_max',
+                    updated_at: new Date().toISOString()
+                }, { onConflict: 'user_id,exercise_id' })
+            }
+            toast.success("Massimali aggiornati!")
+        } catch (e) {
+            console.error(e)
+            toast.error("Errore aggiornamento massimali")
+        } finally {
+            setShowPrDialog(false)
+            router.push(`/workout/recap/${sessionId}`)
+        }
+    }
 
     const finishWorkout = async () => {
+        // 1. Check for PRs if policy is not 'manual'
+        const policy = progressionSettings?.one_rm_update_policy || 'confirm'
+
+        if (policy !== 'manual') {
+            const updates: typeof prUpdates = []
+
+            for (const exercise of runnerExercises) {
+                // Find best estimated 1RM in THIS session
+                const sessionBest = Math.max(...exercise.logs.filter(l => l.set_type === 'work').map(l => Number(l.estimated_1rm) || 0), 0)
+
+                // Find previous best 1RM (History OR User Override)
+                // Priority: User Override > History Best
+                const override1Rm = userOneRmsMap[exercise.exercise.id] || 0
+                const historyBest = Math.max(...exercise.historyLogs.map(l => Number(l.estimated_1rm) || 0), 0)
+                const currentBest = override1Rm > 0 ? override1Rm : historyBest
+
+                // Optimization: Ignore initial "0" records or empty sessions
+                if (sessionBest > currentBest && sessionBest > 0) {
+                    updates.push({
+                        exerciseId: exercise.exercise.id,
+                        exerciseName: exercise.exercise.name,
+                        old1Rm: currentBest > 0 ? currentBest : sessionBest, // If 0, it's a new baseline
+                        new1Rm: sessionBest
+                    })
+                }
+            }
+
+            if (updates.length > 0) {
+                if (policy === 'auto') {
+                    // Auto update
+                    setPrUpdates(updates)
+                    await handleConfirmPRs() // Reuse logic (will redirect)
+                    return
+                } else {
+                    // Confirm dialog
+                    setPrUpdates(updates)
+                    setShowPrDialog(true)
+                    return // Stop here, dialog handles the rest (confirm -> update -> redirect, cancel -> redirect)
+                }
+            }
+        }
+
+        // Default path if no PRs or manual
         try {
-            // We just redirect to recap. The recap page will handle the final finishSession call 
-            // once the user fills in RPE and notes.
-            // But we should at least update the duration here if possible.
-            // For now, simple redirect.
             router.push(`/workout/recap/${sessionId}`)
         } catch (e) {
             console.error(e)
@@ -326,42 +424,64 @@ export default function SessionRunnerPage({ params }: { params: Promise<{ sessio
         <div className="min-h-screen bg-background pb-32">
             {/* Header Area */}
             <div className="sticky top-0 z-20 glass-header px-4 py-4 space-y-4">
-                <SessionHeader
-                    exercise={currentItem.exercise}
-                    templateData={currentItem.templateData}
-                    currentExerciseIndex={currentIndex}
-                    totalExercises={runnerExercises.length}
-                    nextExercise={nextItem?.exercise}
-                    nextTemplateData={nextItem?.templateData}
-                    onBack={() => {
-                        setAlertConfig({
-                            open: true,
-                            title: "Uscire dalla sessione?",
-                            description: "I progressi fatti finora sono stati salvati, ma l'allenamento rimarrà attivo. Potrai riprenderlo più tardi.",
-                            onConfirm: () => router.push('/')
-                        })
-                    }}
-                    onAddExercise={() => {
-                        setPickerMode('add')
-                        setIsPickerOpen(true)
-                    }}
-                    onSwapExercise={() => {
-                        setPickerMode('swap')
-                        setIsPickerOpen(true)
-                    }}
-                    onRemoveExercise={() => {
-                        setAlertConfig({
-                            open: true,
-                            title: "Rimuovere esercizio?",
-                            description: `Sei sicuro di voler rimuovere "${currentItem.exercise.name}" da questa sessione?`,
-                            onConfirm: () => {
-                                setRunnerExercises(prev => prev.filter((_, idx) => idx !== currentIndex))
-                                if (currentIndex > 0) setCurrentIndex(c => c - 1)
-                                toast.success("Esercizio rimosso")
-                            }
-                        })
-                    }}
-                />
+                <div className="flex items-center justify-between">
+                    <SessionHeader
+                        exercise={currentItem.exercise}
+                        templateData={currentItem.templateData}
+                        currentExerciseIndex={currentIndex}
+                        totalExercises={runnerExercises.length}
+                        nextExercise={nextItem?.exercise}
+                        nextTemplateData={nextItem?.templateData}
+                        onBack={() => {
+                            setAlertConfig({
+                                open: true,
+                                title: "Uscire dalla sessione?",
+                                description: "I progressi fatti finora sono stati salvati, ma l'allenamento rimarrà attivo. Potrai riprenderlo più tardi.",
+                                onConfirm: () => router.push('/')
+                            })
+                        }}
+                        onAddExercise={() => {
+                            setPickerMode('add')
+                            setIsPickerOpen(true)
+                        }}
+                        onSwapExercise={() => {
+                            setPickerMode('swap')
+                            setIsPickerOpen(true)
+                        }}
+                        onRemoveExercise={() => {
+                            setAlertConfig({
+                                open: true,
+                                title: "Rimuovere esercizio?",
+                                description: `Sei sicuro di voler rimuovere "${currentItem.exercise.name}" da questa sessione?`,
+                                onConfirm: () => {
+                                    setRunnerExercises(prev => prev.filter((_, idx) => idx !== currentIndex))
+                                    if (currentIndex > 0) setCurrentIndex(c => c - 1)
+                                    toast.success("Esercizio rimosso")
+                                }
+                            })
+                        }}
+                    />
+
+                    {/* Deload Toggle Mini */}
+                    <div className="flex items-center gap-2">
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => {
+                                setIsDeload(!isDeload)
+                                toast.info(isDeload ? "Modalità Normale" : "Modalità Scarico (-10%)")
+                            }}
+                            className={cn(
+                                "h-8 px-2 text-[10px] font-black uppercase tracking-widest border transition-all",
+                                isDeload
+                                    ? "bg-purple-500/20 text-purple-400 border-purple-500/30"
+                                    : "bg-white/5 text-slate-500 border-white/5 hover:bg-white/10"
+                            )}
+                        >
+                            {isDeload ? "DELOAD ON" : "DELOAD"}
+                        </Button>
+                    </div>
+                </div>
 
                 {/* Progress Dots - Integrated but separate for layout control */}
                 <div className="flex gap-1 overflow-x-auto pb-1 scrollbar-none">
@@ -394,6 +514,7 @@ export default function SessionRunnerPage({ params }: { params: Promise<{ sessio
                         settings={progressionSettings}
                         intensityMultiplier={intensityMultiplier}
                         initialValues={{ weight: pw.weight, reps: pw.reps, rir: 0, set_type: 'warmup' } as any}
+                        isDeload={isDeload}
                     />
                 ))}
 
@@ -401,25 +522,37 @@ export default function SessionRunnerPage({ params }: { params: Promise<{ sessio
                 {[...currentItem.logs].sort((a, b) => {
                     if (a.set_type === b.set_type) return a.set_number - b.set_number
                     return a.set_type === 'warmup' ? -1 : 1
-                }).map((log, i) => {
+                }).map((log) => {
                     const setTarget = currentItem.setsData?.[log.set_number - 1]
                     const targetRir = setTarget?.rir ?? currentItem.templateData?.target_rir ?? 0
                     const targetRepsMin = setTarget?.reps_min ?? currentItem.templateData?.target_reps_min
                     const targetRepsMax = setTarget?.reps_max ?? currentItem.templateData?.target_reps_max
+                    const targetPercentage = setTarget?.percentage
+
+                    const sessionWorkLogs = currentItem.logs.filter(l => l.set_type === 'work')
+                    const lastSessionLog = sessionWorkLogs.find(l => l.set_number === log.set_number - 1) || sessionWorkLogs[sessionWorkLogs.length - 1]
+                    const effectivePrevLog = lastSessionLog || currentItem.historyLogs[0]
 
                     return (
                         <SetLogger
-                            key={log.id}
+                            key={`set-${log.set_type}-${log.set_number}`}
                             setNumber={log.set_number}
                             setType={log.set_type as any}
                             targetRir={targetRir}
                             targetRepsMin={targetRepsMin}
                             targetRepsMax={targetRepsMax}
+                            targetPercentage={targetPercentage}
+                            userBest1RM={(currentItem.historyLogs && currentItem.historyLogs.length > 0)
+                                ? Math.max(...currentItem.historyLogs.map(l => Number(l.estimated_1rm) || 0))
+                                : 0}
                             onSave={(w, r, i) => handleLogSet(currentIndex, log.set_number, w, r, i, log.set_type as any)}
                             settings={progressionSettings}
                             intensityMultiplier={intensityMultiplier}
                             initialValues={log}
-                            previousLog={currentItem.historyLogs[0]}
+                            previousLog={effectivePrevLog}
+                            templateSet={setTarget}
+                            previousSetWeight={currentItem.logs.find(l => l.set_number === log.set_number - 1)?.weight}
+                            isDeload={isDeload}
                         />
                     )
                 })}
@@ -437,21 +570,32 @@ export default function SessionRunnerPage({ params }: { params: Promise<{ sessio
                     const targetRir = setTarget?.rir ?? currentItem.templateData?.target_rir ?? 0
                     const targetRepsMin = setTarget?.reps_min ?? currentItem.templateData?.target_reps_min
                     const targetRepsMax = setTarget?.reps_max ?? currentItem.templateData?.target_reps_max
+                    const targetPercentage = setTarget?.percentage
+
+                    const sessionWorkLogs = currentItem.logs.filter(l => l.set_type === 'work')
+                    const effectivePrevLog = sessionWorkLogs[sessionWorkLogs.length - 1] || currentItem.historyLogs[0]
 
                     return (
                         <SetLogger
-                            key={`empty-work-${i}`}
+                            key={`set-work-${setNum}`}
                             setNumber={setNum}
                             setType="work"
                             targetRir={targetRir}
                             targetRepsMin={targetRepsMin}
                             targetRepsMax={targetRepsMax}
+                            targetPercentage={targetPercentage}
+                            userBest1RM={(currentItem.historyLogs && currentItem.historyLogs.length > 0)
+                                ? Math.max(...currentItem.historyLogs.map(l => Number(l.estimated_1rm) || 0))
+                                : 0}
                             isActive={isActive}
                             isFuture={!isActive}
                             onSave={(w, r, i) => handleLogSet(currentIndex, setNum, w, r, i, 'work')}
                             settings={progressionSettings}
                             intensityMultiplier={intensityMultiplier}
-                            previousLog={currentItem.historyLogs[0]}
+                            previousLog={effectivePrevLog}
+                            templateSet={setTarget}
+                            previousSetWeight={currentItem.logs.find(l => l.set_number === setNum - 1)?.weight}
+                            isDeload={isDeload}
                         />
                     )
                 })}
@@ -560,6 +704,17 @@ export default function SessionRunnerPage({ params }: { params: Promise<{ sessio
                 onSelect={handleAddExercise}
             />
 
+            <PRConfirmationDialog
+                open={showPrDialog}
+                onOpenChange={setShowPrDialog}
+                updates={prUpdates}
+                onConfirm={handleConfirmPRs}
+                onCancel={() => {
+                    setShowPrDialog(false)
+                    router.push(`/workout/recap/${sessionId}`)
+                }}
+            />
+
             <AlertDialog open={alertConfig.open} onOpenChange={(open) => setAlertConfig(prev => ({ ...prev, open }))}>
                 <AlertDialogContent className="bg-card border-border text-foreground w-[90%] rounded-2xl shadow-2xl">
                     <AlertDialogHeader>
@@ -582,3 +737,4 @@ export default function SessionRunnerPage({ params }: { params: Promise<{ sessio
         </div>
     )
 }
+

@@ -9,10 +9,17 @@ export type Json =
 export type ExerciseType = 'barbell' | 'dumbbell' | 'cable' | 'machine' | 'bodyweight' | 'other'
 export type BodyPart = 'chest' | 'back' | 'legs' | 'shoulders' | 'arms' | 'core' | 'full_body'
 export type SetType = 'straight' | 'top_set' | 'backoff' | 'warmup' | 'myorep'
+export type IntensityType = 'RIR' | 'RPE'
+export type UserSex = 'male' | 'female'
+
 export interface TemplateSet {
     reps_min: number
     reps_max: number
     rir: number
+    percentage?: number
+    weight_mode?: 'percent' | 'absolute' | 'rpe'
+    is_backoff?: boolean
+    backoff_percent?: number
     type: SetType
 }
 
@@ -91,9 +98,32 @@ export interface ExerciseLog {
     weight: number
     rir: number | null
     estimated_1rm: number // Calculated
+    bodyweight_at_time?: number | null
     created_at: string
     // Joins
     exercise?: Exercise
+}
+
+export interface BodyweightLog {
+    id: string
+    user_id: string
+    weight: number
+    date: string
+    created_at: string
+}
+
+export interface ProgressionSettings {
+    user_id: string
+    progression_rate: number
+    deload_rate: number
+    target_rir: number
+    max_plate_weight: number
+    enable_auto_progression: boolean
+    intensity_type: IntensityType
+    sex: UserSex
+    rounding_increment: number
+    one_rm_update_policy: 'manual' | 'confirm' | 'auto'
+    updated_at: string
 }
 
 // Helper types for Insert/Update might be useful later, 
@@ -101,3 +131,4 @@ export interface ExerciseLog {
 // For now, we manually define what we need.
 export type CreateExerciseInput = Omit<Exercise, 'id' | 'created_at' | 'user_id'>
 export type CreateProgramInput = Omit<Program, 'id' | 'created_at' | 'user_id'>
+export type CreateBodyweightInput = Omit<BodyweightLog, 'id' | 'user_id' | 'created_at' | 'date'> & { date?: string }

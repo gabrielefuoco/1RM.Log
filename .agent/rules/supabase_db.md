@@ -10,6 +10,7 @@ La struttura segue un modello piramidale dal piano alla singola esecuzione:
 - **`template_exercises`**: Esercizi pianificati con Target (Sets, Reps, RIR).
 - **`workout_sessions`**: Esecuzione reale in data X.
 - **`exercise_logs`**: Singolo set eseguito con Performance reale.
+- **`bodyweight_logs`**: Tracciamento peso corporeo nel tempo.
 
 ## 2. Row Level Security (RLS)
 - **Policy**: Ogni tabella ha RLS abilitato.
@@ -29,3 +30,5 @@ La struttura segue un modello piramidale dal piano alla singola esecuzione:
 - `exercise_type`: barbell, dumbbell, cable, machine, bodyweight, other.
 - `body_part`: chest, back, legs, shoulders, arms, core, full_body.
 - `set_type`: straight, top_set, backoff, warmup, myorep.
+- `intensity_type`: RIR, RPE.
+- `user_sex`: male, female.

@@ -46,6 +46,8 @@ Lo schema è definito in `supabase/schema.sql`.
 -   **`workout_sessions`**: L'allenamento svolto in una data specifica.
 -   **`exercise_logs`**: I set eseguiti (Peso, Reps, RIR).
     -   **Campo Chiave**: `estimated_1rm` (Generated Column: `weight * (1 + reps/30)`).
+-   **`bodyweight_logs`**: Storico peso corporeo utente (Data, Peso).
+-   **`progression_settings`**: Include ora `intensity_type` (RIR/RPE) e `sex` (Male/Female).
 
 ## 4. Logica Funzionale ("Il Cervello")
 
@@ -61,7 +63,12 @@ Quando si inizializza una sessione da un template:
     -   Se Reps > Target Max: **Suggerisci +Peso**.
     -   Se RIR < 0 (Fallimento): **Suggerisci stesso peso o scarico (--10%)**.
 
-### C. UI Mobile-First
+### C. Powerlifting Analytics
+-   **Punteggi Competizione**: Calcolo automatico di DOTS, Wilks e IPF GL Points.
+-   **SBD Total**: Somma automatica dei massimali stimati di Squat, Bench e Deadlift.
+-   **Relatività**: I punteggi usano il peso corporeo storico dell'utente al momento del lift.
+
+### D. UI Mobile-First
 -   Input numerici giganti.
 -   Nessuno scroll orizzontale.
 -   Dark Mode di default (OLED friendly).

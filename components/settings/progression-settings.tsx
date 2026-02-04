@@ -28,6 +28,10 @@ const progressionSchema = z.object({
     target_rir: z.number().min(0).max(5),
     max_plate_weight: z.number().min(5).max(50),
     enable_auto_progression: z.boolean(),
+    intensity_type: z.enum(['RIR', 'RPE']),
+    rounding_increment: z.number(),
+    one_rm_update_policy: z.enum(['manual', 'confirm', 'auto']),
+    sex: z.enum(['male', 'female']),
 })
 
 type ProgressionFormValues = z.infer<typeof progressionSchema>
@@ -44,6 +48,10 @@ export function ProgressionSettings() {
             target_rir: 2,
             enable_auto_progression: true,
             max_plate_weight: 20,
+            intensity_type: 'RIR',
+            sex: 'male',
+            rounding_increment: 2.5,
+            one_rm_update_policy: 'confirm',
         },
     })
 
@@ -65,6 +73,10 @@ export function ProgressionSettings() {
                     target_rir: data.target_rir,
                     enable_auto_progression: data.enable_auto_progression,
                     max_plate_weight: data.max_plate_weight || 20,
+                    intensity_type: data.intensity_type || 'RIR',
+                    sex: data.sex || 'male',
+                    rounding_increment: Number(data.rounding_increment) || 2.5,
+                    one_rm_update_policy: data.one_rm_update_policy || 'confirm',
                 })
             }
             setIsLoading(false)
@@ -118,26 +130,200 @@ export function ProgressionSettings() {
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
 
-                        <FormField
-                            control={form.control}
-                            name="enable_auto_progression"
-                            render={({ field }) => (
-                                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4 border-border/30 bg-secondary/5">
-                                    <div className="space-y-0.5">
-                                        <FormLabel className="text-base font-bold">Auto-Progression</FormLabel>
+                        <div className="grid gap-6 md:grid-cols-2">
+                            <FormField
+                                control={form.control}
+                                name="enable_auto_progression"
+                                render={({ field }) => (
+                                    <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4 border-border/30 bg-secondary/5 h-full">
+                                        <div className="space-y-0.5">
+                                            <FormLabel className="text-base font-bold">Auto-Progression</FormLabel>
+                                            <FormDescription className="text-xs">
+                                                Suggerimenti automatici.
+                                            </FormDescription>
+                                        </div>
+                                        <FormControl>
+                                            <Switch
+                                                checked={field.value}
+                                                onCheckedChange={field.onChange}
+                                            />
+                                        </FormControl>
+                                    </FormItem>
+                                )}
+                            />
+
+                            <FormField
+                                control={form.control}
+                                name="one_rm_update_policy"
+                                render={({ field }) => (
+                                    <FormItem className="flex flex-col justify-between rounded-lg border p-4 border-border/30 bg-secondary/5 h-full">
+                                        <div className="space-y-0.5 mb-3">
+                                            <FormLabel className="text-base font-bold">Aggiornamento 1RM</FormLabel>
+                                            <FormDescription className="text-xs">
+                                                Come gestire i nuovi record.
+                                            </FormDescription>
+                                        </div>
+                                        <FormControl>
+                                            <div className="flex bg-secondary/10 p-1 rounded-md">
+                                                <Button
+                                                    type="button"
+                                                    variant={field.value === 'auto' ? 'default' : 'ghost'}
+                                                    size="sm"
+                                                    className="flex-1 text-[10px] font-bold px-1"
+                                                    onClick={() => field.onChange('auto')}
+                                                >
+                                                    AUTO
+                                                </Button>
+                                                <Button
+                                                    type="button"
+                                                    variant={field.value === 'confirm' ? 'default' : 'ghost'}
+                                                    size="sm"
+                                                    className="flex-1 text-[10px] font-bold px-1"
+                                                    onClick={() => field.onChange('confirm')}
+                                                >
+                                                    CHIEDI
+                                                </Button>
+                                                <Button
+                                                    type="button"
+                                                    variant={field.value === 'manual' ? 'default' : 'ghost'}
+                                                    size="sm"
+                                                    className="flex-1 text-[10px] font-bold px-1"
+                                                    onClick={() => field.onChange('manual')}
+                                                >
+                                                    MANUALE
+                                                </Button>
+                                            </div>
+                                        </FormControl>
+                                    </FormItem>
+                                )}
+                            />
+                        </div>
+
+                        <div className="grid gap-6 md:grid-cols-2">
+                            <FormField
+                                control={form.control}
+                                name="intensity_type"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Tipo di Intensità</FormLabel>
+                                        <FormControl>
+                                            <div className="flex bg-secondary/10 p-1 rounded-md">
+                                                <Button
+                                                    type="button"
+                                                    variant={field.value === 'RIR' ? 'default' : 'ghost'}
+                                                    size="sm"
+                                                    className="flex-1 font-bold"
+                                                    onClick={() => field.onChange('RIR')}
+                                                >
+                                                    RIR (Riserva)
+                                                </Button>
+                                                <Button
+                                                    type="button"
+                                                    variant={field.value === 'RPE' ? 'default' : 'ghost'}
+                                                    size="sm"
+                                                    className="flex-1 font-bold"
+                                                    onClick={() => field.onChange('RPE')}
+                                                >
+                                                    RPE (Sforzo 1-10)
+                                                </Button>
+                                            </div>
+                                        </FormControl>
+                                    </FormItem>
+                                )}
+                            />
+
+                            <FormField
+                                control={form.control}
+                                name="sex"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Sesso Biologico</FormLabel>
+                                        <FormControl>
+                                            <div className="flex bg-secondary/10 p-1 rounded-md">
+                                                <Button
+                                                    type="button"
+                                                    variant={field.value === 'male' ? 'default' : 'ghost'}
+                                                    size="sm"
+                                                    className="flex-1 font-bold uppercase"
+                                                    onClick={() => field.onChange('male')}
+                                                >
+                                                    Uomo
+                                                </Button>
+                                                <Button
+                                                    type="button"
+                                                    variant={field.value === 'female' ? 'default' : 'ghost'}
+                                                    size="sm"
+                                                    className="flex-1 font-bold uppercase"
+                                                    onClick={() => field.onChange('female')}
+                                                >
+                                                    Donna
+                                                </Button>
+                                            </div>
+                                        </FormControl>
+                                    </FormItem>
+                                )}
+                            />
+                        </div>
+
+                        <div className="grid gap-6 md:grid-cols-2">
+                            <FormField
+                                control={form.control}
+                                name="rounding_increment"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Arrotondamento (kg)</FormLabel>
+                                        <FormControl>
+                                            <div className="flex items-center gap-2 flex-wrap">
+                                                {[0.5, 1, 1.25, 2.5, 5].map((val) => (
+                                                    <Button
+                                                        key={val}
+                                                        type="button"
+                                                        variant={field.value === val ? 'default' : 'outline'}
+                                                        size="sm"
+                                                        onClick={() => field.onChange(val)}
+                                                        className="font-mono font-bold"
+                                                    >
+                                                        {val}
+                                                    </Button>
+                                                ))}
+                                            </div>
+                                        </FormControl>
                                         <FormDescription>
-                                            Lascia che l'app suggerisca il peso per il prossimo workout.
+                                            Incremento minimo per i calcoli.
                                         </FormDescription>
-                                    </div>
-                                    <FormControl>
-                                        <Switch
-                                            checked={field.value}
-                                            onCheckedChange={field.onChange}
-                                        />
-                                    </FormControl>
-                                </FormItem>
-                            )}
-                        />
+                                    </FormItem>
+                                )}
+                            />
+
+                            <FormField
+                                control={form.control}
+                                name="max_plate_weight"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Disco Max (kg)</FormLabel>
+                                        <FormControl>
+                                            <div className="flex items-center gap-4">
+                                                <Slider
+                                                    min={5}
+                                                    max={25}
+                                                    step={5}
+                                                    value={[field.value]}
+                                                    onValueChange={(val) => field.onChange(val[0])}
+                                                    className="flex-1"
+                                                />
+                                                <span className="font-mono text-xl font-bold text-primary w-12 text-center">
+                                                    {field.value}
+                                                </span>
+                                            </div>
+                                        </FormControl>
+                                        <FormDescription>
+                                            Il disco più pesante disponibile.
+                                        </FormDescription>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                        </div>
 
                         <div className="grid gap-6 md:grid-cols-2">
                             <FormField
@@ -145,7 +331,7 @@ export function ProgressionSettings() {
                                 name="target_rir"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>RIR Target (Buffer)</FormLabel>
+                                        <FormLabel>RIR Target Default</FormLabel>
                                         <FormControl>
                                             <div className="flex items-center gap-4">
                                                 <Slider
@@ -160,7 +346,7 @@ export function ProgressionSettings() {
                                             </div>
                                         </FormControl>
                                         <FormDescription>
-                                            Quante ripetizioni in riserva vuoi tenere (0 = Cedimento, 3 = Buffer Ampio).
+                                            Buffer predefinito se non specificato.
                                         </FormDescription>
                                         <FormMessage />
                                     </FormItem>
@@ -189,36 +375,7 @@ export function ProgressionSettings() {
                                             </div>
                                         </FormControl>
                                         <FormDescription>
-                                            Di quanto aumentare il carico quando l'esercizio è "facile".
-                                        </FormDescription>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-
-                            <FormField
-                                control={form.control}
-                                name="max_plate_weight"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Disco Max (kg)</FormLabel>
-                                        <FormControl>
-                                            <div className="flex items-center gap-4">
-                                                <Slider
-                                                    min={5}
-                                                    max={25}
-                                                    step={5}
-                                                    value={[field.value]}
-                                                    onValueChange={(val) => field.onChange(val[0])}
-                                                    className="flex-1"
-                                                />
-                                                <span className="font-mono text-xl font-bold text-primary w-12 text-center">
-                                                    {field.value}
-                                                </span>
-                                            </div>
-                                        </FormControl>
-                                        <FormDescription>
-                                            Il disco più pesante in palestra (20 o 25kg).
+                                            Incremento carico quando è facile.
                                         </FormDescription>
                                         <FormMessage />
                                     </FormItem>

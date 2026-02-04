@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { LogOut, Settings as SettingsIcon, BookOpen, Maximize2, Minimize2 } from "lucide-react"
 import Link from "next/link"
-import { signOut } from "@/app/(auth)/actions"
+import { signOut } from "@/app/[locale]/(auth)/actions"
 import { useFullscreen } from "@/hooks/use-fullscreen"
 
 export function TopHeader() {

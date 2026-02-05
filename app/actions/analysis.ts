@@ -79,7 +79,7 @@ export async function get1RMTrend(exerciseId: string, periodDays: number = 90) {
         const dateStr = log.workout_sessions?.date || log.created_at
         return {
             date: new Date(dateStr).toISOString().split('T')[0],
-            value: Number(log.estimated_1rm)
+            value: Number(Number(log.estimated_1rm).toFixed(2))
         }
     })
 
@@ -102,7 +102,7 @@ export async function get1RMTrend(exerciseId: string, periodDays: number = 90) {
         d.setDate(d.getDate() + periodDays)
         return {
             date: d.toISOString().split('T')[0],
-            value: Number(log.estimated_1rm)
+            value: Number(Number(log.estimated_1rm).toFixed(2))
         }
     }) || []
 
@@ -149,7 +149,7 @@ export async function getNormalizedMultiTrend(exerciseIds: string[], periodDays:
 
         const baseline = exerciseBaselines[log.exercise_id]
         const current = Number(log.estimated_1rm)
-        const normalized = baseline > 0 ? (current / baseline) * 100 : 100
+        const normalized = baseline > 0 ? Number(((current / baseline) * 100).toFixed(2)) : 100
 
         groupedByDate[date][log.exercise_id] = normalized
     })
@@ -214,7 +214,13 @@ export async function getSBD1RMTrend(periodDays: number = 180) {
         if (e.squat > 0) lastS = e.squat
         if (e.bench > 0) lastB = e.bench
         if (e.deadlift > 0) lastD = e.deadlift
-        result.push({ date, squat: lastS, bench: lastB, deadlift: lastD, total: lastS + lastB + lastD })
+        result.push({
+            date,
+            squat: Number(lastS.toFixed(2)),
+            bench: Number(lastB.toFixed(2)),
+            deadlift: Number(lastD.toFixed(2)),
+            total: Number((lastS + lastB + lastD).toFixed(2))
+        })
     })
 
     return result
@@ -294,11 +300,11 @@ export async function getCompetitionPointsTrend(periodDays: number = 180) {
         const bw = getBwAtDate(e.date)
         return {
             date: e.date,
-            dots: calculateDOTS(e.total, bw, settings.sex),
-            wilks: calculateWilks(e.total, bw, settings.sex),
-            ipf: calculateIPFGL(e.total, bw, settings.sex),
-            total: e.total,
-            bw
+            dots: Number(calculateDOTS(e.total, bw, settings.sex).toFixed(2)),
+            wilks: Number(calculateWilks(e.total, bw, settings.sex).toFixed(2)),
+            ipf: Number(calculateIPFGL(e.total, bw, settings.sex).toFixed(2)),
+            total: Number(e.total.toFixed(2)),
+            bw: Number(bw.toFixed(2))
         }
     })
 }
@@ -332,7 +338,7 @@ export async function getVolumeByBodyPart(periodDays: number = 90) {
         if (!weeklyData[weekStart]) weeklyData[weekStart] = { date: weekStart }
 
         parts.forEach((part: string) => {
-            weeklyData[weekStart][part] = (weeklyData[weekStart][part] || 0) + vol
+            weeklyData[weekStart][part] = Number(((weeklyData[weekStart][part] || 0) + vol).toFixed(2))
         })
     })
 
@@ -394,8 +400,8 @@ export async function getFatigueScatter(periodDays: number = 90) {
     })
 
     return Object.values(sessionAgg).filter(s => s.count > 0).map(s => ({
-        x: Math.round(s.volume / 100) / 10,
-        y: Number((s.rirSum / s.count).toFixed(1)),
+        x: Number((Number(s.volume) / 1000).toFixed(2)),
+        y: Number((s.rirSum / s.count).toFixed(2)),
         date: s.date
     }))
 }
@@ -498,7 +504,8 @@ export async function getPerformanceFeed() {
     const { data: logs } = await supabase.from('exercise_logs').select('id, estimated_1rm, weight, reps, exercises(name), workout_sessions!inner(date)').order('workout_sessions(date)', { ascending: true })
 
     if (!logs) return []
-    const feed: any[] = []
+
+    const latestImprovements: Record<string, any> = {}
     const exMaxes: Record<string, number> = {}
 
     logs.forEach(log => {
@@ -509,15 +516,18 @@ export async function getPerformanceFeed() {
 
         if (cur > prev) {
             if (prev > 0) {
-                feed.push({
-                    id: log.id, exercise: name,
+                // Store/overwrite the latest improvement for this exercise
+                latestImprovements[name] = {
+                    id: log.id,
+                    exercise: name,
                     // @ts-ignore
                     date: log.workout_sessions?.date,
-                    value: cur, raw: `${log.weight}kg x ${log.reps}`,
+                    value: cur,
+                    raw: `${log.weight}kg x ${log.reps}`,
                     improvement: (((cur - prev) / prev) * 100).toFixed(1),
                     // @ts-ignore
                     unixTime: new Date(log.workout_sessions?.date).getTime()
-                })
+                }
             }
             exMaxes[name] = cur
         }
@@ -525,13 +535,47 @@ export async function getPerformanceFeed() {
 
     const limit = new Date()
     limit.setDate(limit.getDate() - 30)
-    return feed.filter(f => f.unixTime >= limit.getTime()).sort((a, b) => b.unixTime - a.unixTime)
+
+    // Filter by date and return as an array
+    return Object.values(latestImprovements)
+        .filter((f: any) => f.unixTime >= limit.getTime())
+        .sort((a: any, b: any) => b.unixTime - a.unixTime)
 }
 
 export async function getExercisesList() {
     const supabase = await createClient()
-    const { data } = await supabase.from('exercises').select('id, name, body_parts').order('name')
-    return data || []
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return []
+
+    // Filter exercises that are present in any of the user's templates
+    const { data, error } = await supabase
+        .from('exercises')
+        .select(`
+            id, 
+            name, 
+            body_parts,
+            template_exercises!inner(
+                workout_templates!inner(
+                    program_id,
+                    programs!inner(user_id)
+                )
+            )
+        `)
+        .eq('template_exercises.workout_templates.programs.user_id', user.id)
+        .order('name')
+
+    if (error) {
+        console.error('Error fetching exercises list:', error)
+        return []
+    }
+
+    // Deduplicate by exercise ID as an exercise can be in multiple templates
+    const seen = new Set()
+    return (data || []).filter(ex => {
+        if (seen.has(ex.id)) return false
+        seen.add(ex.id)
+        return true
+    })
 }
 
 // --- CONFIG ACTIONS ---

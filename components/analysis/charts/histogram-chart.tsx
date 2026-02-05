@@ -32,6 +32,7 @@ export function HistogramChart({ data, xKey, yKey, color = "#60a5fa" }: Histogra
                 <Tooltip
                     cursor={{ fill: '#ffffff10' }}
                     contentStyle={{ backgroundColor: "#111", border: "1px solid #333", color: "#fff" }}
+                    formatter={(value: any) => Number(value).toFixed(2)}
                 />
                 <Bar dataKey={yKey} fill={color} radius={[4, 4, 0, 0]}>
                     {data.map((entry, index) => (

@@ -62,8 +62,8 @@ export function ScatterChart({
                                 return (
                                     <div className="bg-card border border-border p-3 rounded-lg shadow-xl text-xs">
                                         {p.date && <p className="font-mono text-muted-foreground mb-1">{format(new Date(p.date), 'dd MMM yyyy', { locale: it })}</p>}
-                                        <p className="font-heading"><span className="text-muted-foreground">{xLabel}:</span> {p.x}</p>
-                                        <p className="font-heading"><span className="text-muted-foreground">{yLabel}:</span> {p.y}</p>
+                                        <p className="font-heading"><span className="text-muted-foreground">{xLabel}:</span> {Number(p.x).toFixed(2)}</p>
+                                        <p className="font-heading"><span className="text-muted-foreground">{yLabel}:</span> {Number(p.y).toFixed(2)}</p>
                                     </div>
                                 )
                             }

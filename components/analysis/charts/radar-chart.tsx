@@ -30,6 +30,7 @@ export function RadarChart({ data, dataKey, categoryKey, color = "#00ffa3" }: Ra
                 <Tooltip
                     contentStyle={{ backgroundColor: "#111", border: "1px solid #333", color: "#fff" }}
                     itemStyle={{ color: color }}
+                    formatter={(value: any) => Number(value).toFixed(2)}
                 />
             </RechartsRadar>
         </ResponsiveContainer>

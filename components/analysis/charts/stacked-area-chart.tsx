@@ -49,6 +49,7 @@ export function StackedAreaChart({ data, areas, yAxisUnit }: StackedAreaChartPro
                     itemStyle={{ fontSize: "12px" }}
                     labelStyle={{ marginBottom: "5px", color: "#999" }}
                     labelFormatter={(label) => new Date(label).toLocaleDateString('it-IT')}
+                    formatter={(value: any) => Number(value).toFixed(2)}
                 />
                 <Legend iconType="circle" />
                 {areas.map((area) => (

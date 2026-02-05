@@ -26,11 +26,12 @@ export function StackedBarChart({ data, bars, yAxisUnit = '' }: StackedBarChartP
                         fontSize={10}
                         tickLine={false}
                         axisLine={false}
-                        tickFormatter={(val) => `${val}${yAxisUnit}`}
+                        tickFormatter={(val) => `${Number(val).toFixed(2)}${yAxisUnit}`}
                     />
                     <Tooltip
                         contentStyle={{ backgroundColor: '#1a1a1a', border: '1px solid #333', fontSize: '12px' }}
                         itemStyle={{ padding: '0px' }}
+                        formatter={(value: any) => `${Number(value).toFixed(2)}${yAxisUnit}`}
                     />
                     <Legend iconType="circle" wrapperStyle={{ fontSize: '10px', paddingTop: '10px' }} />
                     {bars.map(bar => (

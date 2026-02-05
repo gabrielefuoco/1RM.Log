@@ -5,7 +5,7 @@ import { updateSession } from '@/lib/supabase/middleware';
 
 const intlMiddleware = createMiddleware(routing);
 
-export default async function proxy(request: NextRequest) {
+export default async function middleware(request: NextRequest) {
     // 1. Update Supabase session and handle auth redirects
     const response = await updateSession(request);
 

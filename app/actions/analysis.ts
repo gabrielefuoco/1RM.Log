@@ -135,8 +135,10 @@ export async function getNormalizedMultiTrend(exerciseIds: string[], periodDays:
     const groupedByDate: Record<string, any> = {}
 
     data.forEach(log => {
-        // @ts-ignore
-        const date = new Date(log.workout_sessions.date).toISOString().split('T')[0]
+        const sessionDate = (log.workout_sessions as any)?.date
+        if (!sessionDate) return
+
+        const date = new Date(sessionDate).toISOString().split('T')[0]
         if (!groupedByDate[date]) {
             groupedByDate[date] = { date }
         }
@@ -317,8 +319,9 @@ export async function getVolumeByBodyPart(periodDays: number = 90) {
     const weeklyData: Record<string, any> = {}
 
     logs.forEach(log => {
-        // @ts-ignore
-        const date = new Date(log.workout_sessions.date)
+        const sessionDate = (log.workout_sessions as any)?.date
+        if (!sessionDate) return
+        const date = new Date(sessionDate)
         const weekStart = new Date(date.setDate(date.getDate() - date.getDay())).toISOString().split('T')[0]
 
         // Handle multiple body parts - distribute volume across all target muscles
@@ -460,7 +463,9 @@ export async function getVolumeStats(periodDays: number = 90) {
     const processLogs = (data: any[]) => {
         const volByWeek: Record<string, number> = {}
         data.forEach(log => {
-            const date = new Date(log.workout_sessions.date)
+            const sessionDate = (log.workout_sessions as any)?.date
+            if (!sessionDate) return
+            const date = new Date(sessionDate)
             const weekStart = new Date(date.setDate(date.getDate() - date.getDay())).toISOString().split('T')[0]
             volByWeek[weekStart] = (volByWeek[weekStart] || 0) + (Number(log.weight) * Number(log.reps))
         })

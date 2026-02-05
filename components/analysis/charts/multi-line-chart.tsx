@@ -14,7 +14,7 @@ interface MultiLineChartProps {
 
 export function MultiLineChart({ data, lines, yAxisUnit }: MultiLineChartProps) {
     if (!data || data.length === 0) {
-        return <div className="flex items-center justify-center h-full text-muted-foreground text-sm">Nessun dato disponibile</div>
+        return <div className="flex items-center justify-center h-full text-muted-foreground/50 font-mono text-sm uppercase">Insufficient Data</div>
     }
 
     return (

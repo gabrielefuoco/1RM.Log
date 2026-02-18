@@ -366,6 +366,9 @@ export function SetLogger({
                                         isProgression && "text-primary shadow-[0_0_15px_rgba(0,255,163,0.1)]"
                                     )}
                                     placeholder="0"
+                                    autoComplete="off"
+                                    data-lpignore="true"
+                                    data-1p-ignore="true"
                                 />
                             )}
                         </div>
@@ -386,6 +389,9 @@ export function SetLogger({
                                     onChange={(e) => setReps(e.target.value)}
                                     className="h-11 bg-white/5 border-white/10 text-base font-black rounded-xl text-center focus:border-primary/50 transition-colors"
                                     placeholder="0"
+                                    autoComplete="off"
+                                    data-lpignore="true"
+                                    data-1p-ignore="true"
                                 />
                             )}
                             {/* Suggestion Badge */}
@@ -433,6 +439,9 @@ export function SetLogger({
                                     }}
                                     className="h-11 bg-white/5 border-white/10 text-base font-black rounded-xl text-center focus:border-primary/50 transition-colors"
                                     placeholder="-"
+                                    autoComplete="off"
+                                    data-lpignore="true"
+                                    data-1p-ignore="true"
                                 />
                             )}
                         </div>

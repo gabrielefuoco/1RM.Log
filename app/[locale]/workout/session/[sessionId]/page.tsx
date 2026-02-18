@@ -57,6 +57,7 @@ export default function SessionRunnerPage({ params }: { params: Promise<{ sessio
     const [currentIndex, setCurrentIndex] = useState(0)
     const [progressionSettings, setProgressionSettings] = useState<ProgressionSettings | null>(null)
     const [userOneRmsMap, setUserOneRmsMap] = useState<Record<string, number>>({})
+    const [sessionStartTime, setSessionStartTime] = useState<number | null>(null)
 
     // Timer State
     const [showTimer, setShowTimer] = useState(false)
@@ -165,6 +166,10 @@ export default function SessionRunnerPage({ params }: { params: Promise<{ sessio
                 // Show readiness only for new workouts (no logs yet)
                 if (data.logs.length === 0) {
                     setShowReadiness(true)
+                }
+
+                if (data.session.date) {
+                    setSessionStartTime(new Date(data.session.date).getTime())
                 }
 
             } catch (e) {
@@ -384,6 +389,12 @@ export default function SessionRunnerPage({ params }: { params: Promise<{ sessio
 
         // Default path if no PRs or manual
         try {
+            // Calculate Duration in Seconds
+            const durationSeconds = sessionStartTime
+                ? Math.floor((Date.now() - sessionStartTime) / 1000)
+                : 0
+
+            await finishSession(sessionId, durationSeconds)
             router.push(`/workout/recap/${sessionId}`)
         } catch (e) {
             console.error(e)
@@ -616,7 +627,7 @@ export default function SessionRunnerPage({ params }: { params: Promise<{ sessio
                                 setNumber={pw.set_number}
                                 setType="warmup"
                                 targetRir={0}
-                                isActive={i === 0 && currentItem.logs.filter(l => l.set_type === 'warmup').length === 0}
+                                isActive={i === 0 && currentItem.logs.filter(l => l.set_type === 'warmup' && l.set_number === pw.set_number).length === 0}
                                 onSave={(w, r, i) => handleLogSet(currentIndex, pw.set_number, w, r, i, 'warmup')}
                                 settings={progressionSettings}
                                 intensityMultiplier={intensityMultiplier}
@@ -672,7 +683,9 @@ export default function SessionRunnerPage({ params }: { params: Promise<{ sessio
                             const loggedWorkSets = currentItem.logs.filter(l => l.set_type !== 'warmup').length
                             const setNum = loggedWorkSets + i + 1
                             const isFirstWorkSet = i === 0
-                            const isActive = currentItem.logs.filter(l => l.set_type === 'warmup').length === (currentItem.plannedWarmups?.length || 0) && isFirstWorkSet
+                            const warmupsDone = currentItem.logs.filter(l => l.set_type === 'warmup').length
+                            const warmupsPlanned = currentItem.plannedWarmups?.length || 0
+                            const isActive = warmupsDone >= warmupsPlanned && isFirstWorkSet
 
                             const setTarget = currentItem.setsData?.[setNum - 1]
                             const targetRir = setTarget?.rir ?? currentItem.templateData?.target_rir ?? 0
@@ -895,4 +908,3 @@ export default function SessionRunnerPage({ params }: { params: Promise<{ sessio
         </div>
     )
 }
-

@@ -620,21 +620,29 @@ export default function SessionRunnerPage({ params }: { params: Promise<{ sessio
                     <div className="p-4 lg:p-0 space-y-2">
                         {/* 1. Planned Warmup Sets (not yet logged) */}
                         {currentItem.plannedWarmups?.filter(pw =>
-                            !currentItem.logs.some(l => l.set_type === 'warmup' && l.set_number === pw.set_number)
-                        ).map((pw, i) => (
-                            <SetLogger
-                                key={`planned-warmup-${pw.set_number}`}
-                                setNumber={pw.set_number}
-                                setType="warmup"
-                                targetRir={0}
-                                isActive={i === 0 && currentItem.logs.filter(l => l.set_type === 'warmup' && l.set_number === pw.set_number).length === 0}
-                                onSave={(w, r, i) => handleLogSet(currentIndex, pw.set_number, w, r, i, 'warmup')}
-                                settings={progressionSettings}
-                                intensityMultiplier={intensityMultiplier}
-                                initialValues={{ weight: pw.weight, reps: pw.reps, rir: 0, set_type: 'warmup' } as any}
-                                isDeload={isDeload}
-                            />
-                        ))}
+                            // Use loose verification for set number to avoid string/number mismatch
+                            !currentItem.logs.some(l => l.set_type === 'warmup' && String(l.set_number) === String(pw.set_number))
+                        ).map((pw, i) => {
+                            const isNextWarmup = i === 0
+                            // Active if it's the first in the remaining list AND no logged warmup with this number exists (redundant but safe)
+                            const isActive = isNextWarmup
+
+                            return (
+                                <SetLogger
+                                    key={`planned-warmup-${pw.set_number}`}
+                                    setNumber={pw.set_number}
+                                    setType="warmup"
+                                    targetRir={0}
+                                    isActive={isActive}
+                                    isFuture={!isActive}
+                                    onSave={(w, r, i) => handleLogSet(currentIndex, pw.set_number, w, r, i, 'warmup')}
+                                    settings={progressionSettings}
+                                    intensityMultiplier={intensityMultiplier}
+                                    initialValues={{ weight: pw.weight, reps: pw.reps, rir: 0, set_type: 'warmup' } as any}
+                                    isDeload={isDeload}
+                                />
+                            )
+                        })}
 
                         {/* 2. All Logged Sets (Warmups and Work Sets) grouped together or sorted */}
                         {[...currentItem.logs].sort((a, b) => {
@@ -759,12 +767,15 @@ export default function SessionRunnerPage({ params }: { params: Promise<{ sessio
                     <div className="fixed bottom-0 inset-x-0 p-4 pb-8 glass-nav lg:static lg:bg-transparent lg:border-none lg:shadow-none lg:p-0 lg:pb-0">
                         <Button
                             onClick={() => {
-                                const setsDone = currentItem.logs.length
-                                if (setsDone < currentItem.targetSets) {
+                                // Count ONLY work sets for progress (exclude warmups, drops, failures for now unless they count towards target)
+                                // Assuming targetSets refers to WORK sets.
+                                const workSetsDone = currentItem.logs.filter(l => l.set_type === 'work').length
+
+                                if (workSetsDone < currentItem.targetSets) {
                                     setAlertConfig({
                                         open: true,
                                         title: t("incompleteTitle"),
-                                        description: t("incompleteDescription", { done: setsDone, total: currentItem.targetSets }),
+                                        description: t("incompleteDescription", { done: workSetsDone, total: currentItem.targetSets }),
                                         onConfirm: () => {
                                             if (currentIndex < runnerExercises.length - 1) {
                                                 setCurrentIndex(curr => curr + 1)
@@ -789,17 +800,17 @@ export default function SessionRunnerPage({ params }: { params: Promise<{ sessio
                                     })
                                 }
                             }}
-                            variant={currentItem.logs.length >= currentItem.targetSets ? "default" : "secondary"}
+                            variant={currentItem.logs.filter(l => l.set_type === 'work').length >= currentItem.targetSets ? "default" : "secondary"}
                             className={cn(
                                 "w-full h-14 text-base font-bold rounded-xl shadow-lg flex items-center justify-center gap-3 transition-all",
-                                currentItem.logs.length >= currentItem.targetSets
+                                currentItem.logs.filter(l => l.set_type === 'work').length >= currentItem.targetSets
                                     ? "bg-primary text-primary-foreground hover:bg-primary/90 shadow-[0_0_20px_rgba(0,255,163,0.3)]"
                                     : "bg-muted text-muted-foreground hover:bg-muted/80 border border-border"
                             )}
                         >
                             <div className={cn(
                                 "h-8 w-8 rounded-full flex items-center justify-center",
-                                currentItem.logs.length >= currentItem.targetSets ? "bg-primary-foreground/10" : "bg-background/20"
+                                currentItem.logs.filter(l => l.set_type === 'work').length >= currentItem.targetSets ? "bg-primary-foreground/10" : "bg-background/20"
                             )}>
                                 <ChevronRight className="h-5 w-5" />
                             </div>

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { ExerciseLog, ProgressionSettings, TemplateSet } from "@/types/database"
+import { ProgressionResult } from "@/services/progression"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -38,7 +39,9 @@ interface SetLoggerProps {
     setType?: 'work' | 'warmup' | 'drop' | 'failure'
     isDeload?: boolean
     templateSet?: TemplateSet
+
     previousSetWeight?: number
+    progressionTarget?: ProgressionResult
 }
 
 export function SetLogger({
@@ -58,7 +61,8 @@ export function SetLogger({
     setType = 'work',
     templateSet,
     previousSetWeight,
-    isDeload = false
+    isDeload = false,
+    progressionTarget
 }: SetLoggerProps) {
     const t = useTranslations("Workout")
     // Progression Algorithm
@@ -87,15 +91,23 @@ export function SetLogger({
             }
         }
 
-        // Priority 2: Progression Algorithm (Previous Log)
         if (suggestedWeight === 0 && previousLog && settings) {
-            const result = ProgressionCalculator.calculate(
-                previousLog.weight,
-                previousLog.reps,
-                previousLog.rir ?? null,
-                { ...settings, target_rir: targetRir },
-            )
-            suggestedWeight = result.suggestedWeight * intensityMultiplier
+            const result = ProgressionCalculator.calculate({
+                mode: 'static', // Fallback, we don't know the exact mode here without context, but strictly calculation needs mode. 
+                // Wait, SetLogger shouldn't recalculate progression if it's already passed as prop!
+                // CHANGE: If progressionTarget is provided, use IT as the primary suggestion source.
+                config: {},
+                state: {},
+                history: [previousLog],
+                templateSet: templateSet || { reps_min: 0, reps_max: 0, rir: 0, type: 'work' } as any,
+                progressionSettings: settings
+            })
+            suggestedWeight = result.targetWeight ? result.targetWeight * intensityMultiplier : 0
+        }
+
+        // Priority 3: Progression Target Prop (The Real Progression Engine)
+        if (progressionTarget && progressionTarget.targetWeight) {
+            suggestedWeight = progressionTarget.targetWeight * intensityMultiplier
         }
 
         if (suggestedWeight === 0) return ""
@@ -323,6 +335,16 @@ export function SetLogger({
                 </div>
             ) : (
                 <>
+                    {/* Progression Hint */}
+                    {progressionTarget && progressionTarget.instruction && isActive && (
+                        <div className="mb-2 px-3 py-1.5 bg-blue-500/10 border border-blue-500/20 rounded-lg flex items-center justify-between animate-in fade-in slide-in-from-top-1">
+                            <span className="text-[10px] font-bold text-blue-400 uppercase tracking-wider flex items-center gap-1.5">
+                                <span className="h-1.5 w-1.5 rounded-full bg-blue-400 animate-pulse" />
+                                {progressionTarget.instruction}
+                            </span>
+                        </div>
+                    )}
+
                     <div className="grid grid-cols-7 gap-2 items-end">
                         <div className="col-span-2">
                             <div className="flex items-center justify-between mb-1.5 px-1">

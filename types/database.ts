@@ -34,6 +34,7 @@ export interface TemplateSet {
     reps_max: number
     rir: number
     percentage?: number
+    weight_absolute?: number
     weight_mode?: 'percent' | 'absolute' | 'rpe'
     is_backoff?: boolean
     backoff_percent?: number
@@ -88,6 +89,10 @@ export interface TemplateExercise {
     type: SetType
     sets_data: TemplateSet[]
     order: number
+    // Progression
+    progression_mode?: ProgressionMode
+    progression_config?: any // Json
+    progression_state?: any // Json
     // Joins
     exercise?: Exercise
 }
@@ -143,9 +148,19 @@ export interface ProgressionSettings {
     updated_at: string
 }
 
-// Helper types for Insert/Update might be useful later, 
-// matching Supabase's Database['public']['Tables']['exercises']['Insert'] structure if we generated types.
-// For now, we manually define what we need.
+export type ProgressionType = 'double' | 'linear' | 'percentage_sequence' | 'rir_match'
+export type ProgressionMode = 'static' | 'auto_double' | 'auto_linear' | 'custom_sequence'
+
+export interface ProgressionDefinition {
+    id: string
+    user_id: string
+    name: string
+    description: string | null
+    type: ProgressionType
+    config: any // Json
+    created_at: string
+}
+
 export type CreateExerciseInput = Omit<Exercise, 'id' | 'created_at' | 'user_id'>
 export type CreateProgramInput = Omit<Program, 'id' | 'created_at' | 'user_id'>
 export type CreateBodyweightInput = Omit<BodyweightLog, 'id' | 'user_id' | 'created_at' | 'date'> & { date?: string }

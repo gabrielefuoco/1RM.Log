@@ -6,10 +6,11 @@
 ## 1. Gerarchia Dati (Relazioni)
 La struttura segue un modello piramidale dal piano alla singola esecuzione:
 - **`programs`**: Macrociclo (Pianificazione alto livello).
+- **`progression_definitions`**: Libreria di schemi di progressione riutilizzabili.
 - **`workout_templates`**: Sessioni tipo (Mesociclo/Microciclo).
-- **`template_exercises`**: Esercizi pianificati con Target (Sets, Reps, RIR).
+- **`template_exercises`**: Configurazione esercizio (Sets, Reps, **Progression Mode**).
 - **`workout_sessions`**: Esecuzione reale in data X.
-- **`exercise_logs`**: Singolo set eseguito con Performance reale.
+- **`exercise_logs`**: Singolo set (Peso, Reps, RIR, 1RM Stimato).
 - **`bodyweight_logs`**: Tracciamento peso corporeo nel tempo.
 
 ## 2. Row Level Security (RLS)

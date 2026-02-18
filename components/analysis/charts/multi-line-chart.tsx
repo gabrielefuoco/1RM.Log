@@ -30,6 +30,7 @@ export function MultiLineChart({ data, lines, yAxisUnit }: MultiLineChartProps) 
                         return `${date.getDate()}/${date.getMonth() + 1}`
                     }}
                     tickMargin={10}
+                    minTickGap={30}
                 />
                 <YAxis
                     stroke="#666"
@@ -38,11 +39,17 @@ export function MultiLineChart({ data, lines, yAxisUnit }: MultiLineChartProps) 
                     tickFormatter={(val) => Math.round(val).toString()}
                 />
                 <Tooltip
-                    contentStyle={{ backgroundColor: "#111", border: "1px solid #333", color: "#fff" }}
-                    itemStyle={{ fontSize: "12px" }}
-                    labelStyle={{ marginBottom: "5px", color: "#999" }}
-                    labelFormatter={(label) => new Date(label).toLocaleDateString('it-IT')}
-                    formatter={(value: any) => Number(value).toFixed(2)}
+                    contentStyle={{
+                        backgroundColor: "rgba(17, 17, 17, 0.95)",
+                        backdropFilter: "blur(4px)",
+                        border: "1px solid rgba(255, 255, 255, 0.1)",
+                        borderRadius: "8px",
+                        color: "#fff"
+                    }}
+                    itemStyle={{ fontSize: "11px", fontFamily: "var(--font-jetbrains-mono)" }}
+                    labelStyle={{ marginBottom: "5px", color: "#999", fontSize: "10px", fontFamily: "var(--font-jetbrains-mono)", textTransform: "uppercase" }}
+                    labelFormatter={(label) => new Date(label).toLocaleDateString('it-IT', { day: 'numeric', month: 'long', year: 'numeric' })}
+                    formatter={(value: any) => [`${Number(value).toFixed(2)} ${yAxisUnit || ''}`, '']}
                 />
                 <Legend iconType="circle" />
                 {lines.map((line) => (
@@ -55,6 +62,7 @@ export function MultiLineChart({ data, lines, yAxisUnit }: MultiLineChartProps) 
                         strokeWidth={2}
                         dot={false}
                         activeDot={{ r: 4, strokeWidth: 0 }}
+                        connectNulls={true}
                     />
                 ))}
             </LineChart>

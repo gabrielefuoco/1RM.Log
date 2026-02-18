@@ -28,6 +28,7 @@
         "analysis": "Analisi",
         "programs": "Programmi",
         "history": "Storico",
+        "exercises": "Esercizi",
         "settings": "Config"
     },
     "Settings": {
@@ -183,6 +184,7 @@
         "notificationBody": "È ora della prossima serie. Forza!",
         "exercise": "Esercizio",
         "sets": "Serie",
+        "history": "Storia",
         "nextPrefix": "Prossimo",
         "noTarget": "Nessun obiettivo impostato",
         "prsUpdated": "Massimali aggiornati!",

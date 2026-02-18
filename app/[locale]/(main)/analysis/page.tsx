@@ -1,123 +1,129 @@
 "use client"
 
 import { useState } from "react"
-import { AnalysisGrid, AnalysisGridItem } from "@/components/analysis/analysis-grid"
-import { ChartWidget } from "@/components/analysis/chart-widget"
-import { TrendChart } from "@/components/analysis/trend-chart"
-import { StackedAreaChart } from "@/components/analysis/charts/stacked-area-chart"
-import { RadarChart } from "@/components/analysis/charts/radar-chart"
-import { HistogramChart } from "@/components/analysis/charts/histogram-chart"
+import { AnalysisGrid } from "@/components/analysis/analysis-grid"
 import { PerformanceRail } from "@/components/analysis/performance-rail"
 import { CalendarRange, Dumbbell, TrendingUp, Activity } from "lucide-react"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
-import { MultiSelect } from "@/components/ui/multi-select"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
 import {
-    getKPIs, get1RMTrend, getVolumeStats, getPerformanceFeed, getExercisesList,
-    getSBD1RMTrend, getMuscleBalance, getIntensityDistribution, getNormalizedMultiTrend,
-    getBodyweightTrend, getRelativeStrengthTrend, getCompetitionPointsTrend, getVolumeByBodyPart,
-    getHardSetsTrend, getFatigueScatter, getDashboardConfig, updateDashboardConfig
+    getKPIs, getPerformanceFeed, getExercisesList,
+    getCompetitionPointsTrend, getDashboardConfig, updateDashboardConfig
 } from "@/app/actions/analysis"
-import { MultiLineChart } from "@/components/analysis/charts/multi-line-chart"
-import { StackedBarChart } from "@/components/analysis/charts/stacked-bar-chart"
-import { ScatterChart } from "@/components/analysis/charts/scatter-chart"
 import { WidgetManager } from "@/components/analysis/widget-manager"
 import { useTranslations } from "next-intl"
+import { CHART_PRESETS, SmartChartConfig, DashboardConfig } from "@/types/analysis"
+import { SmartChart } from "@/components/analysis/smart-chart"
+import { SmartChartConfigurator } from "@/components/analysis/smart-chart-configurator"
+import { Plus } from "lucide-react"
+import { toast } from "sonner"
+import { createClient } from "@/lib/supabase/client"
 
 export default function AnalysisPage() {
     const queryClient = useQueryClient()
     const t = useTranslations("Analysis")
-    const [selectedExercise, setSelectedExercise] = useState<string | null>(null)
-    const [multiSelected, setMultiSelected] = useState<string[]>([])
     const [showComparison, setShowComparison] = useState(false)
     const [compMetric, setCompMetric] = useState<'dots' | 'wilks' | 'ipf'>('dots')
 
-    // Parallel Data Fetching
-    const { data: kpis } = useQuery({ queryKey: ['analysis', 'kpis'], queryFn: () => getKPIs() })
-    const { data: volumeStats } = useQuery({ queryKey: ['analysis', 'volume', showComparison], queryFn: () => getVolumeStats() })
-    const { data: performanceFeed } = useQuery({ queryKey: ['analysis', 'feed'], queryFn: () => getPerformanceFeed() })
-    const { data: exercises } = useQuery({ queryKey: ['exercises'], queryFn: () => getExercisesList() })
-    const { data: bodyweightData } = useQuery({ queryKey: ['analysis', 'bodyweight'], queryFn: () => getBodyweightTrend() })
+    // Configurator State
+    const [configDrawerOpen, setConfigDrawerOpen] = useState(false)
+    const [editingChart, setEditingChart] = useState<Partial<SmartChartConfig> | null>(null)
+    const [isFocusedEdit, setIsFocusedEdit] = useState(false)
 
-    // Default to first exercise if not selected
-    const targetExerciseId = selectedExercise || (exercises?.[0]?.id) || null
-
-    const { data: trendStats } = useQuery({
-        queryKey: ['analysis', 'trend', targetExerciseId, showComparison],
-        queryFn: () => targetExerciseId ? get1RMTrend(targetExerciseId) : { current: [], comparison: [] },
-        enabled: !!targetExerciseId
-    })
-
-    const { data: relStrengthData } = useQuery({
-        queryKey: ['analysis', 'rel-strength', targetExerciseId],
-        queryFn: () => targetExerciseId ? getRelativeStrengthTrend(targetExerciseId) : [],
-        enabled: !!targetExerciseId
-    })
-
-    const { data: normalizedTrend } = useQuery({
-        queryKey: ['analysis', 'normalized', multiSelected],
-        queryFn: () => getNormalizedMultiTrend(multiSelected),
-        enabled: multiSelected.length > 0
-    })
-
-    const { data: sbdData } = useQuery({ queryKey: ['analysis', 'sbd'], queryFn: () => getSBD1RMTrend() })
-    const { data: muscleBalance } = useQuery({ queryKey: ['analysis', 'muscle-balance'], queryFn: () => getMuscleBalance() })
-    const { data: intensityDist } = useQuery({ queryKey: ['analysis', 'intensity'], queryFn: () => getIntensityDistribution() })
-    const { data: compPointsTrend } = useQuery({ queryKey: ['analysis', 'comp-points'], queryFn: () => getCompetitionPointsTrend() })
-    const { data: volumeByPart } = useQuery({ queryKey: ['analysis', 'volume-part'], queryFn: () => getVolumeByBodyPart() })
-    const { data: hardSets } = useQuery({ queryKey: ['analysis', 'hard-sets'], queryFn: () => getHardSetsTrend() })
-    const { data: scatterData } = useQuery({ queryKey: ['analysis', 'scatter'], queryFn: () => getFatigueScatter() })
-    const { data: dbConfig } = useQuery({ queryKey: ['analysis', 'config'], queryFn: () => getDashboardConfig() })
-
-    const updateConfigMutation = useMutation({
-        mutationFn: updateDashboardConfig,
-        onSuccess: () => queryClient.invalidateQueries({ queryKey: ['analysis', 'config'] })
-    })
-
-    // Dashboard Engine Configuration
-    const ALL_WIDGETS = [
-        { id: 'trend', title: t('trend1rmTitle') },
-        { id: 'volume', title: t('volumeTitle') },
-        { id: 'normalized', title: t('normalizedTitle') },
-        { id: 'sbd', title: t('sbdTotalTitle') },
-        { id: 'muscle_balance', title: t('muscleBalanceTitle') },
-        { id: 'intensity', title: t('intensityDistTitle') },
-        { id: 'bodyweight', title: t('bodyweightTitle') },
-        { id: 'rel_strength', title: t('relativeStrengthTitle') },
-        { id: 'dots', title: t('compPointsTrendTitle') },
-        { id: 'volume_part', title: t('muscleVolumeTitle') },
-        { id: 'hard_sets', title: t('hardSetsTitle') },
-        { id: 'fatigue', title: t('fatigueTitle') }
-    ]
-
-    const isVisible = (id: string) => dbConfig?.[id] !== false
-
-    const handleToggle = (id: string) => {
-        const newConfig = { ...dbConfig, [id]: !isVisible(id) }
-        updateConfigMutation.mutate(newConfig)
+    const handleAddChart = () => {
+        setEditingChart(null)
+        setIsFocusedEdit(false)
+        setConfigDrawerOpen(true)
     }
 
-    const widgetConfig = ALL_WIDGETS.map(w => ({ ...w, visible: isVisible(w.id) }))
+    const handleEditChart = (config: SmartChartConfig, focused: boolean = false) => {
+        setEditingChart(config)
+        setIsFocusedEdit(focused)
+        setConfigDrawerOpen(true)
+    }
+
+    // Parallel Data Fetching
+    const { data: kpis } = useQuery({ queryKey: ['analysis', 'kpis'], queryFn: () => getKPIs() })
+    const { data: performanceFeed } = useQuery({ queryKey: ['analysis', 'feed'], queryFn: () => getPerformanceFeed() })
+    const { data: compPointsTrend } = useQuery({ queryKey: ['analysis', 'comp-points'], queryFn: () => getCompetitionPointsTrend() })
+    const { data: dbConfig } = useQuery({ queryKey: ['analysis', 'config'], queryFn: () => getDashboardConfig() }) as any
+
+    const supabase = createClient()
+
+    const { mutate: saveConfig } = useMutation({
+        mutationFn: async (updatedConfig: Partial<DashboardConfig>) => {
+            return await updateDashboardConfig(updatedConfig)
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['analysis', 'config'] })
+            toast.success("Dashboard aggiornata", {
+                description: "Le modifiche ai grafici sono state salvate.",
+                duration: 2000
+            })
+        },
+        onError: (err) => {
+            console.error("Save Error:", err)
+            toast.error("Errore durante il salvataggio")
+        }
+    })
 
     // Latest Points for KPI
     const currentPoints = compPointsTrend?.length ? compPointsTrend[compPointsTrend.length - 1] : null
     const kpiPoints = currentPoints ? (currentPoints as any)[compMetric] : null
 
-    // Memoized options for MultiSelect
-    const exerciseOptions = exercises?.map((e: any) => ({ label: e.name, value: e.id })) || []
+    // Effective Config combining Presets + Custom User Charts
+    const isVisible = (id: string) => dbConfig?.visibility?.[id] !== false
 
-    const multiChartLines = multiSelected.map((id, index) => {
-        const name = exercises?.find((e: any) => e.id === id)?.name || 'Unknown'
-        const colors = ['#00ffa3', '#3b82f6', '#f97316', '#ef4444', '#eab308']
-        return { key: id, color: colors[index % colors.length], name }
-    })
+    const customCharts = (dbConfig as DashboardConfig)?.customCharts || []
 
-    // Formatted points for MultiLineChart
-    const formattedPoints = compPointsTrend?.map((p: any) => ({
-        date: p.date,
-        value: p[compMetric]
-    })) || []
+    const handleToggle = (id: string) => {
+        const newVisibility = { ...(dbConfig?.visibility || {}), [id]: !isVisible(id) }
+        saveConfig({ ...dbConfig, visibility: newVisibility })
+    }
+
+    const handleSaveCustomChart = (newConfig: SmartChartConfig) => {
+        let newCustomCharts = [...customCharts]
+        const index = newCustomCharts.findIndex(c => c.id === newConfig.id)
+
+        if (index >= 0) {
+            newCustomCharts[index] = newConfig
+        } else {
+            newCustomCharts.push(newConfig)
+        }
+
+        saveConfig({ ...dbConfig, customCharts: newCustomCharts })
+    }
+
+    const handleDeleteCustomChart = (id: string) => {
+        const newCustomCharts = customCharts.filter(c => c.id !== id)
+        saveConfig({ ...dbConfig, customCharts: newCustomCharts })
+    }
+
+    // Total pool of visible charts - Deduplicate by ID prioritizing customCharts (overrides)
+    const allConfigsMap = new Map<string, SmartChartConfig>()
+    CHART_PRESETS.forEach(p => allConfigsMap.set(p.id, p))
+    customCharts.forEach(c => allConfigsMap.set(c.id, c))
+
+    const activeConfigs: SmartChartConfig[] = Array.from(allConfigsMap.values())
+        .filter(c => isVisible(c.id))
+        .map(base => {
+            const config = { ...base }
+
+            // Inject page-level states into dynamic configs
+            if (config.params) {
+                config.params = {
+                    ...config.params,
+                    showComparison: showComparison
+                }
+                if (config.metric === 'dots') {
+                    config.params.compMetric = compMetric
+                }
+            }
+
+            return config
+        })
+
+    const widgetConfig = CHART_PRESETS.map(w => ({ id: w.id, title: w.title, visible: isVisible(w.id) }))
 
     return (
         <div className="p-4 md:p-8 space-y-8 pb-32">
@@ -128,6 +134,15 @@ export default function AnalysisPage() {
                     <p className="text-muted-foreground text-sm">{t("subtitle")}</p>
                 </div>
                 <div className="flex items-center gap-3">
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={handleAddChart}
+                        className="gap-2 h-8 text-xs font-mono uppercase bg-primary/5 border-primary/20 hover:bg-primary/10"
+                    >
+                        <Plus className="size-4" />
+                        Add Chart
+                    </Button>
                     <Button
                         variant={showComparison ? "default" : "outline"}
                         size="sm"
@@ -140,6 +155,15 @@ export default function AnalysisPage() {
                     <WidgetManager config={widgetConfig} onToggle={handleToggle} />
                 </div>
             </div>
+
+            {/* Configurator */}
+            <SmartChartConfigurator
+                open={configDrawerOpen}
+                onOpenChange={setConfigDrawerOpen}
+                onSave={handleSaveCustomChart}
+                initialConfig={editingChart || undefined}
+                isFocusedEdit={isFocusedEdit}
+            />
 
             {/* KPI Grid */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -165,7 +189,7 @@ export default function AnalysisPage() {
 
                 <div className="bg-card border border-border p-5 rounded-lg flex flex-col justify-between h-[120px] relative overflow-hidden group">
                     <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
-                        <Activity className="size-12 text- pink-500" />
+                        <Activity className="size-12 text-pink-500" />
                     </div>
                     <p className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground">{compMetric.toUpperCase()} {t("scoreKpi")}</p>
                     <div>
@@ -191,252 +215,16 @@ export default function AnalysisPage() {
                 <PerformanceRail items={performanceFeed || []} />
             </div>
 
-            {/* Main Charts Grid with Conditional Rendering */}
+            {/* Dynamic Smart Charts Grid */}
             <AnalysisGrid>
-                {isVisible('trend') && (
-                    <AnalysisGridItem colSpan={8}>
-                        <ChartWidget
-                            title={t("trend1rmTitle")}
-                            subtitle={t("trendSubtitle")}
-                            icon={<TrendingUp className="size-5" />}
-                            infoTooltip="Estimated 1RM trend over time."
-                            headerAction={
-                                <Select onValueChange={setSelectedExercise} defaultValue={selectedExercise || undefined}>
-                                    <SelectTrigger className="w-[180px] h-8 text-xs">
-                                        <SelectValue placeholder={t("selectExercise")} />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {exercises?.map((ex: any) => (
-                                            <SelectItem key={ex.id} value={ex.id}>{ex.name}</SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                            }
-                        >
-                            <TrendChart
-                                data={(trendStats as any)?.current || []}
-                                comparisonData={showComparison ? (trendStats as any)?.comparison : undefined}
-                                primaryColor="#00ffa3"
-                            />
-                        </ChartWidget>
-                    </AnalysisGridItem>
-                )}
-
-                {isVisible('volume') && (
-                    <AnalysisGridItem colSpan={4}>
-                        <ChartWidget
-                            title={t("volumeTitle")}
-                            subtitle={t("weeklyTonnage")}
-                            icon={<Dumbbell className="size-5" />}
-                            infoTooltip="Total weight lifted per week."
-                        >
-                            <TrendChart
-                                data={(volumeStats as any)?.current || []}
-                                comparisonData={showComparison ? (volumeStats as any)?.comparison : undefined}
-                                primaryColor="#60a5fa"
-                                unit="kg"
-                            />
-                        </ChartWidget>
-                    </AnalysisGridItem>
-                )}
-
-                {isVisible('normalized') && (
-                    <AnalysisGridItem colSpan={12}>
-                        <ChartWidget
-                            title={t("normalizedTitle")}
-                            subtitle={t("normalizedSubtitle")}
-                            icon={<Activity className="size-5" />}
-                            infoTooltip="Compare progression speed between exercises. All charts start at 100%."
-                            headerAction={
-                                <div className="w-[300px]">
-                                    <MultiSelect
-                                        options={exerciseOptions}
-                                        selected={multiSelected}
-                                        onChange={setMultiSelected}
-                                        placeholder={t("selectExercisesPlaceholder")}
-                                    />
-                                </div>
-                            }
-                        >
-                            <MultiLineChart
-                                data={normalizedTrend || []}
-                                lines={multiChartLines}
-                                yAxisUnit="%"
-                            />
-                        </ChartWidget>
-                    </AnalysisGridItem>
-                )}
-
-                {isVisible('volume_part') && (
-                    <AnalysisGridItem colSpan={12}>
-                        <ChartWidget
-                            title={t("muscleVolumeTitle")}
-                            subtitle={t("muscleVolumeSubtitle")}
-                            icon={<Dumbbell className="size-5" />}
-                            infoTooltip="Breakdown of total volume per week distributed by muscle groups."
-                        >
-                            <StackedBarChart
-                                data={volumeByPart || []}
-                                bars={[
-                                    { key: 'Chest', color: '#ef4444', name: 'Chest' },
-                                    { key: 'Back (Lats)', color: '#3b82f6', name: 'Lats' },
-                                    { key: 'Back (Upper/Traps)', color: '#6366f1', name: 'Upper Back' },
-                                    { key: 'Shoulders (Front)', color: '#f97316', name: 'Front Delts' },
-                                    { key: 'Shoulders (Side)', color: '#f59e0b', name: 'Side Delts' },
-                                    { key: 'Quadriceps', color: '#22c55e', name: 'Quads' },
-                                    { key: 'Hamstrings', color: '#10b981', name: 'Hams' },
-                                    { key: 'Glutes', color: '#ec4899', name: 'Glutes' },
-                                    { key: 'Triceps', color: '#a855f7', name: 'Triceps' },
-                                    { key: 'Biceps', color: '#d946ef', name: 'Biceps' },
-                                    { key: 'Core', color: '#64748b', name: 'Core' }
-                                ]}
-                                yAxisUnit="kg"
-                            />
-                        </ChartWidget>
-                    </AnalysisGridItem>
-                )}
-
-                {isVisible('sbd') && (
-                    <AnalysisGridItem colSpan={8}>
-                        <ChartWidget
-                            title={t("sbdTotalTitle")}
-                            subtitle={t("sbdSubtitle")}
-                            icon={<Activity className="size-5" />}
-                            infoTooltip="Sum of estimated 1RMs for the three big lifts."
-                        >
-                            <StackedAreaChart
-                                data={sbdData || []}
-                                areas={[
-                                    { key: 'squat', color: '#ef4444', name: 'Squat' },
-                                    { key: 'bench', color: '#3b82f6', name: 'Bench' },
-                                    { key: 'deadlift', color: '#eab308', name: 'Deadlift' }
-                                ]}
-                                yAxisUnit="kg"
-                            />
-                        </ChartWidget>
-                    </AnalysisGridItem>
-                )}
-
-                {isVisible('muscle_balance') && (
-                    <AnalysisGridItem colSpan={4}>
-                        <ChartWidget
-                            title={t("muscleBalanceTitle")}
-                            subtitle={t("muscleBalanceSubtitle")}
-                            icon={<Activity className="size-5" />}
-                            infoTooltip="Training volume distribution (number of sets) per muscle group."
-                        >
-                            <RadarChart
-                                data={muscleBalance || []}
-                                dataKey="value"
-                                categoryKey="subject"
-                                color="#8b5cf6"
-                            />
-                        </ChartWidget>
-                    </AnalysisGridItem>
-                )}
-
-                {isVisible('intensity') && (
-                    <AnalysisGridItem colSpan={6}>
-                        <ChartWidget
-                            title={t("intensityDistTitle")}
-                            subtitle={t("intensityDistSubtitle")}
-                            icon={<TrendingUp className="size-5" />}
-                            infoTooltip="Frequency of intensity levels (RIR). RIR 0 = Failure."
-                        >
-                            <HistogramChart
-                                data={intensityDist || []}
-                                xKey="rir"
-                                yKey="count"
-                                color="#f97316"
-                            />
-                        </ChartWidget>
-                    </AnalysisGridItem>
-                )}
-
-                {isVisible('bodyweight') && (
-                    <AnalysisGridItem colSpan={6}>
-                        <ChartWidget
-                            title={t("bodyweightTitle")}
-                            subtitle={t("bodyweightTrend")}
-                            icon={<Dumbbell className="size-5" />}
-                            infoTooltip="Body weight over time (from bodyweight_logs)."
-                        >
-                            <TrendChart data={bodyweightData || []} primaryColor="#a3a3a3" unit="kg" />
-                        </ChartWidget>
-                    </AnalysisGridItem>
-                )}
-
-                {isVisible('rel_strength') && (
-                    <AnalysisGridItem colSpan={12}>
-                        <ChartWidget
-                            title={t("relativeStrengthTitle")}
-                            subtitle={t("relativeStrengthSubtitle")}
-                            icon={<Activity className="size-5" />}
-                            infoTooltip="Ratio between estimated 1RM and body weight."
-                        >
-                            <MultiLineChart
-                                data={relStrengthData || []}
-                                lines={[{ key: 'value', color: '#ec4899', name: 'Ratio (xBW)' }]}
-                                yAxisUnit="x"
-                            />
-                        </ChartWidget>
-                    </AnalysisGridItem>
-                )}
-
-                {isVisible('dots') && (
-                    <AnalysisGridItem colSpan={12}>
-                        <ChartWidget
-                            title={t("compPointsTrendTitle")}
-                            subtitle={t("compPointsSubtitle")}
-                            icon={<Activity className="size-5" />}
-                            infoTooltip="Trend based on SBD total and body weight points."
-                            headerAction={
-                                <Select onValueChange={(v: any) => setCompMetric(v)} defaultValue={compMetric}>
-                                    <SelectTrigger className="w-[120px] h-8 text-xs">
-                                        <SelectValue placeholder="Metric" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="dots">DOTS</SelectItem>
-                                        <SelectItem value="wilks">Wilks</SelectItem>
-                                        <SelectItem value="ipf">IPF GL</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                            }
-                        >
-                            <MultiLineChart
-                                data={formattedPoints}
-                                lines={[{ key: 'value', color: '#8b5cf6', name: compMetric.toUpperCase() }]}
-                                yAxisUnit="pts"
-                            />
-                        </ChartWidget>
-                    </AnalysisGridItem>
-                )}
-
-                {isVisible('hard_sets') && (
-                    <AnalysisGridItem colSpan={6}>
-                        <ChartWidget
-                            title={t("hardSetsTitle")}
-                            subtitle={t("effectiveVolume")}
-                            icon={<TrendingUp className="size-5" />}
-                            infoTooltip="Number of sets completed with 3 reps or less in reserve."
-                        >
-                            <TrendChart data={hardSets || []} primaryColor="#facc15" unit="sets" />
-                        </ChartWidget>
-                    </AnalysisGridItem>
-                )}
-
-                {isVisible('fatigue') && (
-                    <AnalysisGridItem colSpan={6}>
-                        <ChartWidget
-                            title={t("fatigueTitle")}
-                            subtitle={t("fatigueSubtitle")}
-                            icon={<Activity className="size-5" />}
-                            infoTooltip="Each point represents a session. Helps understanding perceived load."
-                        >
-                            <ScatterChart data={scatterData || []} />
-                        </ChartWidget>
-                    </AnalysisGridItem>
-                )}
+                {activeConfigs.map(config => (
+                    <SmartChart
+                        key={config.id}
+                        config={config}
+                        onEdit={handleEditChart}
+                        onDelete={handleDeleteCustomChart}
+                    />
+                ))}
             </AnalysisGrid>
         </div>
     )

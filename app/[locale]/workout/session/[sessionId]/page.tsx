@@ -2,19 +2,20 @@
 
 import { use, useEffect, useState } from "react"
 import { useRouter } from "@/i18n/routing"
-import { getSessionRunnerData, logSet, finishSession, getPreviousLogs } from "@/services/workout"
+import { getSessionRunnerData, logSet, finishSession, getPreviousLogs, getSessionProgressionTargets } from "@/services/workout"
 import { Exercise, ExerciseLog, WorkoutTemplate, ProgressionSettings } from "@/types/database"
-import { getProgressionSettings } from "@/services/progression" // Integration
+import { getProgressionSettings, ProgressionResult } from "@/services/progression" // Integration
 import { createClient } from "@/lib/supabase/client"
 
 import { SessionHeader } from "@/components/workout/session-header"
 import { SetLogger } from "@/components/workout/set-logger"
 import { Button } from "@/components/ui/button"
-import { Loader2, ChevronRight, ChevronLeft, Plus, Trash2 } from "lucide-react"
+import { Badge } from "@/components/ui/badge"
+import { Loader2, ChevronRight, ChevronLeft, Plus, Trash2, Check, History } from "lucide-react"
 import { RestTimer } from "@/components/workout/rest-timer"
 import { ExercisePicker } from "@/components/exercises/exercise-picker"
 import { toast } from "sonner"
-import { cn } from "@/lib/utils"
+import { cn, calculate1RM } from "@/lib/utils"
 import { useWakeLock } from "@/hooks/use-wake-lock"
 import { DailyReadiness } from "@/components/workout/daily-readiness"
 
@@ -32,6 +33,7 @@ interface RunnerExerciseState {
     historyLogs: ExerciseLog[] // Previous history
     targetSets: number
     plannedWarmups?: any[] // Will use WarmupSet structure
+    progressionTarget?: ProgressionResult // Calculated target from backend
 }
 
 import {
@@ -96,6 +98,9 @@ export default function SessionRunnerPage({ params }: { params: Promise<{ sessio
                     setProgressionSettings(settings)
                 }
 
+                // Fetch Progression Targets (New)
+                const progressionTargets = await getSessionProgressionTargets(sessionId)
+
                 // Build Initial State
                 const exercisesMap = new Map<string, RunnerExerciseState>()
 
@@ -110,7 +115,8 @@ export default function SessionRunnerPage({ params }: { params: Promise<{ sessio
                             setsData: te.sets_data,
                             logs: [],
                             historyLogs: history,
-                            targetSets: te.target_sets || 3
+                            targetSets: te.target_sets || 3,
+                            progressionTarget: progressionTargets[te.id]
                         })
                     }
                 }
@@ -423,273 +429,423 @@ export default function SessionRunnerPage({ params }: { params: Promise<{ sessio
     const nextItem = runnerExercises[currentIndex + 1]
 
     return (
-        <div className="min-h-screen bg-background pb-32">
-            {/* Header Area */}
-            <div className="sticky top-0 z-20 glass-header px-4 py-4 space-y-4">
-                <div className="flex items-center justify-between">
-                    <SessionHeader
-                        exercise={currentItem.exercise}
-                        templateData={currentItem.templateData}
-                        currentExerciseIndex={currentIndex}
-                        totalExercises={runnerExercises.length}
-                        nextExercise={nextItem?.exercise}
-                        nextTemplateData={nextItem?.templateData}
-                        onBack={() => {
-                            setAlertConfig({
-                                open: true,
-                                title: t("exitTitle"),
-                                description: t("exitDescription"),
-                                onConfirm: () => router.push('/')
-                            })
-                        }}
-                        onAddExercise={() => {
-                            setPickerMode('add')
-                            setIsPickerOpen(true)
-                        }}
-                        onSwapExercise={() => {
-                            setPickerMode('swap')
-                            setIsPickerOpen(true)
-                        }}
-                        onRemoveExercise={() => {
-                            setAlertConfig({
-                                open: true,
-                                title: t("removeExTitle"),
-                                description: t("removeExDescription").replace("{name}", currentItem.exercise.name),
-                                onConfirm: () => {
-                                    setRunnerExercises(prev => prev.filter((_, idx) => idx !== currentIndex))
-                                    if (currentIndex > 0) setCurrentIndex(c => c - 1)
-                                    toast.success(t("exRemoved"))
-                                }
-                            })
-                        }}
-                    />
+        <div className="min-h-screen bg-background pb-32 lg:pb-0">
+            {/* Desktop: Top Bar for global session actions if needed, or just cleaner layout */}
 
-                    {/* Deload Toggle Mini */}
-                    <div className="flex items-center gap-2">
+            <div className="max-w-[1600px] mx-auto lg:p-6 lg:grid lg:grid-cols-12 lg:gap-8">
+
+                {/* LEFT COLUMN: Sidebar Navigation (Desktop Only) */}
+                <div className="hidden lg:block lg:col-span-3 space-y-6">
+                    <div className="sticky top-6">
+                        <div className="mb-4">
+                            <h2 className="text-xl font-heading font-bold text-white uppercase tracking-tight mb-1">Sessione</h2>
+                            <p className="text-xs text-slate-500 font-mono uppercase tracking-widest">
+                                {runnerExercises.reduce((acc, ex) => acc + ex.logs.filter(l => l.set_type === 'work').length, 0)} Sets completati
+                            </p>
+                        </div>
+
+                        <div className="space-y-2 pr-2 max-h-[calc(100vh-200px)] overflow-y-auto scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
+                            {runnerExercises.map((exState, idx) => {
+                                const isCurrent = idx === currentIndex
+                                const isDone = exState.logs.length >= exState.targetSets
+                                const setsDone = exState.logs.filter(l => l.set_type === 'work').length
+
+                                return (
+                                    <div
+                                        key={idx}
+                                        onClick={() => {
+                                            setCurrentIndex(idx)
+                                            window.scrollTo({ top: 0, behavior: 'smooth' })
+                                        }}
+                                        className={cn(
+                                            "p-3 rounded-xl border cursor-pointer transition-all group relative overflow-hidden",
+                                            isCurrent
+                                                ? "bg-primary/10 border-primary/30 shadow-[0_0_15px_rgba(0,255,163,0.1)]"
+                                                : "bg-zinc-900/30 border-transparent hover:bg-zinc-900/50 hover:border-white/5"
+                                        )}
+                                    >
+                                        <div className="flex items-center justify-between gap-2 relative z-10">
+                                            <div className="flex-1 min-w-0">
+                                                <p className={cn(
+                                                    "font-bold text-sm truncate",
+                                                    isCurrent ? "text-white" : "text-slate-400 group-hover:text-slate-200"
+                                                )}>
+                                                    {exState.exercise.name}
+                                                </p>
+                                                <p className="text-[10px] text-slate-500 mt-0.5">
+                                                    {setsDone} / {exState.targetSets} Sets
+                                                </p>
+                                            </div>
+                                            {isDone && (
+                                                <div className="h-5 w-5 rounded-full bg-primary/20 flex items-center justify-center text-primary">
+                                                    <Check className="h-3 w-3" />
+                                                </div>
+                                            )}
+                                            {isCurrent && (
+                                                <div className="h-5 w-5 rounded-full bg-primary flex items-center justify-center text-black animate-pulse">
+                                                    <div className="h-2 w-2 bg-black rounded-full" />
+                                                </div>
+                                            )}
+                                        </div>
+                                        {/* Progress Bar Background */}
+                                        <div className="absolute bottom-0 left-0 h-0.5 bg-primary/50 transition-all" style={{ width: `${(setsDone / exState.targetSets) * 100}%` }} />
+                                    </div>
+                                )
+                            })}
+                        </div>
+
+                        <div className="pt-6 mt-6 border-t border-white/5">
+                            <Button
+                                variant="outline"
+                                className="w-full border-red-900/30 bg-red-900/10 text-red-400 hover:bg-red-900/20"
+                                onClick={() => router.push('/')}
+                            >
+                                Esci dalla sessione
+                            </Button>
+                        </div>
+                    </div>
+                </div>
+
+                {/* CENTER COLUMN: Main Work Area */}
+                <div className="lg:col-span-6 space-y-6">
+                    {/* Header Area (Modified for Desktop/Mobile) */}
+                    <div className={cn(
+                        "sticky top-0 z-20 glass-header px-4 py-4 space-y-4 lg:static lg:bg-transparent lg:border-none lg:shadow-none lg:p-0 lg:glass-header-none",
+                        // On desktop, we want to hide the sticky behavior and glass effect
+                    )}>
+                        <div className="lg:hidden"> {/* Mobile Only Header Controls */}
+                            <SessionHeader
+                                exercise={currentItem.exercise}
+                                templateData={currentItem.templateData}
+                                currentExerciseIndex={currentIndex}
+                                totalExercises={runnerExercises.length}
+                                nextExercise={nextItem?.exercise}
+                                nextTemplateData={nextItem?.templateData}
+                                isDeload={isDeload}
+                                onToggleDeload={() => {
+                                    setIsDeload(!isDeload)
+                                    toast.info(isDeload ? t("normalMode") : t("deloadMode"))
+                                }}
+                                onBack={() => {
+                                    setAlertConfig({
+                                        open: true,
+                                        title: t("exitTitle"),
+                                        description: t("exitDescription"),
+                                        onConfirm: () => router.push('/')
+                                    })
+                                }}
+                                onAddExercise={() => {
+                                    setPickerMode('add')
+                                    setIsPickerOpen(true)
+                                }}
+                                onSwapExercise={() => {
+                                    setPickerMode('swap')
+                                    setIsPickerOpen(true)
+                                }}
+                                onRemoveExercise={() => {
+                                    setAlertConfig({
+                                        open: true,
+                                        title: t("removeExTitle"),
+                                        description: t("removeExDescription", { name: currentItem.exercise.name }),
+                                        onConfirm: () => {
+                                            setRunnerExercises(prev => prev.filter((_, idx) => idx !== currentIndex))
+                                            if (currentIndex > 0) setCurrentIndex(c => c - 1)
+                                            toast.success(t("exRemoved"))
+                                        }
+                                    })
+                                }}
+                            />
+
+                            {/* Progress Dots Mobile */}
+                            <div className="flex gap-1 overflow-x-auto pb-1 scrollbar-none mt-4">
+                                {runnerExercises.map((_, idx) => (
+                                    <div
+                                        key={idx}
+                                        onClick={() => setCurrentIndex(idx)}
+                                        className={cn(
+                                            "h-1 rounded-full transition-all cursor-pointer",
+                                            idx === currentIndex ? "w-8 bg-primary shadow-[0_0_8px_rgba(0,255,163,0.6)]" : "w-2 bg-slate-800"
+                                        )}
+                                    />
+                                ))}
+                            </div>
+                        </div>
+
+                        <div className="hidden lg:block"> {/* Desktop Header */}
+                            <div className="bg-zinc-900/30 border border-white/5 rounded-2xl p-6 backdrop-blur-sm relative overflow-hidden">
+                                <div className="absolute top-0 right-0 p-4 flex gap-2">
+                                    <Button size="sm" variant="ghost" onClick={() => setIsPickerOpen(true)}>
+                                        <Plus className="h-4 w-4 mr-2" /> Aggiungi
+                                    </Button>
+                                    <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={() => {
+                                            setIsDeload(!isDeload)
+                                            toast.info(isDeload ? t("normalMode") : t("deloadMode"))
+                                        }}
+                                        className={cn(
+                                            "text-xs font-bold border transition-all",
+                                            isDeload
+                                                ? "bg-purple-500/20 text-purple-400 border-purple-500/30"
+                                                : "bg-white/5 text-slate-500 border-white/5 hover:bg-white/10"
+                                        )}
+                                    >
+                                        {isDeload ? t("deloadOn") : t("deloadOff")}
+                                    </Button>
+                                </div>
+                                <SessionHeader
+                                    exercise={currentItem.exercise}
+                                    templateData={currentItem.templateData}
+                                    currentExerciseIndex={currentIndex}
+                                    totalExercises={runnerExercises.length}
+                                // No nav needed inside header for desktop
+                                />
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Set Loggers */}
+                    <div className="p-4 lg:p-0 space-y-2">
+                        {/* 1. Planned Warmup Sets (not yet logged) */}
+                        {currentItem.plannedWarmups?.filter(pw =>
+                            !currentItem.logs.some(l => l.set_type === 'warmup' && l.set_number === pw.set_number)
+                        ).map((pw, i) => (
+                            <SetLogger
+                                key={`planned-warmup-${pw.set_number}`}
+                                setNumber={pw.set_number}
+                                setType="warmup"
+                                targetRir={0}
+                                isActive={i === 0 && currentItem.logs.filter(l => l.set_type === 'warmup').length === 0}
+                                onSave={(w, r, i) => handleLogSet(currentIndex, pw.set_number, w, r, i, 'warmup')}
+                                settings={progressionSettings}
+                                intensityMultiplier={intensityMultiplier}
+                                initialValues={{ weight: pw.weight, reps: pw.reps, rir: 0, set_type: 'warmup' } as any}
+                                isDeload={isDeload}
+                            />
+                        ))}
+
+                        {/* 2. All Logged Sets (Warmups and Work Sets) grouped together or sorted */}
+                        {[...currentItem.logs].sort((a, b) => {
+                            if (a.set_type === b.set_type) return a.set_number - b.set_number
+                            return a.set_type === 'warmup' ? -1 : 1
+                        }).map((log) => {
+                            const setTarget = currentItem.setsData?.[log.set_number - 1]
+                            const targetRir = setTarget?.rir ?? currentItem.templateData?.target_rir ?? 0
+                            const targetRepsMin = setTarget?.reps_min ?? currentItem.templateData?.target_reps_min
+                            const targetRepsMax = setTarget?.reps_max ?? currentItem.templateData?.target_reps_max
+                            const targetPercentage = setTarget?.percentage
+
+                            const sessionWorkLogs = currentItem.logs.filter(l => l.set_type === 'work')
+                            const lastSessionLog = sessionWorkLogs.find(l => l.set_number === log.set_number - 1) || sessionWorkLogs[sessionWorkLogs.length - 1]
+                            const effectivePrevLog = lastSessionLog || currentItem.historyLogs[0]
+
+                            return (
+                                <SetLogger
+                                    key={`set-${log.set_type}-${log.set_number}`}
+                                    setNumber={log.set_number}
+                                    setType={log.set_type as any}
+                                    targetRir={targetRir}
+                                    targetRepsMin={targetRepsMin}
+                                    targetRepsMax={targetRepsMax}
+                                    targetPercentage={targetPercentage}
+                                    userBest1RM={(currentItem.historyLogs && currentItem.historyLogs.length > 0)
+                                        ? Math.max(...currentItem.historyLogs.map(l => Number(l.estimated_1rm) || 0))
+                                        : 0}
+                                    onSave={(w, r, i) => handleLogSet(currentIndex, log.set_number, w, r, i, log.set_type as any)}
+                                    settings={progressionSettings}
+                                    intensityMultiplier={intensityMultiplier}
+                                    initialValues={log}
+                                    previousLog={effectivePrevLog}
+                                    templateSet={setTarget}
+                                    previousSetWeight={currentItem.logs.find(l => l.set_number === log.set_number - 1)?.weight}
+                                    isDeload={isDeload}
+                                    progressionTarget={currentItem.progressionTarget}
+                                />
+                            )
+                        })}
+
+                        {/* 3. Empty Work Sets (targetSets - loggedWorkSets) */}
+                        {Array.from({
+                            length: Math.max(0, currentItem.targetSets - currentItem.logs.filter(l => l.set_type !== 'warmup').length)
+                        }).map((_, i) => {
+                            const loggedWorkSets = currentItem.logs.filter(l => l.set_type !== 'warmup').length
+                            const setNum = loggedWorkSets + i + 1
+                            const isFirstWorkSet = i === 0
+                            const isActive = currentItem.logs.filter(l => l.set_type === 'warmup').length === (currentItem.plannedWarmups?.length || 0) && isFirstWorkSet
+
+                            const setTarget = currentItem.setsData?.[setNum - 1]
+                            const targetRir = setTarget?.rir ?? currentItem.templateData?.target_rir ?? 0
+                            const targetRepsMin = setTarget?.reps_min ?? currentItem.templateData?.target_reps_min
+                            const targetRepsMax = setTarget?.reps_max ?? currentItem.templateData?.target_reps_max
+                            const targetPercentage = setTarget?.percentage
+
+                            const sessionWorkLogs = currentItem.logs.filter(l => l.set_type === 'work')
+                            const effectivePrevLog = sessionWorkLogs[sessionWorkLogs.length - 1] || currentItem.historyLogs[0]
+
+                            return (
+                                <SetLogger
+                                    key={`set-work-${setNum}`}
+                                    setNumber={setNum}
+                                    setType="work"
+                                    targetRir={targetRir}
+                                    targetRepsMin={targetRepsMin}
+                                    targetRepsMax={targetRepsMax}
+                                    targetPercentage={targetPercentage}
+                                    userBest1RM={(currentItem.historyLogs && currentItem.historyLogs.length > 0)
+                                        ? Math.max(...currentItem.historyLogs.map(l => Number(l.estimated_1rm) || 0))
+                                        : 0}
+                                    isActive={isActive}
+                                    isFuture={!isActive}
+                                    onSave={(w, r, i) => handleLogSet(currentIndex, setNum, w, r, i, 'work')}
+                                    settings={progressionSettings}
+                                    intensityMultiplier={intensityMultiplier}
+                                    previousLog={effectivePrevLog}
+                                    templateSet={setTarget}
+                                    previousSetWeight={currentItem.logs.find(l => l.set_number === setNum - 1)?.weight}
+                                    isDeload={isDeload}
+                                    progressionTarget={currentItem.progressionTarget}
+                                />
+                            )
+                        })}
+                    </div>
+
+                    {/* Action Buttons */}
+                    <div className="px-4 pb-4 lg:p-0 grid grid-cols-2 gap-3">
                         <Button
-                            variant="ghost"
-                            size="sm"
+                            variant="outline"
+                            className="h-12 border-primary/20 bg-primary/5 text-primary font-bold rounded-xl hover:bg-primary/10 transition-all flex items-center justify-center gap-2"
+                            onClick={handleAddWarmup}
+                            disabled={currentItem.plannedWarmups && currentItem.plannedWarmups.length > 0}
+                        >
+                            <Plus className="h-4 w-4" />
+                            {t("warmup")}
+                        </Button>
+                        <Button
+                            variant="outline"
+                            className="h-12 border-white/10 bg-white/5 text-slate-300 font-bold rounded-xl hover:bg-white/10 transition-all flex items-center justify-center gap-2"
                             onClick={() => {
-                                setIsDeload(!isDeload)
-                                toast.info(isDeload ? t("normalMode") : t("deloadMode"))
+                                // Add an extra set by incrementing targetSets
+                                setRunnerExercises(prev => {
+                                    const copy = [...prev]
+                                    const target = { ...copy[currentIndex] }
+                                    target.targetSets += 1
+                                    copy[currentIndex] = target
+                                    return copy
+                                })
+                                toast.success(t("setAdded"))
+                                setTimeout(() => window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' }), 100)
                             }}
+                        >
+                            <Plus className="h-4 w-4" />
+                            {t("extraSet")}
+                        </Button>
+                    </div>
+
+                    {/* Footer Mobile / Actions Desktop */}
+                    <div className="fixed bottom-0 inset-x-0 p-4 pb-8 glass-nav lg:static lg:bg-transparent lg:border-none lg:shadow-none lg:p-0 lg:pb-0">
+                        <Button
+                            onClick={() => {
+                                const setsDone = currentItem.logs.length
+                                if (setsDone < currentItem.targetSets) {
+                                    setAlertConfig({
+                                        open: true,
+                                        title: t("incompleteTitle"),
+                                        description: t("incompleteDescription", { done: setsDone, total: currentItem.targetSets }),
+                                        onConfirm: () => {
+                                            if (currentIndex < runnerExercises.length - 1) {
+                                                setCurrentIndex(curr => curr + 1)
+                                                window.scrollTo({ top: 0, behavior: 'smooth' })
+                                            } else {
+                                                finishWorkout()
+                                            }
+                                        }
+                                    })
+                                    return
+                                }
+
+                                if (currentIndex < runnerExercises.length - 1) {
+                                    setCurrentIndex(curr => curr + 1)
+                                    window.scrollTo({ top: 0, behavior: 'smooth' })
+                                } else {
+                                    setAlertConfig({
+                                        open: true,
+                                        title: t("finishTitle"),
+                                        description: t("finishDescription"),
+                                        onConfirm: finishWorkout
+                                    })
+                                }
+                            }}
+                            variant={currentItem.logs.length >= currentItem.targetSets ? "default" : "secondary"}
                             className={cn(
-                                "h-8 px-2 text-[10px] font-black uppercase tracking-widest border transition-all",
-                                isDeload
-                                    ? "bg-purple-500/20 text-purple-400 border-purple-500/30"
-                                    : "bg-white/5 text-slate-500 border-white/5 hover:bg-white/10"
+                                "w-full h-14 text-base font-bold rounded-xl shadow-lg flex items-center justify-center gap-3 transition-all",
+                                currentItem.logs.length >= currentItem.targetSets
+                                    ? "bg-primary text-primary-foreground hover:bg-primary/90 shadow-[0_0_20px_rgba(0,255,163,0.3)]"
+                                    : "bg-muted text-muted-foreground hover:bg-muted/80 border border-border"
                             )}
                         >
-                            {isDeload ? t("deloadOn") : t("deloadOff")}
+                            <div className={cn(
+                                "h-8 w-8 rounded-full flex items-center justify-center",
+                                currentItem.logs.length >= currentItem.targetSets ? "bg-primary-foreground/10" : "bg-background/20"
+                            )}>
+                                <ChevronRight className="h-5 w-5" />
+                            </div>
+                            <span>
+                                {currentIndex < runnerExercises.length - 1
+                                    ? `${t("next")}: ${nextItem?.exercise.name.toUpperCase()}`
+                                    : t("finish")
+                                }
+                            </span>
                         </Button>
                     </div>
                 </div>
 
-                {/* Progress Dots - Integrated but separate for layout control */}
-                <div className="flex gap-1 overflow-x-auto pb-1 scrollbar-none">
-                    {runnerExercises.map((_, idx) => (
-                        <div
-                            key={idx}
-                            onClick={() => setCurrentIndex(idx)}
-                            className={cn(
-                                "h-1 rounded-full transition-all cursor-pointer",
-                                idx === currentIndex ? "w-8 bg-primary shadow-[0_0_8px_rgba(0,255,163,0.6)]" : "w-2 bg-muted-foreground/20"
-                            )}
-                        />
-                    ))}
-                </div>
-            </div>
+                {/* RIGHT COLUMN: History Context (Desktop Only) */}
+                <div className="hidden lg:block lg:col-span-3">
+                    <div className="sticky top-6">
+                        <h3 className="text-sm font-black text-slate-500 uppercase tracking-widest mb-4 flex items-center gap-2">
+                            <History className="h-4 w-4" />
+                            {t("history")}
+                        </h3>
 
-            {/* Set Loggers */}
-            <div className="p-4 space-y-2">
-                {/* 1. Planned Warmup Sets (not yet logged) */}
-                {currentItem.plannedWarmups?.filter(pw =>
-                    !currentItem.logs.some(l => l.set_type === 'warmup' && l.set_number === pw.set_number)
-                ).map((pw, i) => (
-                    <SetLogger
-                        key={`planned-warmup-${pw.set_number}`}
-                        setNumber={pw.set_number}
-                        setType="warmup"
-                        targetRir={0}
-                        isActive={i === 0 && currentItem.logs.filter(l => l.set_type === 'warmup').length === 0}
-                        onSave={(w, r, i) => handleLogSet(currentIndex, pw.set_number, w, r, i, 'warmup')}
-                        settings={progressionSettings}
-                        intensityMultiplier={intensityMultiplier}
-                        initialValues={{ weight: pw.weight, reps: pw.reps, rir: 0, set_type: 'warmup' } as any}
-                        isDeload={isDeload}
-                    />
-                ))}
-
-                {/* 2. All Logged Sets (Warmups and Work Sets) grouped together or sorted */}
-                {[...currentItem.logs].sort((a, b) => {
-                    if (a.set_type === b.set_type) return a.set_number - b.set_number
-                    return a.set_type === 'warmup' ? -1 : 1
-                }).map((log) => {
-                    const setTarget = currentItem.setsData?.[log.set_number - 1]
-                    const targetRir = setTarget?.rir ?? currentItem.templateData?.target_rir ?? 0
-                    const targetRepsMin = setTarget?.reps_min ?? currentItem.templateData?.target_reps_min
-                    const targetRepsMax = setTarget?.reps_max ?? currentItem.templateData?.target_reps_max
-                    const targetPercentage = setTarget?.percentage
-
-                    const sessionWorkLogs = currentItem.logs.filter(l => l.set_type === 'work')
-                    const lastSessionLog = sessionWorkLogs.find(l => l.set_number === log.set_number - 1) || sessionWorkLogs[sessionWorkLogs.length - 1]
-                    const effectivePrevLog = lastSessionLog || currentItem.historyLogs[0]
-
-                    return (
-                        <SetLogger
-                            key={`set-${log.set_type}-${log.set_number}`}
-                            setNumber={log.set_number}
-                            setType={log.set_type as any}
-                            targetRir={targetRir}
-                            targetRepsMin={targetRepsMin}
-                            targetRepsMax={targetRepsMax}
-                            targetPercentage={targetPercentage}
-                            userBest1RM={(currentItem.historyLogs && currentItem.historyLogs.length > 0)
-                                ? Math.max(...currentItem.historyLogs.map(l => Number(l.estimated_1rm) || 0))
-                                : 0}
-                            onSave={(w, r, i) => handleLogSet(currentIndex, log.set_number, w, r, i, log.set_type as any)}
-                            settings={progressionSettings}
-                            intensityMultiplier={intensityMultiplier}
-                            initialValues={log}
-                            previousLog={effectivePrevLog}
-                            templateSet={setTarget}
-                            previousSetWeight={currentItem.logs.find(l => l.set_number === log.set_number - 1)?.weight}
-                            isDeload={isDeload}
-                        />
-                    )
-                })}
-
-                {/* 3. Empty Work Sets (targetSets - loggedWorkSets) */}
-                {Array.from({
-                    length: Math.max(0, currentItem.targetSets - currentItem.logs.filter(l => l.set_type !== 'warmup').length)
-                }).map((_, i) => {
-                    const loggedWorkSets = currentItem.logs.filter(l => l.set_type !== 'warmup').length
-                    const setNum = loggedWorkSets + i + 1
-                    const isFirstWorkSet = i === 0
-                    const isActive = currentItem.logs.filter(l => l.set_type === 'warmup').length === (currentItem.plannedWarmups?.length || 0) && isFirstWorkSet
-
-                    const setTarget = currentItem.setsData?.[setNum - 1]
-                    const targetRir = setTarget?.rir ?? currentItem.templateData?.target_rir ?? 0
-                    const targetRepsMin = setTarget?.reps_min ?? currentItem.templateData?.target_reps_min
-                    const targetRepsMax = setTarget?.reps_max ?? currentItem.templateData?.target_reps_max
-                    const targetPercentage = setTarget?.percentage
-
-                    const sessionWorkLogs = currentItem.logs.filter(l => l.set_type === 'work')
-                    const effectivePrevLog = sessionWorkLogs[sessionWorkLogs.length - 1] || currentItem.historyLogs[0]
-
-                    return (
-                        <SetLogger
-                            key={`set-work-${setNum}`}
-                            setNumber={setNum}
-                            setType="work"
-                            targetRir={targetRir}
-                            targetRepsMin={targetRepsMin}
-                            targetRepsMax={targetRepsMax}
-                            targetPercentage={targetPercentage}
-                            userBest1RM={(currentItem.historyLogs && currentItem.historyLogs.length > 0)
-                                ? Math.max(...currentItem.historyLogs.map(l => Number(l.estimated_1rm) || 0))
-                                : 0}
-                            isActive={isActive}
-                            isFuture={!isActive}
-                            onSave={(w, r, i) => handleLogSet(currentIndex, setNum, w, r, i, 'work')}
-                            settings={progressionSettings}
-                            intensityMultiplier={intensityMultiplier}
-                            previousLog={effectivePrevLog}
-                            templateSet={setTarget}
-                            previousSetWeight={currentItem.logs.find(l => l.set_number === setNum - 1)?.weight}
-                            isDeload={isDeload}
-                        />
-                    )
-                })}
-            </div>
-
-            {/* Action Buttons */}
-            <div className="px-4 pb-4 grid grid-cols-2 gap-3">
-                <Button
-                    variant="outline"
-                    className="h-12 border-primary/20 bg-primary/5 text-primary font-bold rounded-xl hover:bg-primary/10 transition-all flex items-center justify-center gap-2"
-                    onClick={handleAddWarmup}
-                    disabled={currentItem.plannedWarmups && currentItem.plannedWarmups.length > 0}
-                >
-                    <Plus className="h-4 w-4" />
-                    {t("warmup")}
-                </Button>
-                <Button
-                    variant="outline"
-                    className="h-12 border-white/10 bg-white/5 text-slate-300 font-bold rounded-xl hover:bg-white/10 transition-all flex items-center justify-center gap-2"
-                    onClick={() => {
-                        // Add an extra set by incrementing targetSets
-                        setRunnerExercises(prev => {
-                            const copy = [...prev]
-                            const target = { ...copy[currentIndex] }
-                            target.targetSets += 1
-                            copy[currentIndex] = target
-                            return copy
-                        })
-                        toast.success(t("setAdded"))
-                        setTimeout(() => window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' }), 100)
-                    }}
-                >
-                    <Plus className="h-4 w-4" />
-                    {t("extraSet")}
-                </Button>
-            </div>
-
-            {/* Footer */}
-            <div className="fixed bottom-0 inset-x-0 p-4 pb-8 glass-nav">
-                <Button
-                    onClick={() => {
-                        const setsDone = currentItem.logs.length
-                        if (setsDone < currentItem.targetSets) {
-                            setAlertConfig({
-                                open: true,
-                                title: t("incompleteTitle"),
-                                description: t("incompleteDescription").replace("{done}", setsDone.toString()).replace("{total}", currentItem.targetSets.toString()),
-                                onConfirm: () => {
-                                    if (currentIndex < runnerExercises.length - 1) {
-                                        setCurrentIndex(curr => curr + 1)
-                                        window.scrollTo({ top: 0, behavior: 'smooth' })
-                                    } else {
-                                        finishWorkout()
-                                    }
-                                }
-                            })
-                            return
-                        }
-
-                        if (currentIndex < runnerExercises.length - 1) {
-                            setCurrentIndex(curr => curr + 1)
-                            window.scrollTo({ top: 0, behavior: 'smooth' })
-                        } else {
-                            setAlertConfig({
-                                open: true,
-                                title: t("finishTitle"),
-                                description: t("finishDescription"),
-                                onConfirm: finishWorkout
-                            })
-                        }
-                    }}
-                    variant={currentItem.logs.length >= currentItem.targetSets ? "default" : "secondary"}
-                    className={cn(
-                        "w-full h-14 text-base font-bold rounded-xl shadow-lg flex items-center justify-center gap-3 transition-all",
-                        currentItem.logs.length >= currentItem.targetSets
-                            ? "bg-primary text-primary-foreground hover:bg-primary/90 shadow-[0_0_20px_rgba(0,255,163,0.3)]"
-                            : "bg-muted text-muted-foreground hover:bg-muted/80 border border-border"
-                    )}
-                >
-                    <div className={cn(
-                        "h-8 w-8 rounded-full flex items-center justify-center",
-                        currentItem.logs.length >= currentItem.targetSets ? "bg-primary-foreground/10" : "bg-background/20"
-                    )}>
-                        <ChevronRight className="h-5 w-5" />
+                        {currentItem.historyLogs && currentItem.historyLogs.length > 0 ? (
+                            <div className="space-y-3 relative before:absolute before:left-3.5 before:top-2 before:bottom-2 before:w-px before:bg-white/5">
+                                {currentItem.historyLogs.map((log) => (
+                                    <div key={log.id} className="relative pl-8">
+                                        <div className="absolute left-1.5 top-2 h-4 w-4 rounded-full border-2 border-zinc-900 bg-zinc-800 z-10" />
+                                        <div className="bg-zinc-900/40 border border-white/5 rounded-lg p-3">
+                                            <div className="flex items-center justify-between mb-1">
+                                                <span className="text-[10px] text-slate-500 uppercase font-bold">
+                                                    {new Date(log.created_at).toLocaleDateString()}
+                                                </span>
+                                                <span className="text-xs font-black text-primary">
+                                                    {calculate1RM(log.weight, log.reps)}KG <span className="text-[9px] text-slate-500 font-normal">e1RM</span>
+                                                </span>
+                                            </div>
+                                            <div className="flex items-baseline gap-2">
+                                                <span className="text-lg font-bold text-white">{log.weight}</span>
+                                                <span className="text-xs text-slate-500">kg</span>
+                                                <span className="text-sm text-slate-600">x</span>
+                                                <span className="text-lg font-bold text-white">{log.reps}</span>
+                                            </div>
+                                            {log.rir !== null && (
+                                                <div className="mt-1 flex gap-2">
+                                                    <Badge variant="outline" className="text-[9px] bg-transparent border-white/10 text-slate-500 h-5">
+                                                        RIR {log.rir}
+                                                    </Badge>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="p-4 border border-dashed border-white/10 rounded-lg text-center">
+                                <p className="text-xs text-slate-500">Nessuna storia disponibile per questo esercizio.</p>
+                            </div>
+                        )}
                     </div>
-                    <span>
-                        {currentIndex < runnerExercises.length - 1
-                            ? `${t("next")}: ${nextItem?.exercise.name.toUpperCase()}`
-                            : t("finish")
-                        }
-                    </span>
-                </Button>
+                </div>
             </div>
 
             {/* Components */}
@@ -739,3 +895,4 @@ export default function SessionRunnerPage({ params }: { params: Promise<{ sessio
         </div>
     )
 }
+

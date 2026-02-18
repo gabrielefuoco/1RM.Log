@@ -45,21 +45,21 @@ export default function ExercisesPage() {
 
 
     return (
-        <div className="space-y-6 pt-4">
+        <div className="space-y-8 pt-4 container-padding">
             {/* Header */}
-            <div className="flex flex-col gap-1">
-                <h1 className="text-2xl font-bold text-white tracking-tight">{t("title")}</h1>
-                <p className="text-sm text-slate-400">{t("subtitle")}</p>
+            <div>
+                <h1 className="text-4xl font-black text-white italic uppercase tracking-tighter leading-none mb-2">{t("title")}</h1>
+                <p className="text-zinc-500 font-bold uppercase tracking-widest text-[10px]">{t("subtitle")}</p>
             </div>
 
             {/* Search */}
-            <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <Search className="h-4 w-4 text-slate-500" />
+            <div className="relative group">
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <Search className="h-4 w-4 text-zinc-500 group-focus-within:text-primary transition-colors" />
                 </div>
                 <Input
                     placeholder={t("searchPlaceholder")}
-                    className="pl-10 bg-zinc-900/50 border-white/10 text-white rounded-xl h-12"
+                    className="pl-11 bg-zinc-900/40 border-white/5 text-white rounded-2xl h-12 focus:border-primary/20 focus:bg-zinc-900/60 transition-all placeholder:text-zinc-600 font-medium"
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
                 />

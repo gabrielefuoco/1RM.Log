@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/client"
 import { getProgramTemplates } from "@/services/programs"
 import { Program, WorkoutTemplate } from "@/types/database"
 import { WorkoutTemplateList } from "@/components/programs/workout-template-list"
+import { WorkoutTemplateCard } from "@/components/programs/workout-template-card"
 import { CreateWorkoutTemplateDrawer } from "@/components/programs/create-workout-template-drawer"
 import { Button } from "@/components/ui/button"
 import { ArrowLeft, Plus, Play } from "lucide-react"
@@ -81,47 +82,25 @@ export default function ProgramDetailPage({ params }: { params: Promise<{ id: st
                     />
                 </div>
 
-                <div className="space-y-3">
-                    {templates.map((template) => (
-                        <Card
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {templates.map((template, index) => (
+                        <WorkoutTemplateCard
                             key={template.id}
-                            className="bg-zinc-900/40 border-white/5 hover:bg-zinc-900/60 transition-colors cursor-pointer group relative overflow-hidden"
-                            onClick={() => router.push(`/programs/${id}/template/${template.id}`)}
-                        >
-                            {/* Click the card to navigate to detail/edit, BUT we want a PLAY button for the runner */}
-                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-transparent to-primary/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                            template={template}
+                            index={index}
+                            onClick={(id) => router.push(`/programs/${id}/template/${template.id}`)}
+                            onPlay={(id) => router.push(`/workout/${id}`)}
+                        />
+                    ))
+                    }
 
-                            <CardContent className="p-4 flex items-center gap-4">
-                                <div className="h-10 w-10 rounded-full bg-secondary/30 flex items-center justify-center shrink-0 border border-white/5 font-bold text-slate-300">
-                                    {template.order + 1}
-                                </div>
-
-                                <div className="flex-1 min-w-0">
-                                    <h3 className="font-bold text-white text-base truncate">{template.name}</h3>
-                                    <p className="text-xs text-slate-400 mt-1 flex gap-2">
-                                        <span>{template.template_exercises.length} Esercizi</span>
-                                    </p>
-                                </div>
-
-                                <Button
-                                    size="icon"
-                                    className="h-10 w-10 rounded-full bg-primary text-background-dark shadow-[0_0_15px_rgba(19,236,109,0.3)] hover:bg-white hover:text-black transition-all"
-                                    onClick={(e) => {
-                                        e.stopPropagation()
-                                        router.push(`/workout/${template.id}`)
-                                    }}
-                                >
-                                    <Play className="h-5 w-5 fill-current" />
-                                </Button>
-                            </CardContent>
-                        </Card>
-                    ))}
-
-                    {templates.length === 0 && (
-                        <div className="text-center py-8 border border-dashed border-white/10 rounded-xl">
-                            <p className="text-slate-500">Nessuna scheda creata.</p>
-                        </div>
-                    )}
+                    {
+                        templates.length === 0 && (
+                            <div className="col-span-full text-center py-8 border border-dashed border-white/10 rounded-xl">
+                                <p className="text-slate-500">Nessuna scheda creata.</p>
+                            </div>
+                        )
+                    }
                 </div>
             </div>
 

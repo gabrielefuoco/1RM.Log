@@ -39,8 +39,15 @@ export function AnalysisGridItem({
         12: "lg:col-span-12",
     }[colSpan]
 
+    const isWide = colSpan >= 8
+
     return (
-        <div className={cn("col-span-1", spanClass, className)}>
+        <div className={cn(
+            "col-span-1",
+            isWide ? "md:col-span-2" : "md:col-span-1",
+            spanClass,
+            className
+        )}>
             {children}
         </div>
     )

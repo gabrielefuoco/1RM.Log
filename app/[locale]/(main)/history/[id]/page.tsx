@@ -38,6 +38,8 @@ import {
     DialogTitle,
 } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
+import { Badge } from "@/components/ui/badge"
+import { WorkoutExerciseCard } from "@/components/workout/workout-exercise-card"
 
 // Extended types for join
 // Use simpler types for state to avoid strict extension mismatch
@@ -246,73 +248,47 @@ export default function SessionDetailPage({
                 </CardContent>
             </Card>
 
+
             {/* Logs List */}
             <div className="space-y-6">
-                {Object.values(groupedLogs).map((group, idx) => (
-                    <div key={idx} className="space-y-2">
-                        <div className="pl-1">
-                            <h3 className="text-sm font-bold text-primary">{group.exerciseName}</h3>
-                            <p className="text-[10px] text-slate-500 uppercase tracking-widest">{group.exerciseBodyParts.join(', ')}</p>
-                        </div>
-                        <div className="space-y-2">
-                            {group.logs.map((log) => (
-                                <Card key={log.id} className="bg-zinc-900/40 border-white/5">
-                                    <CardContent className="p-3 flex items-center justify-between">
-                                        <div className="flex items-center gap-4">
-                                            <div className="w-8 h-8 rounded-full bg-secondary/10 flex items-center justify-center text-xs font-bold text-slate-500 border border-white/5">
-                                                {log.set_number}
-                                            </div>
-                                            <div>
-                                                <div className="flex items-baseline gap-1">
-                                                    <span className="text-lg font-bold text-white">{log.weight}</span>
-                                                    <span className="text-xs text-slate-500">kg</span>
-                                                    <span className="mx-2 text-slate-600">×</span>
-                                                    <span className="text-lg font-bold text-white">{log.reps}</span>
-                                                    <span className="text-xs text-slate-500">reps</span>
-                                                </div>
-                                                {log.rir !== null && (
-                                                    <div className="text-xs text-slate-500 mt-0.5">
-                                                        RIR {log.rir} • 1RM ~{log.estimated_1rm?.toFixed(1) || "?"}kg
-                                                    </div>
-                                                )}
-                                            </div>
-                                        </div>
+                <div className="flex items-center justify-between mb-4">
+                    <h2 className="text-sm font-bold text-slate-500 uppercase tracking-widest pl-1">Exercises</h2>
+                </div>
 
-                                        <div className="flex gap-1">
-                                            <Button
-                                                variant="ghost"
-                                                size="icon"
-                                                className="h-8 w-8 text-slate-500 hover:text-white"
-                                                onClick={() => {
-                                                    setEditingLog(log)
-                                                    setEditLogWeight(log.weight)
-                                                    setEditLogReps(log.reps)
-                                                    setEditLogRir(log.rir || undefined)
-                                                }}
-                                            >
-                                                <Pencil className="h-4 w-4" />
-                                            </Button>
-                                            <Button
-                                                variant="ghost"
-                                                size="icon"
-                                                className="h-8 w-8 text-slate-500 hover:text-red-400"
-                                                onClick={() => handleDeleteLog(log.id)}
-                                            >
-                                                <Trash2 className="h-4 w-4" />
-                                            </Button>
-                                        </div>
-                                    </CardContent>
-                                </Card>
-                            ))}
-                        </div>
-                    </div>
-                ))}
+                <div className="space-y-4">
+                    {Object.values(groupedLogs).map((group, idx) => (
+                        <WorkoutExerciseCard
+                            key={idx}
+                            title={group.exerciseName}
+                            index={idx + 1}
+                            mode="history"
+                            items={group.logs}
+                            subtitle={
+                                <div className="flex flex-wrap gap-1 mt-0.5">
+                                    {group.exerciseBodyParts.map((bp) => (
+                                        <Badge key={bp} variant="secondary" className="text-[9px] h-3.5 px-1.5 bg-white/5 text-zinc-500 border-none font-black uppercase tracking-tighter">
+                                            {bp}
+                                        </Badge>
+                                    ))}
+                                </div>
+                            }
+                            actions={
+                                <div className="flex items-center gap-1 opacity-20 group-hover:opacity-100 transition-opacity">
+                                    {/* Actions for specific logs would need to be handled differently if we want per-set actions. 
+                                        For now, keeping the detail view clean. If the user needs to edit, they can click a 'pencil' which we can add to the card as a global edit or keep per-set if we extend the card.
+                                        But to match 'Programs' exactly, let's keep it clean.
+                                    */}
+                                </div>
+                            }
+                        />
+                    ))}
 
-                {logs.length === 0 && (
-                    <div className="text-center py-12 border border-dashed border-white/10 rounded-xl">
-                        <p className="text-slate-500">No sets recorded in this session.</p>
-                    </div>
-                )}
+                    {logs.length === 0 && (
+                        <div className="text-center py-12 border border-dashed border-white/10 rounded-xl">
+                            <p className="text-slate-500">No sets recorded in this session.</p>
+                        </div>
+                    )}
+                </div>
             </div>
 
             {/* Delete Session Alert */}

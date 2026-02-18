@@ -32,6 +32,11 @@ export function DesktopSidebar() {
             icon: History,
         },
         {
+            name: t("exercises"),
+            href: "/exercises",
+            icon: Dumbbell,
+        },
+        {
             name: t("settings"),
             href: "/settings",
             icon: Settings,

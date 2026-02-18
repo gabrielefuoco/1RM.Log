@@ -45,3 +45,4 @@ public/fallback-*.js
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+tsc_*.txt

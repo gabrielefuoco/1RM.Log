@@ -15,6 +15,8 @@ interface SessionHeaderProps {
     totalExercises: number
     nextExercise?: Exercise | null
     nextTemplateData?: TemplateExercise | null
+    isDeload?: boolean
+    onToggleDeload?: () => void
     onBack?: () => void
     onAddExercise?: () => void
     onRemoveExercise?: () => void
@@ -29,6 +31,8 @@ export function SessionHeader({
     totalExercises,
     nextExercise,
     nextTemplateData,
+    isDeload,
+    onToggleDeload,
     onBack,
     onAddExercise,
     onRemoveExercise,
@@ -53,20 +57,35 @@ export function SessionHeader({
                             <ChevronLeft className="h-5 w-5" />
                         </Button>
                     )}
-                    <Badge className="bg-muted text-muted-foreground border-transparent uppercase text-[10px] tracking-widest font-bold px-2 py-0.5">
+                    <Badge className="bg-zinc-800/50 text-slate-500 border-zinc-700/50 uppercase text-[9px] tracking-[0.1em] font-black px-2 py-0.5">
                         {exercise.type || t("exercise")}
                     </Badge>
-                    <span className="text-[10px] text-muted-foreground font-bold tracking-tighter uppercase">
+                    <span className="text-[10px] text-slate-600 font-black tracking-tighter uppercase">
                         {currentExerciseIndex + 1} / {totalExercises}
                     </span>
                 </div>
 
                 <div className="flex items-center gap-1">
+                    {onToggleDeload && (
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={onToggleDeload}
+                            className={cn(
+                                "h-7 px-2 text-[9px] font-black uppercase tracking-[0.15em] border transition-all mr-1",
+                                isDeload
+                                    ? "bg-purple-500/20 text-purple-400 border-purple-500/30 shadow-[0_0_10px_rgba(168,85,247,0.2)]"
+                                    : "bg-zinc-800/30 text-slate-500 border-zinc-700/30 hover:bg-zinc-800/50"
+                            )}
+                        >
+                            {isDeload ? "DL ON" : "DL"}
+                        </Button>
+                    )}
                     {onRemoveExercise && (
                         <Button
                             variant="ghost"
                             size="icon"
-                            className="text-destructive hover:bg-destructive/10 h-8 w-8"
+                            className="text-red-900/40 hover:text-red-500 hover:bg-red-500/10 h-8 w-8 transition-colors"
                             onClick={onRemoveExercise}
                         >
                             <Trash2 className="h-4 w-4" />
@@ -76,7 +95,7 @@ export function SessionHeader({
                         <Button
                             variant="ghost"
                             size="icon"
-                            className="text-muted-foreground hover:text-primary h-8 w-8"
+                            className="text-slate-600 hover:text-primary h-8 w-8 transition-colors"
                             onClick={onSwapExercise}
                             title="Swap Exercise"
                         >
@@ -87,49 +106,57 @@ export function SessionHeader({
                         <Button
                             variant="ghost"
                             size="icon"
-                            className="text-primary hover:bg-primary/5 h-8 w-8"
+                            className="text-primary hover:bg-primary/5 h-8 w-8 transition-colors"
                             onClick={onAddExercise}
                         >
                             <Plus className="h-5 w-5" />
-                        </Button>
-                    )}
-                    {!onAddExercise && !onRemoveExercise && (
-                        <Button size="icon" variant="ghost" className="text-muted-foreground h-8 w-8">
-                            <MoreVertical className="h-4 w-4" />
                         </Button>
                     )}
                 </div>
             </div>
 
             {/* Exercise Name */}
-            <div>
-                <h1 className="text-2xl font-bold text-foreground leading-tight uppercase tracking-tight">{exercise.name}</h1>
-                <p className="text-[10px] text-muted-foreground uppercase tracking-[0.2em] mt-1 font-bold">
-                    {Array.isArray(exercise.body_parts) ? exercise.body_parts.join(', ') : exercise.body_parts}
+            <div className="space-y-1">
+                <h1 className="text-3xl font-black text-white italic leading-[0.9] uppercase tracking-tighter">
+                    {exercise.name}
+                </h1>
+                <p className="text-[9px] text-primary/60 uppercase tracking-[0.25em] font-black">
+                    {Array.isArray(exercise.body_parts) ? exercise.body_parts.join(' • ') : exercise.body_parts}
                 </p>
             </div>
 
-            {/* Stats Bar (Only if templateData exists) */}
+            {/* Target Card: Redesigned for Industrial Look */}
             {templateData && (
-                <div className="relative flex items-center bg-muted/30 rounded-xl border border-border overflow-hidden">
-                    {/* Green left accent */}
-                    <div className="absolute left-0 top-2 bottom-2 w-1 bg-primary rounded-full shadow-[0_0_8px_rgba(0,255,163,0.5)]"></div>
+                <div className="relative group">
+                    <div className="absolute -inset-0.5 bg-gradient-to-r from-primary/20 to-transparent rounded-2xl blur opacity-20 group-hover:opacity-40 transition-opacity"></div>
+                    <div className="relative flex items-center bg-zinc-900/60 rounded-2xl border border-white/5 overflow-hidden backdrop-blur-sm">
+                        {/* Status bar left accent */}
+                        <div className={cn(
+                            "absolute left-0 top-0 bottom-0 w-1 transition-colors shadow-[0_0_10px_rgba(0,255,163,0.3)]",
+                            isDeload ? "bg-purple-500 shadow-[0_0_10px_rgba(168,85,247,0.3)]" : "bg-primary"
+                        )}></div>
 
-                    <div className="flex-1 py-3 pl-4 text-center">
-                        <p className="text-[9px] text-muted-foreground uppercase tracking-widest font-bold">{t("sets")}</p>
-                        <p className="text-xl font-bold text-foreground mt-0.5">{templateData.target_sets}</p>
-                    </div>
-                    <div className="w-px h-10 bg-border"></div>
-                    <div className="flex-1 py-3 text-center">
-                        <p className="text-[9px] text-muted-foreground uppercase tracking-widest font-bold">RIR</p>
-                        <p className="text-xl font-bold text-primary drop-shadow-[0_0_8px_rgba(0,255,163,0.3)] mt-0.5">{templateData.target_rir ?? '-'}</p>
-                    </div>
-                    <div className="w-px h-10 bg-border"></div>
-                    <div className="flex-1 py-3 text-center">
-                        <p className="text-[9px] text-muted-foreground uppercase tracking-widest font-bold">{t("reps")}</p>
-                        <p className="text-xl font-bold text-foreground mt-0.5">
-                            {templateData.target_reps_min}-{templateData.target_reps_max}
-                        </p>
+                        <div className="flex-1 py-4 pl-4 text-center">
+                            <p className="text-[8px] text-slate-500 uppercase font-black tracking-widest">{t("sets")}</p>
+                            <p className="text-2xl font-black text-white mt-0.5 leading-none">{templateData.target_sets}</p>
+                        </div>
+                        <div className="w-px h-10 bg-white/5"></div>
+                        <div className="flex-1 py-4 text-center">
+                            <p className="text-[8px] text-slate-500 uppercase font-black tracking-widest">RIR</p>
+                            <p className={cn(
+                                "text-2xl font-black mt-0.5 leading-none",
+                                isDeload ? "text-purple-400" : "text-primary shadow-primary/20"
+                            )}>
+                                {templateData.target_rir ?? '-'}
+                            </p>
+                        </div>
+                        <div className="w-px h-10 bg-white/5"></div>
+                        <div className="flex-1 py-4 text-center">
+                            <p className="text-[8px] text-slate-500 uppercase font-black tracking-widest">{t("reps")}</p>
+                            <p className="text-2xl font-black text-white mt-0.5 leading-none">
+                                {templateData.target_reps_min}<span className="text-xs text-slate-600 mx-0.5">-</span>{templateData.target_reps_max}
+                            </p>
+                        </div>
                     </div>
                 </div>
             )}
@@ -139,44 +166,46 @@ export function SessionHeader({
                 <div
                     className={cn(
                         "transition-all duration-300 ease-in-out cursor-pointer",
-                        "bg-muted/20 rounded-xl border border-border/50",
-                        isExpanded ? "p-4 space-y-3" : "px-4 py-3"
+                        "bg-zinc-900/30 rounded-2xl border border-white/5",
+                        isExpanded ? "p-4 space-y-4" : "px-4 py-3"
                     )}
                     onClick={() => setIsExpanded(!isExpanded)}
                 >
                     <div className="flex items-center gap-3">
                         <div className={cn(
-                            "h-8 w-8 rounded-lg bg-muted flex items-center justify-center transition-transform",
-                            isExpanded && "rotate-90 bg-primary/20"
+                            "h-8 w-8 rounded-xl bg-zinc-800/50 flex items-center justify-center transition-all duration-300",
+                            isExpanded && "bg-primary/20 shadow-[0_0_10px_rgba(0,255,163,0.2)]"
                         )}>
-                            <ChevronRight className={cn("h-4 w-4 text-muted-foreground", isExpanded && "text-primary")} />
+                            <ChevronRight className={cn("h-4 w-4 text-slate-500 transition-all", isExpanded && "text-primary rotate-90")} />
                         </div>
                         <div className="flex-1">
-                            <p className="text-[9px] text-muted-foreground uppercase tracking-widest font-bold">{t("nextPrefix")}:</p>
-                            <p className="text-sm text-foreground font-bold">{nextExercise.name}</p>
+                            <p className="text-[10px] text-slate-600 uppercase tracking-[0.1em] font-black">{t("nextPrefix")}:</p>
+                            <p className="text-base font-black text-white italic truncate">{nextExercise.name.toUpperCase()}</p>
                         </div>
-                        {!isExpanded && <Info className="h-4 w-4 text-muted-foreground/30" />}
+                        {!isExpanded && <Info className="h-4 w-4 text-slate-700" />}
                     </div>
 
-                    {isExpanded && nextTemplateData && (
-                        <div className="grid grid-cols-3 gap-2 pt-2 animate-in fade-in slide-in-from-top-2 duration-300">
-                            <div className="bg-background/40 rounded-lg p-2 border border-border/20 text-center">
-                                <p className="text-[8px] text-muted-foreground uppercase font-black">{t("sets")}</p>
-                                <p className="text-sm font-bold text-foreground">{nextTemplateData.target_sets}</p>
-                            </div>
-                            <div className="bg-background/40 rounded-lg p-2 border border-border/20 text-center">
-                                <p className="text-[8px] text-muted-foreground uppercase font-black">{t("reps")}</p>
-                                <p className="text-sm font-bold text-foreground">{nextTemplateData.target_reps_min}-{nextTemplateData.target_reps_max}</p>
-                            </div>
-                            <div className="bg-background/40 rounded-lg p-2 border border-border/20 text-center">
-                                <p className="text-[8px] text-muted-foreground uppercase font-black">RIR</p>
-                                <p className="text-sm font-bold text-primary">{nextTemplateData.target_rir ?? '-'}</p>
-                            </div>
+                    {isExpanded && (
+                        <div className="pt-2 animate-in fade-in slide-in-from-top-2 duration-300">
+                            {nextTemplateData ? (
+                                <div className="grid grid-cols-3 gap-2">
+                                    <div className="bg-zinc-950/50 rounded-xl p-2 border border-white/5 text-center">
+                                        <p className="text-[9px] text-slate-500 uppercase font-black">{t("sets")}</p>
+                                        <p className="text-lg font-black text-white">{nextTemplateData.target_sets}</p>
+                                    </div>
+                                    <div className="bg-zinc-950/50 rounded-xl p-2 border border-white/5 text-center">
+                                        <p className="text-[9px] text-slate-500 uppercase font-black">{t("reps")}</p>
+                                        <p className="text-lg font-black text-white">{nextTemplateData.target_reps_min}-{nextTemplateData.target_reps_max}</p>
+                                    </div>
+                                    <div className="bg-zinc-950/50 rounded-xl p-2 border border-white/5 text-center">
+                                        <p className="text-[9px] text-slate-500 uppercase font-black">RIR</p>
+                                        <p className="text-lg font-black text-primary">{nextTemplateData.target_rir ?? '-'}</p>
+                                    </div>
+                                </div>
+                            ) : (
+                                <p className="text-[10px] text-slate-500 italic text-center py-2 bg-zinc-950/30 rounded-xl border border-white/5">{t("noTarget")}</p>
+                            )}
                         </div>
-                    )}
-
-                    {isExpanded && !nextTemplateData && (
-                        <p className="text-[10px] text-muted-foreground italic text-center py-1">{t("noTarget")}</p>
                     )}
                 </div>
             )}

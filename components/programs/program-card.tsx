@@ -2,10 +2,11 @@
 
 import { useState } from "react"
 import { Program } from "@/types/database"
-import { Card, CardContent } from "@/components/ui/card"
+import { UniversalListCard } from "@/components/ui/universal-list-card"
 import { Badge } from "@/components/ui/badge"
-import { Calendar, ChevronRight, MoreVertical, Pencil, Trash2, Power, AlertTriangle } from "lucide-react"
+import { Calendar, ChevronRight, MoreVertical, Pencil, Trash2, Power, AlertTriangle, ArrowRight } from "lucide-react"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { format } from "date-fns"
 import { it } from "date-fns/locale"
 import { Button } from "@/components/ui/button"
@@ -36,6 +37,7 @@ interface ProgramCardProps {
 }
 
 export function ProgramCard({ program, onRefresh }: ProgramCardProps) {
+    const router = useRouter()
     const isActive = program.is_active
     const [isDeleting, setIsDeleting] = useState(false)
     const [deleteOpen, setDeleteOpen] = useState(false)
@@ -69,51 +71,65 @@ export function ProgramCard({ program, onRefresh }: ProgramCardProps) {
 
     return (
         <>
-            <Card className={`relative transition-all hover:bg-zinc-900/60 border-white/5 ${isActive ? 'bg-zinc-900/40 border-primary/30 shadow-[0_0_15px_rgba(19,236,109,0.1)]' : 'bg-transparent opacity-80'}`}>
-                <CardContent className="p-4 flex items-center justify-between">
-                    <Link href={`/programs/${program.id}`} className="flex-1 min-w-0 pr-4">
-                        <div>
-                            <div className="flex items-center gap-2 mb-1">
-                                {isActive && <Badge className="bg-primary/20 text-primary hover:bg-primary/20 border-primary/20 h-5 text-[10px]">ATTIVO</Badge>}
-                                <span className="text-xs text-slate-500 flex items-center gap-1">
-                                    <Calendar className="h-3 w-3" />
-                                    {format(new Date(program.start_date), "d MMM yyyy", { locale: it })}
-                                </span>
-                            </div>
-                            <h3 className={`font-bold text-lg ${isActive ? 'text-white' : 'text-slate-400'}`}>
-                                {program.name}
-                            </h3>
-                            {program.description && (
-                                <p className="text-xs text-slate-500 line-clamp-1 mt-1">{program.description}</p>
-                            )}
-                        </div>
-                    </Link>
+            <UniversalListCard
+                title={program.name}
+                isActive={isActive}
+                index={undefined} // Programs don't usually have an order index shown
+                onClick={() => router.push(`/programs/${program.id}`)}
+                className="mb-0"
 
-                    <div className="shrink-0 flex items-center gap-1">
-                        <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                                <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400 hover:text-white hover:bg-white/10">
-                                    <MoreVertical className="h-4 w-4" />
-                                </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end" className="w-48 bg-zinc-900 border-white/10 text-white">
-                                {!isActive && (
-                                    <DropdownMenuItem onClick={handleToggleActive} className="focus:bg-primary/20 text-primary focus:text-primary cursor-pointer">
-                                        <Power className="mr-2 h-4 w-4" /> Imposta Attivo
-                                    </DropdownMenuItem>
-                                )}
-                                <DropdownMenuItem onClick={() => setEditOpen(true)} className="focus:bg-white/10 focus:text-white cursor-pointer">
-                                    <Pencil className="mr-2 h-4 w-4" /> Modifica
-                                </DropdownMenuItem>
-                                <DropdownMenuSeparator className="bg-white/10" />
-                                <DropdownMenuItem onClick={() => setDeleteOpen(true)} className="focus:bg-red-900/30 text-red-400 focus:text-red-400 cursor-pointer">
-                                    <Trash2 className="mr-2 h-4 w-4" /> Elimina
-                                </DropdownMenuItem>
-                            </DropdownMenuContent>
-                        </DropdownMenu>
+                // Construct the subtitle (Dates + Desc)
+                subtitle={
+                    <div className="flex flex-col gap-1">
+                        <div className="flex items-center gap-2 text-xs text-slate-500">
+                            <Calendar className="h-3 w-3" />
+                            {format(new Date(program.start_date), "d MMM yyyy", { locale: it })}
+                            {program.end_date && ` - ${format(new Date(program.end_date), "d MMM yyyy", { locale: it })}`}
+                        </div>
+                        {program.description && (
+                            <span className="text-xs text-slate-500 line-clamp-1">{program.description}</span>
+                        )}
+                        <div className="flex gap-2 mt-1">
+                            <Badge variant="outline" className="text-[10px] h-5 bg-white/5 border-white/10 text-slate-400">
+                                {isActive ? "CURRENT MACROCYCLE" : "ARCHIVED"}
+                            </Badge>
+                        </div>
                     </div>
-                </CardContent>
-            </Card>
+                }
+
+                // Actions Menu
+                actions={
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400 hover:text-white hover:bg-white/10">
+                                <MoreVertical className="h-4 w-4" />
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="w-48 bg-zinc-900 border-white/10 text-white">
+                            {!isActive && (
+                                <DropdownMenuItem onClick={handleToggleActive} className="focus:bg-primary/20 text-primary focus:text-primary cursor-pointer">
+                                    <Power className="mr-2 h-4 w-4" /> Imposta Attivo
+                                </DropdownMenuItem>
+                            )}
+                            <DropdownMenuItem onClick={() => setEditOpen(true)} className="focus:bg-white/10 focus:text-white cursor-pointer">
+                                <Pencil className="mr-2 h-4 w-4" /> Modifica
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator className="bg-white/10" />
+                            <DropdownMenuItem onClick={() => setDeleteOpen(true)} className="focus:bg-red-900/30 text-red-400 focus:text-red-400 cursor-pointer">
+                                <Trash2 className="mr-2 h-4 w-4" /> Elimina
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                }
+            >
+                {/* Content Slot: Optional stats if we had them, distinct from subtitle */}
+            </UniversalListCard>
+
+            {/* Wrap in Link for navigation behavior if not using onClick */}
+            {/* Actually UniversalCard has onClick. Let's use that for navigation. But Link is better for SEO/Standard. 
+                ProgramCard usage in page.tsx wraps it? No.
+                Let's use a wrapper or just the onClick prop.
+            */}
 
             <EditProgramDrawer
                 program={program}

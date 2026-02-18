@@ -1,6 +1,8 @@
 import { createClient } from "@/lib/supabase/client"
 import { WorkoutSession, ExerciseLog } from "@/types/database"
 import { calculate1RM } from "@/utils/formulas"
+import { ProgressionCalculator, getProgressionSettings, ProgressionResult } from "./progression"
+import { getSessionOneRms } from "./one-rm"
 
 export async function startSession(templateId: string | null): Promise<string> {
     const supabase = createClient()
@@ -252,7 +254,7 @@ export async function getSessionRunnerData(sessionId: string) {
                 *,
                 template_exercises (
                     *,
-                    exercise:exercises(name, body_parts, type)
+                    exercise:exercises(id, name, body_parts, type)
                 )
             )
         `)
@@ -348,5 +350,67 @@ export async function updateSessionNotes(sessionId: string, notes: string) {
         .from('workout_sessions')
         .update({ notes })
         .eq('id', sessionId)
+
     if (error) throw error
+}
+
+export async function getSessionProgressionTargets(sessionId: string): Promise<Record<string, ProgressionResult>> {
+    const supabase = createClient()
+
+    // 1. Get Session & Template
+    const { data: session } = await supabase
+        .from('workout_sessions')
+        .select(`
+            *,
+            workout_template:workout_templates (
+                *,
+                template_exercises (
+                    *,
+                    exercise:exercises(name)
+                )
+            )
+        `)
+        .eq('id', sessionId)
+        .single()
+
+    if (!session || !session.workout_template) return {}
+
+    const settings = await getProgressionSettings(session.user_id)
+
+    // 2. Prepare data fetching
+    const exercises = session.workout_template.template_exercises || []
+    const exerciseIds = exercises.map((e: any) => e.exercise_id)
+
+    // Batch fetch 1RMs
+    const oneRms = await getSessionOneRms(exerciseIds)
+    const oneRmMap = new Map(oneRms.map(o => [o.exercise_id, o.one_rm]))
+
+    // Calculate targets
+    const targets: Record<string, ProgressionResult> = {}
+
+    await Promise.all(exercises.map(async (te: any) => {
+        // Fetch history (last 10 logs to be safe)
+        const allLogs = await getPreviousLogs(te.exercise_id, 10)
+        // Filter out CURRENT session logs just in case
+        const history = allLogs.filter((l: any) => l.session_id !== sessionId)
+
+        // Use first work set as baseline
+        const templateSet = te.sets_data.find((s: any) => s.type === 'straight' || s.type === 'work') || te.sets_data[0]
+
+        if (!templateSet) return
+
+        const result = ProgressionCalculator.calculate({
+            mode: te.progression_mode || 'static',
+            config: te.progression_config || {},
+            state: te.progression_state || {},
+            history: history as any, // Cast to match expected type
+            templateSet: templateSet,
+            reference1RM: oneRmMap.get(te.exercise_id),
+            progressionSettings: settings
+        })
+
+        targets[te.id] = result
+    }))
+
+    return targets
 }

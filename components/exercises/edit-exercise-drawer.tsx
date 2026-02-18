@@ -86,37 +86,37 @@ export function EditExerciseDrawer({ exercise, open, onOpenChange, onSuccess }: 
             <DrawerContent className="bg-background border-t border-white/10">
                 <div className="mx-auto w-full max-w-sm">
                     <DrawerHeader>
-                        <DrawerTitle className="text-white text-xl">Edit Exercise</DrawerTitle>
-                        <DrawerDescription>Modify exercise details.</DrawerDescription>
+                        <DrawerTitle className="text-2xl font-black text-white italic uppercase tracking-tighter leading-none mb-1">Edit Exercise</DrawerTitle>
+                        <DrawerDescription className="text-zinc-500 font-bold uppercase tracking-widest text-[10px]">Modify exercise details.</DrawerDescription>
                     </DrawerHeader>
 
-                    <div className="p-4 space-y-4">
+                    <div className="p-4 space-y-5">
                         <div className="space-y-2">
-                            <Label htmlFor="edit-name" className="text-white">Exercise Name</Label>
+                            <Label htmlFor="edit-name" className="text-zinc-500 font-bold uppercase tracking-widest text-[9px] ml-1">Exercise Name</Label>
                             <Input
                                 id="edit-name"
                                 placeholder="e.g. Incline Dumbbell Press"
-                                className="bg-zinc-900/50 border-white/10 text-white"
+                                className="bg-zinc-900/40 border-white/5 text-white h-11 focus:border-primary/20 transition-all rounded-xl"
                                 value={name}
                                 onChange={(e) => setName(e.target.value)}
                             />
                         </div>
 
                         <div className="space-y-2">
-                            <Label className="text-white">Body Parts</Label>
+                            <Label className="text-zinc-500 font-bold uppercase tracking-widest text-[9px] ml-1">Body Parts</Label>
                             <MultiSelect
                                 options={BODY_PART_OPTIONS}
                                 selected={bodyParts}
                                 onChange={setBodyParts}
                                 placeholder="Choose categories..."
-                                className="bg-zinc-900/50 border-white/10 text-white"
+                                className="bg-zinc-900/40 border-white/5 text-white focus:border-primary/20 transition-all rounded-xl"
                             />
                         </div>
 
                         <div className="space-y-2">
-                            <Label className="text-white">Equipment Type</Label>
+                            <Label className="text-zinc-500 font-bold uppercase tracking-widest text-[9px] ml-1">Equipment Type</Label>
                             <Select value={type} onValueChange={(v) => setType(v as ExerciseType)}>
-                                <SelectTrigger className="bg-zinc-900/50 border-white/10 text-white">
+                                <SelectTrigger className="bg-zinc-900/40 border-white/5 text-white h-11 focus:border-primary/20 transition-all rounded-xl">
                                     <SelectValue />
                                 </SelectTrigger>
                                 <SelectContent className="bg-zinc-900 border-white/10 text-white">
@@ -135,12 +135,12 @@ export function EditExerciseDrawer({ exercise, open, onOpenChange, onSuccess }: 
                         </div>
                     </div>
 
-                    <DrawerFooter>
-                        <Button onClick={handleSubmit} disabled={loading} className="w-full bg-primary text-background-dark font-bold hover:bg-primary/90">
+                    <DrawerFooter className="pt-2">
+                        <Button onClick={handleSubmit} disabled={loading} className="w-full bg-primary text-background-dark font-black uppercase tracking-widest hover:bg-primary/90 transition-all h-12 rounded-xl">
                             {loading ? "Saving..." : "Save Changes"}
                         </Button>
                         <DrawerClose asChild>
-                            <Button variant="outline" className="w-full border-white/10 text-white hover:bg-white/5 hover:text-white">Cancel</Button>
+                            <Button variant="ghost" className="w-full text-zinc-500 hover:text-white font-bold uppercase tracking-widest text-xs h-10">Cancel</Button>
                         </DrawerClose>
                     </DrawerFooter>
                 </div>

@@ -10,7 +10,7 @@ interface StackedBarChartProps {
 
 export function StackedBarChart({ data, bars, yAxisUnit = '' }: StackedBarChartProps) {
     return (
-        <div className="w-full h-[300px]">
+        <div className="w-full h-full">
             <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={data} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#333" vertical={false} />

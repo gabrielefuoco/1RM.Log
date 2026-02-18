@@ -122,27 +122,32 @@ export function ExerciseList({ exercises, isLoading, onRefresh }: ExerciseListPr
     )
 }
 
+import { UniversalListCard } from "@/components/ui/universal-list-card"
+
 function ExerciseCard({ exercise, onEdit, onDelete }: { exercise: Exercise, onEdit: () => void, onDelete: () => void }) {
     // Icon mapping based on body part or type
     const getIcon = () => {
-        if (exercise.type === 'dumbbell') return <Dumbbell className="h-5 w-5 text-primary" />
-        if (exercise.type === 'machine') return <Anchor className="h-5 w-5 text-primary" />
-        if (exercise.type === 'bodyweight') return <User className="h-5 w-5 text-primary" />
-        return <Activity className="h-5 w-5 text-primary" />
+        if (exercise.type === 'dumbbell') return <Dumbbell className="h-4 w-4 text-primary" />
+        if (exercise.type === 'machine') return <Anchor className="h-4 w-4 text-primary" />
+        if (exercise.type === 'bodyweight') return <User className="h-4 w-4 text-primary" />
+        return <Activity className="h-4 w-4 text-primary" />
     }
 
     return (
-        <Card className="bg-zinc-900/40 border-white/5 hover:bg-zinc-900/60 transition-colors group">
-            <CardContent className="p-4 flex items-center gap-4">
-                <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0 border border-primary/20">
-                    {getIcon()}
+        <UniversalListCard
+            title={exercise.name}
+            isCompact={true}
+            onClick={onEdit}
+            icon={getIcon()}
+            subtitle={
+                <div className="flex items-center gap-1 mt-0.5">
+                    <span className="text-zinc-500 font-bold uppercase tracking-widest text-[9px] truncate">
+                        {exercise.body_parts?.join(', ')} • {exercise.type}
+                    </span>
                 </div>
-                <div className="flex-1 min-w-0">
-                    <h3 className="font-semibold text-white truncate text-base">{exercise.name}</h3>
-                    <p className="text-xs text-slate-400 capitalize">{exercise.body_parts?.join(', ')} • {exercise.type}</p>
-                </div>
-
-                <div className="shrink-0">
+            }
+            actions={
+                <div className="flex items-center gap-1 opacity-20 group-hover:opacity-100 transition-opacity">
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                             <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400 hover:text-white hover:bg-white/10">
@@ -159,7 +164,7 @@ function ExerciseCard({ exercise, onEdit, onDelete }: { exercise: Exercise, onEd
                         </DropdownMenuContent>
                     </DropdownMenu>
                 </div>
-            </CardContent>
-        </Card>
+            }
+        />
     )
 }

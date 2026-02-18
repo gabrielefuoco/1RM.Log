@@ -82,7 +82,9 @@ export default function ProgramsPage() {
                 {loading ? (
                     <div className="h-24 rounded-lg bg-zinc-900/50 animate-pulse" />
                 ) : activeProgram ? (
-                    <ProgramCard program={activeProgram} onRefresh={loadPrograms} />
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <ProgramCard program={activeProgram} onRefresh={loadPrograms} />
+                    </div>
                 ) : (
                     <div className="p-6 rounded-lg border border-dashed border-white/10 text-center">
                         <p className="text-slate-500 text-sm">{t("noActiveProgram")}</p>
@@ -93,14 +95,14 @@ export default function ProgramsPage() {
             {/* History Section */}
             <section>
                 <h2 className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-3">{t("history")}</h2>
-                <div className="space-y-3">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {pastPrograms.map(p => (
                         <ProgramCard key={p.id} program={p} onRefresh={loadPrograms} />
                     ))}
-                    {!loading && pastPrograms.length === 0 && (
-                        <p className="text-xs text-slate-600">{t("noPastPrograms")}</p>
-                    )}
                 </div>
+                {!loading && pastPrograms.length === 0 && (
+                    <p className="text-xs text-slate-600">{t("noPastPrograms")}</p>
+                )}
             </section>
 
             <CreateProgramDrawer onSuccess={loadPrograms} />

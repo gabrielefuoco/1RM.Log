@@ -28,6 +28,7 @@
         "analysis": "Analysis",
         "programs": "Programs",
         "history": "History",
+        "exercises": "Exercises",
         "settings": "Settings"
     },
     "Settings": {
@@ -183,6 +184,7 @@
         "notificationBody": "It's time for the next set. Let's go!",
         "exercise": "Exercise",
         "sets": "Sets",
+        "history": "History",
         "nextPrefix": "Next",
         "noTarget": "No target set",
         "prsUpdated": "PRs updated!",

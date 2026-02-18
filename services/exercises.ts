@@ -71,6 +71,10 @@ export interface AddTemplateExerciseInput {
     target_rir: number | null
     order: number
     sets_data?: TemplateSet[]
+    // Progression
+    progression_mode?: string
+    progression_config?: any
+    progression_state?: any
 }
 
 export async function addTemplateExercise(input: AddTemplateExerciseInput) {
@@ -148,6 +152,10 @@ export interface UpdateTemplateExerciseInput {
     target_reps_max?: number | null
     target_rir?: number | null
     sets_data?: TemplateSet[]
+    // Progression
+    progression_mode?: string
+    progression_config?: any
+    progression_state?: any
 }
 
 export async function updateTemplateExercise(id: string, updates: UpdateTemplateExerciseInput) {

@@ -11,6 +11,9 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { useRouter } from "@/i18n/routing"
 import { useTranslations } from "next-intl"
+import { SmartChart } from "@/components/analysis/smart-chart"
+import { CHART_PRESETS } from "@/types/analysis"
+import { AnalysisGrid } from "@/components/analysis/analysis-grid"
 
 export default function HomePage() {
     const router = useRouter()
@@ -28,8 +31,11 @@ export default function HomePage() {
         return `${Math.round(value)}kg`
     }
 
+    // featured charts for home
+    const featuredCharts = CHART_PRESETS.filter(p => p.id === 'trend_1rm' || p.id === 'weekly_volume')
+
     return (
-        <div className="space-y-6 pt-4">
+        <div className="space-y-6 pt-4 pb-20">
             {/* Unified Desktop Grid Layout */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
@@ -56,6 +62,19 @@ export default function HomePage() {
                             icon={Trophy}
                             isLoading={isLoading}
                         />
+                    </div>
+
+                    {/* Featured Charts Section */}
+                    <div className="pt-2">
+                        <h3 className="font-heading text-lg uppercase tracking-tight mb-4 flex items-center gap-2">
+                            <TrendingUp className="size-5 text-primary" />
+                            {t("growth1RM")} & Performance
+                        </h3>
+                        <AnalysisGrid className="md:grid-cols-1 lg:grid-cols-12">
+                            {featuredCharts.map(config => (
+                                <SmartChart key={config.id} config={{ ...config, colSpan: config.id === 'trend_1rm' ? 8 : 4 } as any} />
+                            ))}
+                        </AnalysisGrid>
                     </div>
                 </div>
 

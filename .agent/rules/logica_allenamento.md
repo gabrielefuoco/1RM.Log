@@ -11,29 +11,34 @@ Non chiediamo mai l'1RM all'utente; lo stimiamo in base alle performance.
   - Ridondata nel DB come `GENERATED ALWAYS` column in `exercise_logs`.
 - **Precisione**: Arrotondamento a 1 decimale. Se `reps == 1`, l'1RM è pari al peso sollevato.
 
-## 2. Suggerimenti e Carryover
-La progressione e i suggerimenti di carico sono gestiti per massimizzare la velocità di input in palestra.
+## 2. Progression Engine (Il Motore di Crescita)
+Il sistema di suggerimento carichi è stato evoluto in un "Progression Engine" deterministico.
 
-### A. Carryover Intra-Sessione (Live Carryover)
-Quando un utente completa il Set 1, i dati di peso e reps vengono automaticamente portati come suggerimento al Set 2 della **stessa sessione**.
-- **Priorità**: Sessione Corrente > Ultima Sessione Storica.
-- **Obiettivo**: Ridurre l'inserimento manuale se l'utente mantiene lo stesso carico per più serie.
+### A. Modalità di Progressione
+Ogni esercizio in una scheda può avere una modalità specifica:
 
-### B. Algoritmo di Progressione (Storico)
-Suggerisce il carico iniziale basandosi sulla performance dell'ultima sessione:
+#### 1. Double Progression (`auto_double`)
+-   **Obiettivo**: Aumentare il volume (Rep) prima dell'intensità (Peso).
+-   **Logica**:
+    1.  Hai completato TUTTI i set con il massimo delle ripetizioni (`reps_max`)?
+    2.  **SÌ**: Aumenta il peso (`increment` es. +2.5kg) e resetta le ripetizioni al minimo (`reps_min`).
+    3.  **NO**: Mantieni il peso e prova a fare più ripetizioni la prossima volta.
 
-### A. RIR (Reps In Reserve)
-- **Logica**: Se `RIR_Effettivo >= RIR_Target + 2`.
-- **Azione**: Suggerisci aumento del carico.
-- **Incremento**: `Peso_Attuale * (1 + progression_rate)`. Default rate: 2.5%.
+#### 2. Linear Progression (`auto_linear`)
+-   **Obiettivo**: Aumentare l'intensità linearmente finché la tecnica regge.
+-   **Logica (RIR Based)**:
+    1.  Il RIR dell'ultimo set era troppo alto (`RIR_Effettivo >= RIR_Target + 2`)?
+    2.  **SÌ**: Era troppo facile -> Aumenta peso (`increment`).
+    3.  **NO**: Mantieni peso.
+    4.  **Eccezione**: Se `Reps > Reps_Max + 2` (Overshoot), aumenta peso.
 
-### B. Rep Range Overflow
-- **Logica**: Se `Reps_Effettive > Reps_Target_Max`.
-- **Azione**: Suggerisci aumento del carico.
+#### 3. Custom Sequence (`custom_sequence`)
+-   **Obiettivo**: Periodizzazione ondulatoria o schemi fissi (es. 5/3/1, Waves).
+-   **Logica**: Segue una lista predefinita di step (es. Settimana 1: 70%, Settimana 2: 75%...).
+-   **Avanzamento**: Manuale o automatico a fine mesociclo.
 
-### C. Gestione dei Fallimenti
-- **Logica**: Se `RIR_Effettivo < 0` (cedimento tecnico o assistito).
-- **Azione**: Suggerisci Mantenimento o Scarico (`deload_rate` default 10%).
+### B. Carryover Intra-Sessione
+-   Se l'utente modifica il peso nel Set 1, il suggerimento per i Set successivi si adatta immediatamente ("Live Carryover").
 
 ## 3. Arrotondamento Carichi
 - **Standard**: Tutti i pesi suggeriti sono arrotondati al **2.5kg** più vicino (passo standard di 1.25kg per lato del bilanciere).

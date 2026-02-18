@@ -11,6 +11,7 @@ import { removeTemplateExercise } from "@/services/exercises"
 import { deleteWorkoutTemplate } from "@/services/programs"
 import { toast } from "sonner"
 import { EditTemplateExerciseDrawer } from "@/components/programs/edit-template-exercise-drawer"
+import { TemplateExerciseCard } from "@/components/programs/template-exercise-card"
 import { EditTemplateDrawer } from "@/components/programs/edit-template-drawer"
 import { WorkoutTemplate, TemplateExercise } from "@/types/database"
 import {
@@ -181,44 +182,14 @@ export default function TemplateDetailPage({
                 </div>
 
                 <div className="space-y-3">
-                    {exercises.map((ex) => (
-                        <Card
+                    {exercises.map((ex, i) => (
+                        <TemplateExerciseCard
                             key={ex.id}
-                            className="bg-zinc-900/40 border-white/5 hover:bg-zinc-900/60 transition-colors cursor-pointer group"
-                            onClick={() => setEditingExercise(ex)}
-                        >
-                            <CardContent className="p-4 flex items-center gap-4">
-                                <div className="text-slate-600 font-mono text-xs">
-                                    {(ex.order + 1).toString().padStart(2, '0')}
-                                </div>
-                                {/* <GripVertical className="h-5 w-5 text-slate-600 cursor-grab opacity-0 group-hover:opacity-100" /> */}
-
-                                <div className="flex-1 min-w-0">
-                                    <h3 className="font-bold text-white text-base truncate">{ex.exercise?.name}</h3>
-                                    <p className="text-xs text-slate-400 mt-1 flex items-center gap-2">
-                                        <span>
-                                            {ex.target_sets} serie × {ex.target_reps_min || "?"}-{ex.target_reps_max || "?"} reps
-                                            {ex.target_rir !== null && ` @ RIR ${ex.target_rir}`}
-                                        </span>
-                                        {ex.sets_data && Array.isArray(ex.sets_data) && ex.sets_data.length > 0 && (
-                                            <span className="px-1 py-0.5 rounded bg-primary/10 text-primary text-[8px] font-black uppercase border border-primary/20">Flex</span>
-                                        )}
-                                    </p>
-                                </div>
-
-                                <Button
-                                    size="icon"
-                                    variant="ghost"
-                                    className="h-8 w-8 text-slate-500 hover:text-red-400 hover:bg-red-400/10 z-10"
-                                    onClick={(e) => {
-                                        e.stopPropagation()
-                                        handleRemoveExercise(ex.id, ex.exercise?.name || "Esercizio")
-                                    }}
-                                >
-                                    <Trash2 className="h-4 w-4" />
-                                </Button>
-                            </CardContent>
-                        </Card>
+                            exercise={ex}
+                            index={i}
+                            onEdit={setEditingExercise}
+                            onRemove={handleRemoveExercise}
+                        />
                     ))}
 
                     {exercises.length === 0 && (

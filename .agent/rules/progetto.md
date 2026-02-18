@@ -55,13 +55,11 @@ Lo schema è definito in `supabase/schema.sql`.
 Non chiedere mai l'1RM all'utente. Calcolalo e salvalo in `estimated_1rm` ogni volta che salva un set.
 -   *Best Lift Query*: `MAX(estimated_1rm)` per esercizio.
 
-### B. Algoritmo di Progressione
-Quando si inizializza una sessione da un template:
-1.  Cerca l'ultimo log dello stesso esercizio.
-2.  Confronta `RIR Target` vs `RIR Effettivo`.
-    -   Se RIR Effettivo > Target (+2 riserva): **Suggerisci +2.5% peso**.
-    -   Se Reps > Target Max: **Suggerisci +Peso**.
-    -   Se RIR < 0 (Fallimento): **Suggerisci stesso peso o scarico (--10%)**.
+### B. Progression Engine
+Il cuore pulsante dell'app. Non solo "suggerimenti", ma un motore deterministico:
+1.  **Supporto Modalità**: Double Progression, Linear Progression, Custom Sequences.
+2.  **Automazione**: Calcola il prossimo carico basandosi sulla storia (es. "Hai completato 3x10? Aumenta 2.5kg").
+3.  **Flessibilità**: Ogni esercizio può avere la sua logica di progressione configurabile.
 
 ### C. Powerlifting Analytics
 -   **Punteggi Competizione**: Calcolo automatico di DOTS, Wilks e IPF GL Points.

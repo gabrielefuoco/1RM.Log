@@ -51,7 +51,7 @@ export function TrendChart({
 
 
     return (
-        <div className="w-full h-[350px] w-full">
+        <div className="w-full h-full min-h-[300px]">
             <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={formattedData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                     <defs>
@@ -80,14 +80,42 @@ export function TrendChart({
                         domain={['auto', 'auto']}
                     />
                     <Tooltip
-                        content={({ active, payload, label }) => {
+                        content={({ active, payload }) => {
                             if (active && payload && payload.length) {
+                                const data = payload[0].payload
+                                const current = Number(payload[0].value)
+                                const compare = data.compareValue !== null ? Number(data.compareValue) : null
+                                const diff = compare !== null ? ((current - compare) / compare) * 100 : null
+
                                 return (
-                                    <div className="bg-card/95 backdrop-blur border border-border/50 p-3 rounded-lg shadow-xl">
-                                        <p className="text-[10px] text-muted-foreground font-mono uppercase mb-1">{payload[0].payload.fullDate}</p>
-                                        <p className="text-lg font-heading text-foreground font-bold flex items-center gap-2">
-                                            {Number(payload[0].value).toFixed(1)} <span className="text-xs font-normal text-muted-foreground">{unit}</span>
+                                    <div className="bg-card/95 backdrop-blur border border-border p-3 rounded-lg shadow-xl min-w-[140px]">
+                                        <p className="text-[10px] text-muted-foreground font-mono uppercase mb-2 border-b border-border/50 pb-1">
+                                            {data.fullDate}
                                         </p>
+                                        <div className="space-y-2">
+                                            <div className="flex justify-between items-baseline gap-4">
+                                                <span className="text-[10px] text-muted-foreground font-mono uppercase">Attuale</span>
+                                                <span className="text-sm font-bold text-foreground">
+                                                    {current.toFixed(1)} <span className="text-[10px] text-muted-foreground">{unit}</span>
+                                                </span>
+                                            </div>
+                                            {compare !== null && (
+                                                <>
+                                                    <div className="flex justify-between items-baseline gap-4">
+                                                        <span className="text-[10px] text-muted-foreground font-mono uppercase">Precedente</span>
+                                                        <span className="text-sm font-medium text-muted-foreground">
+                                                            {compare.toFixed(1)} <span className="text-[10px]">{unit}</span>
+                                                        </span>
+                                                    </div>
+                                                    <div className="flex justify-between items-baseline gap-4 pt-1 border-t border-border/30">
+                                                        <span className="text-[10px] text-muted-foreground font-mono uppercase">Progresso</span>
+                                                        <span className={`text-xs font-bold ${diff! >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+                                                            {diff! >= 0 ? '+' : ''}{diff!.toFixed(1)}%
+                                                        </span>
+                                                    </div>
+                                                </>
+                                            )}
+                                        </div>
                                     </div>
                                 )
                             }

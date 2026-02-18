@@ -282,25 +282,38 @@ export default function SessionRunnerPage({ params }: { params: Promise<{ sessio
         const bestHistoryLog = currentItem.historyLogs.reduce((prev, curr) => (prev.weight > curr.weight) ? prev : curr, currentItem.historyLogs[0])
         const best1RM = currentItem.historyLogs.length > 0 ? Math.max(...currentItem.historyLogs.map(l => Number(l.estimated_1rm) || 0)) : 0
 
+        let referenceWeight = 0;
+
+        // PRIORITY 1: Progression Target (The most accurate "planned" weight)
+        if (currentItem.progressionTarget?.targetWeight && currentItem.progressionTarget.targetWeight > 0) {
+            referenceWeight = currentItem.progressionTarget.targetWeight
+        }
+
+        // PRIORITY 2: Best Set Logged in THIS Session (if user already started)
+        if (referenceWeight === 0 && currentItem.logs.length > 0) {
+            referenceWeight = Math.max(...currentItem.logs.map(l => l.weight))
+        }
+
+        // PRIORITY 3: Calculated from 1RM + Target Percentage
         // Find if we have a target percentage in the first working set
-        // Note: setsData maps to all sets (1-based index usually aligns with 0-based array if carefully managed, but here setsData is array of configurations)
-        // We look at the first set's config.
         const firstSetConfig = currentItem.setsData?.[0]
         const firstSetPercent = firstSetConfig?.percentage
 
-        let referenceWeight = 0;
-
-        if (firstSetPercent && best1RM > 0) {
+        if (referenceWeight === 0 && firstSetPercent && best1RM > 0) {
             // Calculate based on %
             const raw = best1RM * (firstSetPercent / 100) * intensityMultiplier
             referenceWeight = Math.round(raw / 2.5) * 2.5
-        } else if (bestHistoryLog) {
+        }
+
+        // PRIORITY 4: History Best Weight (Fallback)
+        if (referenceWeight === 0 && bestHistoryLog) {
             // Fallback to history best weight
             referenceWeight = bestHistoryLog.weight
         }
 
         if (referenceWeight <= 0) {
             // No history or percentage, cannot calculate warmup automatically reliably
+            toast.error(t("errorWarmupNoRef"))
             return
         }
 

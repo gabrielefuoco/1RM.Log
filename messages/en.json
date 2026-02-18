@@ -127,6 +127,7 @@
         "swappedWith": "Swapped with",
         "addedEx": "Added",
         "warmupAdded": "warmup sets added",
+        "errorWarmupNoRef": "Cannot calculate warmup: no reference (target, history, or current set).",
         "exitTitle": "Exit session?",
         "exitDescription": "Progress so far has been saved, but the workout will remain active. You can resume it later.",
         "removeExTitle": "Remove exercise?",

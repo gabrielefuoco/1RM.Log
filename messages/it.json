@@ -127,6 +127,7 @@
         "swappedWith": "Sostituito con",
         "addedEx": "Aggiunto",
         "warmupAdded": "set di warmup aggiunti",
+        "errorWarmupNoRef": "Impossibile calcolare warmup: nessun riferimento (target, storico o set corrente).",
         "exitTitle": "Uscire dalla sessione?",
         "exitDescription": "I progressi fatti finora sono stati salvati, ma l'allenamento rimarrà attivo. Potrai riprenderlo più tardi.",
         "removeExTitle": "Rimuovere esercizio?",

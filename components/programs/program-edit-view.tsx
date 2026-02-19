@@ -25,7 +25,7 @@ import {
     sortableKeyboardCoordinates,
     horizontalListSortingStrategy,
 } from '@dnd-kit/sortable'
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { TemplateExercise } from "@/types/database"
 import { updateTemplateExerciseOrder } from "@/services/exercises"
 import { toast } from "sonner"
@@ -45,6 +45,24 @@ export function ProgramEditView({ programId, templates, onRefresh }: ProgramEdit
     const [activeExercise, setActiveExercise] = useState<TemplateExercise | null>(null)
     const [originalContainer, setOriginalContainer] = useState<string | null>(null)
 
+    // Refs for accessing latest state in event handlers
+    const itemsRef = useRef<Record<string, TemplateExercise[]>>(items)
+    const activeIdRef = useRef(activeId)
+
+    // Helper to update items and ref key
+    const updateItems = (newItems: Record<string, TemplateExercise[]> | ((prev: Record<string, TemplateExercise[]>) => Record<string, TemplateExercise[]>)) => {
+        if (typeof newItems === 'function') {
+            setItems(prev => {
+                const next = newItems(prev)
+                itemsRef.current = next
+                return next
+            })
+        } else {
+            setItems(newItems)
+            itemsRef.current = newItems
+        }
+    }
+
     // Initialize/Sync State
     useEffect(() => {
         const newItems: Record<string, TemplateExercise[]> = {}
@@ -53,8 +71,12 @@ export function ProgramEditView({ programId, templates, onRefresh }: ProgramEdit
             const sorted = [...(t.template_exercises || [])].sort((a, b) => a.order - b.order)
             newItems[t.id] = sorted
         })
-        setItems(newItems)
+        updateItems(newItems)
     }, [templates])
+
+    useEffect(() => {
+        activeIdRef.current = activeId
+    }, [activeId])
 
 
     // 2. Sensors
@@ -68,16 +90,17 @@ export function ProgramEditView({ programId, templates, onRefresh }: ProgramEdit
         const { active } = event
         setActiveId(active.id as string)
 
+        const currentItems = itemsRef.current
         const findContainer = (id: string) => {
-            if (id in items) return id
-            return Object.keys(items).find(key => items[key].some(e => e.id === id))
+            if (id in currentItems) return id
+            return Object.keys(currentItems).find(key => currentItems[key].some(e => e.id === id))
         }
 
         const container = findContainer(active.id as string)
         setOriginalContainer(container || null)
 
         if (container) {
-            const ex = items[container].find(e => e.id === active.id)
+            const ex = currentItems[container].find(e => e.id === active.id)
             if (ex) setActiveExercise(ex)
         }
     }
@@ -90,9 +113,10 @@ export function ProgramEditView({ programId, templates, onRefresh }: ProgramEdit
         const overId = over.id as string
 
         // Find source and destination containers
+        const currentItems = itemsRef.current
         const findContainer = (id: string) => {
-            if (id in items) return id
-            return Object.keys(items).find(key => items[key].some(e => e.id === id))
+            if (id in currentItems) return id
+            return Object.keys(currentItems).find(key => currentItems[key].some(e => e.id === id))
         }
 
         const activeContainer = findContainer(activeId)
@@ -103,7 +127,7 @@ export function ProgramEditView({ programId, templates, onRefresh }: ProgramEdit
         }
 
         // Moving between containers
-        setItems((prev) => {
+        updateItems((prev) => {
             const activeItems = prev[activeContainer]
             const overItems = prev[overContainer]
             const activeIndex = activeItems.findIndex(i => i.id === activeId)
@@ -123,10 +147,6 @@ export function ProgramEditView({ programId, templates, onRefresh }: ProgramEdit
                 newIndex = overIndex >= 0 ? overIndex + modifier : overItems.length + 1;
             }
 
-            // Update the pushed item with new template ID immediately?
-            // No, the ID in DB is updated on DragEnd.
-            // But for rendering, we use local state.
-
             return {
                 ...prev,
                 [activeContainer]: [
@@ -143,16 +163,13 @@ export function ProgramEditView({ programId, templates, onRefresh }: ProgramEdit
 
     const handleDragEnd = async (event: DragEndEvent) => {
         const { active, over } = event
-
-        // Commit the final move if needed (same container reorder)
-        // If different container, dragOver handled the move, but we might need final reorder.
-
         const activeId = active.id as string
         const overId = over ? (over.id as string) : null
 
-        let currentState = { ...items }
+        // Use Ref for latest state (crucial!)
+        let currentState = { ...itemsRef.current }
 
-        const findValContainer = (id: string, currentItems: typeof items) =>
+        const findValContainer = (id: string, currentItems: typeof currentState) =>
             Object.keys(currentItems).find(key => currentItems[key].some(e => e.id === id))
 
         const activeContainer = findValContainer(activeId, currentState)
@@ -168,19 +185,19 @@ export function ProgramEditView({ programId, templates, onRefresh }: ProgramEdit
                     ...currentState,
                     [activeContainer]: arrayMove(currentState[activeContainer], activeIndex, overIndex)
                 }
-                setItems(currentState)
+                updateItems(currentState)
             }
         }
 
+        const original = originalContainer // Capture before reset
         setActiveId(null)
         setActiveExercise(null)
         setOriginalContainer(null)
 
         // PERSISTENCE
-        // Update DB for affected containers.
         const containersToUpdate = new Set<string>()
         if (activeContainer) containersToUpdate.add(activeContainer)
-        if (originalContainer) containersToUpdate.add(originalContainer)
+        if (original) containersToUpdate.add(original)
 
         try {
             const promises: Promise<any>[] = []
@@ -194,12 +211,15 @@ export function ProgramEditView({ programId, templates, onRefresh }: ProgramEdit
                     }))
                 })
             }
-            await Promise.all(promises)
-            // toast.success("Salvato")
+            if (promises.length > 0) {
+                await Promise.all(promises)
+                // toast.success("Ordine salvato")
+                onRefresh()
+            }
         } catch (e) {
             console.error(e)
             toast.error("Errore salvataggio")
-            onRefresh()
+            onRefresh() // Revert on error
         }
     }
 

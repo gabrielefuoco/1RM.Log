@@ -17,7 +17,7 @@ export function ProgramEditView({ programId, templates, onRefresh }: ProgramEdit
     return (
         <div className="h-full w-full">
             <ScrollArea className="w-full whitespace-nowrap rounded-md border-none">
-                <div className="flex w-max space-x-4 p-1 pb-4">
+                <div className="flex min-w-full w-max space-x-4 p-1 pb-4">
                     {templates.map((template) => (
                         <WorkoutTemplateColumn
                             key={template.id}

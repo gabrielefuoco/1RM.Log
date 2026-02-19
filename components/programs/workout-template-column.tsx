@@ -65,7 +65,7 @@ export function WorkoutTemplateColumn({ template, onRefresh }: WorkoutTemplateCo
     }
 
     return (
-        <div className="w-[400px] shrink-0 flex flex-col h-full bg-zinc-900/40 rounded-xl border border-white/5 overflow-hidden">
+        <div className="flex-1 min-w-[400px] flex flex-col h-full bg-zinc-900/40 rounded-xl border border-white/5 overflow-hidden">
             {/* Header */}
             <div className="flex items-center justify-between p-3 border-b border-white/5 bg-zinc-900/60">
                 <div className="flex items-center gap-3 overflow-hidden">

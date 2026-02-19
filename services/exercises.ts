@@ -171,3 +171,17 @@ export async function updateTemplateExercise(id: string, updates: UpdateTemplate
     if (error) throw error
     return data
 }
+
+export async function updateTemplateExerciseOrder(id: string, updates: { order: number, workout_template_id?: string }) {
+    const supabase = createClient()
+
+    const { data, error } = await supabase
+        .from('template_exercises')
+        .update(updates)
+        .eq('id', id)
+        .select()
+        .single()
+
+    if (error) throw error
+    return data
+}

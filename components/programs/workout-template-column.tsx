@@ -19,22 +19,30 @@ import { removeTemplateExercise } from "@/services/exercises"
 import { deleteWorkoutTemplate } from "@/services/programs"
 import { toast } from "sonner"
 import { ScrollArea } from "@/components/ui/scroll-area"
+import { useDroppable } from "@dnd-kit/core"
+import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable"
+import { SortableTemplateExerciseCard } from "./sortable-template-exercise-card"
 
 interface WorkoutTemplateColumnProps {
     template: WorkoutTemplate & { template_exercises: any[] }
+    exercises: TemplateExercise[] // Controlled exercises
     onRefresh: () => void
 }
 
-export function WorkoutTemplateColumn({ template, onRefresh }: WorkoutTemplateColumnProps) {
+export function WorkoutTemplateColumn({ template, exercises, onRefresh }: WorkoutTemplateColumnProps) {
     const [editingExercise, setEditingExercise] = useState<TemplateExercise | null>(null)
     const [editTemplateOpen, setEditTemplateOpen] = useState(false)
     const [deleteTemplateOpen, setDeleteTemplateOpen] = useState(false)
     const [isDeleting, setIsDeleting] = useState(false)
 
-    // Parse exercises
-    const exercises = (template.template_exercises || []) as TemplateExercise[]
-    // Sort by order 
-    exercises.sort((a, b) => a.order - b.order)
+    // Droppable for the column itself
+    const { setNodeRef } = useDroppable({
+        id: template.id,
+        data: {
+            type: 'Column',
+            template
+        }
+    })
 
     const handleRemoveExercise = async (id: string, name: string) => {
         if (!confirm(`Rimuovere ${name}?`)) return
@@ -100,23 +108,25 @@ export function WorkoutTemplateColumn({ template, onRefresh }: WorkoutTemplateCo
 
             {/* List */}
             <ScrollArea className="flex-1 p-3">
-                <div className="space-y-3 pb-4">
-                    {exercises.map((ex, i) => (
-                        <TemplateExerciseCard
-                            key={ex.id}
-                            exercise={ex}
-                            index={i}
-                            onEdit={setEditingExercise}
-                            onRemove={handleRemoveExercise}
-                        />
-                    ))}
+                <SortableContext items={exercises.map(e => e.id)} strategy={verticalListSortingStrategy}>
+                    <div ref={setNodeRef} className="space-y-0 pb-4 min-h-[100px]">
+                        {exercises.map((ex, i) => (
+                            <SortableTemplateExerciseCard
+                                key={ex.id}
+                                exercise={ex}
+                                index={i}
+                                onEdit={setEditingExercise}
+                                onRemove={handleRemoveExercise}
+                            />
+                        ))}
 
-                    {exercises.length === 0 && (
-                        <div className="text-center py-12 opacity-50 border border-dashed border-white/10 rounded-lg">
-                            <p className="text-xs text-slate-400">Nessun esercizio</p>
-                        </div>
-                    )}
-                </div>
+                        {exercises.length === 0 && (
+                            <div className="text-center py-12 opacity-50 border border-dashed border-white/10 rounded-lg">
+                                <p className="text-xs text-slate-400">Nessun esercizio</p>
+                            </div>
+                        )}
+                    </div>
+                </SortableContext>
             </ScrollArea>
 
             {/* Footer Add Button */}

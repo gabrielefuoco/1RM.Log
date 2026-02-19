@@ -19,8 +19,9 @@ export function TemplateExerciseCard({
     exercise,
     index,
     onEdit,
-    onRemove
-}: TemplateExerciseCardProps) {
+    onRemove,
+    dragHandle
+}: TemplateExerciseCardProps & { dragHandle?: React.ReactNode }) {
     const sets = exercise.sets_data || []
     const progressionMode = exercise.progression_mode || 'static'
     const bodyParts = exercise.exercise?.body_parts || []
@@ -34,6 +35,7 @@ export function TemplateExerciseCard({
             mode="template"
             items={sets}
             onClick={() => onEdit(exercise)}
+            dragHandle={dragHandle}
 
             subtitle={
                 <div className="flex items-center gap-2 mt-0.5">

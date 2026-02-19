@@ -44,8 +44,9 @@ export function UniversalListCard({
     className,
     isCompact = false,
     headerExtra,
-    icon
-}: UniversalListCardProps) {
+    icon,
+    dragHandle
+}: UniversalListCardProps & { dragHandle?: ReactNode }) {
 
     return (
         <Card
@@ -76,6 +77,13 @@ export function UniversalListCard({
                 {/* Header Row */}
                 <div className="flex items-start justify-between gap-3">
                     <div className="flex items-center gap-4 min-w-0">
+                        {/* Drag Handle */}
+                        {dragHandle && (
+                            <div className="shrink-0 text-zinc-600 hover:text-white cursor-grab active:cursor-grabbing -ml-2 mr-1">
+                                {dragHandle}
+                            </div>
+                        )}
+
                         {/* Index / Icon Box */}
                         {(icon || index !== undefined) && (
                             <div className={cn(

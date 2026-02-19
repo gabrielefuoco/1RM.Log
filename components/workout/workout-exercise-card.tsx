@@ -28,8 +28,9 @@ export function WorkoutExerciseCard({
     actions,
     onClick,
     mode,
-    items
-}: WorkoutExerciseCardProps) {
+    items,
+    dragHandle
+}: WorkoutExerciseCardProps & { dragHandle?: ReactNode }) {
     return (
         <UniversalListCard
             title={title}
@@ -39,6 +40,7 @@ export function WorkoutExerciseCard({
             headerExtra={headerExtra}
             subtitle={subtitle}
             actions={actions}
+            dragHandle={dragHandle}
         >
             <div className="overflow-hidden">
                 {/* Table Header */}

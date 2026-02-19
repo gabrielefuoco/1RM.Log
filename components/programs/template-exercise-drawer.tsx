@@ -5,16 +5,7 @@ import { getExercises, addTemplateExercise, updateTemplateExercise } from "@/ser
 import { Exercise } from "@/types/database"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import {
-    Drawer,
-    DrawerContent,
-    DrawerDescription,
-    DrawerFooter,
-    DrawerHeader,
-    DrawerTitle,
-    DrawerTrigger,
-    DrawerClose,
-} from "@/components/ui/drawer"
+
 import {
     Dialog,
     DialogContent,
@@ -140,10 +131,10 @@ export function TemplateExerciseDrawer({
         }
     }
 
-    const Header = isDesktop ? DialogHeader : DrawerHeader
-    const Title = isDesktop ? DialogTitle : DrawerTitle
-    const Description = isDesktop ? DialogDescription : DrawerDescription
-    const Footer = isDesktop ? DialogFooter : DrawerFooter
+    const Header = DialogHeader
+    const Title = DialogTitle
+    const Description = DialogDescription
+    const Footer = DialogFooter
 
     const footerButtons = (
         <Footer className="p-6 pt-0 gap-3 sm:gap-0">
@@ -156,19 +147,12 @@ export function TemplateExerciseDrawer({
                     {loading ? "Saving..." : (mode === 'add' ? "Add Exercise" : "Save Changes")}
                 </Button>
             )}
-            {!isDesktop && (
-                <DrawerClose asChild>
-                    <Button variant="ghost" className="w-full text-slate-500 text-xs uppercase font-bold">
-                        Cancel
-                    </Button>
-                </DrawerClose>
-            )}
         </Footer>
     )
 
     const contentBody = (
-        <div className="flex flex-col h-full max-h-[90vh]">
-            <Header className="p-6 pb-2 shrink-0">
+        <div className="flex flex-col h-full max-h-[85vh]">
+            <Header className="p-6 pb-2 shrink-0 text-left">
                 <Title className="text-2xl uppercase italic font-black tracking-tighter text-white">
                     {selectedExercise ? (mode === 'add' ? "Configure Exercise" : "Edit Configuration") : "Select Exercise"}
                 </Title>
@@ -245,39 +229,19 @@ export function TemplateExerciseDrawer({
         </div>
     )
 
-    if (isDesktop) {
-        return (
-            <Dialog open={open} onOpenChange={onOpenChange}>
-                <DialogTrigger asChild>
-                    {trigger || (mode === 'add' && (
-                        <Button size="sm" variant="outline" className="h-8 text-xs border-primary/30 text-primary hover:bg-primary/10">
-                            <Plus className="h-3 w-3 mr-1" />
-                            Add Exercise
-                        </Button>
-                    ))}
-                </DialogTrigger>
-                <DialogContent className="max-w-2xl bg-background/90 border border-border backdrop-blur-xl shadow-2xl p-0 overflow-hidden text-white flex flex-col">
-                    {contentBody}
-                </DialogContent>
-            </Dialog>
-        )
-    }
-
     return (
-        <Drawer open={open} onOpenChange={onOpenChange}>
-            <DrawerTrigger asChild>
+        <Dialog open={open} onOpenChange={onOpenChange}>
+            <DialogTrigger asChild>
                 {trigger || (mode === 'add' && (
                     <Button size="sm" variant="outline" className="h-8 text-xs border-primary/30 text-primary hover:bg-primary/10">
                         <Plus className="h-3 w-3 mr-1" />
                         Add Exercise
                     </Button>
                 ))}
-            </DrawerTrigger>
-            <DrawerContent className="bg-background/95 border-t border-border max-h-[95vh] text-white">
-                <div className="mx-auto w-full max-w-sm">
-                    {contentBody}
-                </div>
-            </DrawerContent>
-        </Drawer>
+            </DialogTrigger>
+            <DialogContent className="max-w-2xl bg-zinc-950/95 border border-white/10 backdrop-blur-xl shadow-2xl p-0 overflow-hidden text-white flex flex-col w-[95vw] sm:w-full rounded-3xl">
+                {contentBody}
+            </DialogContent>
+        </Dialog>
     )
 }

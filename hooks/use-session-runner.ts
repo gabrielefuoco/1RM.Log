@@ -348,6 +348,53 @@ export function useSessionRunner(sessionId: string) {
         toast.success(t("exRemoved"))
     }
 
+    const removeSet = async (exerciseIndex: number, setNumber: number, isLogged: boolean, logId?: string) => {
+        if (isLogged && logId) {
+            // Delete from DB
+            try {
+                const supabase = createClient()
+                const { error } = await supabase.from('exercise_logs').delete().eq('id', logId)
+                if (error) throw error
+
+                // Update State
+                setRunnerExercises(prev => {
+                    const copy = [...prev]
+                    const target = { ...copy[exerciseIndex] }
+                    target.logs = target.logs.filter(l => l.id !== logId)
+
+                    // Renumber logs if needed? Ideally we just keep set_number as is or re-index.
+                    // For now, let's keep set_number as the identifier. 
+                    // But if we delete set 2, set 3 becomes set 2? 
+                    // In a live runner, usually we want to "void" it or just remove it.
+                    // If we remove it, the next sets shift up.
+
+                    // Let's re-fetch logs to be safe and consistent with DB triggers if any?
+                    // Or manual re-indexing:
+                    // Actually, if we just remove it, the "Plan" (targetSets) stays the same, 
+                    // but the "Logged" count decreases.
+
+                    copy[exerciseIndex] = target
+                    return copy
+                })
+                toast.success(t("setRemoved"))
+            } catch (e) {
+                console.error(e)
+                toast.error(t("errorRemovingSet"))
+            }
+        } else {
+            // It's a planned set (not logged yet), so we just reduce the target sets
+            setRunnerExercises(prev => {
+                const copy = [...prev]
+                const target = { ...copy[exerciseIndex] }
+                if (target.targetSets > 0) {
+                    target.targetSets -= 1
+                }
+                copy[exerciseIndex] = target
+                return copy
+            })
+        }
+    }
+
     const toggleDeload = () => {
         setIsDeload(!isDeload)
         toast.info(isDeload ? t("normalMode") : t("deloadMode"))
@@ -393,6 +440,7 @@ export function useSessionRunner(sessionId: string) {
         finishWorkout,
         addExtraSet,
         removeExercise,
+        removeSet,
         toggleDeload,
         openPicker,
 

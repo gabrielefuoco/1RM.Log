@@ -272,6 +272,7 @@ export default function SessionRunnerPage({ params }: { params: Promise<{ sessio
                                     previousSetWeight={currentItem.logs.find(l => l.set_number === log.set_number - 1)?.weight}
                                     isDeload={s.isDeload}
                                     progressionTarget={currentItem.progressionTarget}
+                                    onRemove={() => s.removeSet(s.currentIndex, log.set_number, true, log.id)}
                                 />
                             )
                         })}
@@ -318,6 +319,7 @@ export default function SessionRunnerPage({ params }: { params: Promise<{ sessio
                                     previousSetWeight={currentItem.logs.find(l => l.set_number === setNum - 1)?.weight}
                                     isDeload={s.isDeload}
                                     progressionTarget={currentItem.progressionTarget}
+                                    onRemove={() => s.removeSet(s.currentIndex, setNum, false)}
                                 />
                             )
                         })}

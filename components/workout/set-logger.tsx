@@ -1,5 +1,3 @@
-"use client"
-
 import { useEffect, useState } from "react"
 import { ExerciseLog, ProgressionSettings, TemplateSet } from "@/types/database"
 import { ProgressionResult } from "@/services/progression"
@@ -7,7 +5,7 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { calculate1RM, rirToRpe, rpeToRir } from "@/utils/formulas"
-import { Check, History, Timer } from "lucide-react"
+import { Check, History, Timer, Trash2, X } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 import { PlateCalculator } from "./plate-calculator"
@@ -33,6 +31,7 @@ interface SetLoggerProps {
     isActive?: boolean
     isFuture?: boolean
     onSave: (weight: number, reps: number, rir: number, setType: 'work' | 'warmup' | 'drop' | 'failure') => void
+    onRemove?: () => void
     initialValues?: ExerciseLog
     settings: ProgressionSettings | null
     intensityMultiplier?: number
@@ -55,6 +54,7 @@ export function SetLogger({
     isActive = false,
     isFuture = false,
     onSave,
+    onRemove,
     initialValues,
     settings,
     intensityMultiplier = 1.0,
@@ -116,7 +116,7 @@ export function SetLogger({
 
     return (
         <div className={cn(
-            "p-4 rounded-3xl border transition-all duration-300",
+            "p-4 rounded-3xl border transition-all duration-300 relative group",
             isActive
                 ? "border-primary bg-muted/40 shadow-[0_0_25px_rgba(0,255,163,0.1)] scale-[1.01]"
                 : isSaved
@@ -126,9 +126,22 @@ export function SetLogger({
         )}
             onClick={() => isSaved && setIsSaved(false)}
         >
+            {/* Remove Button */}
+            {onRemove && (
+                <button
+                    onClick={(e) => {
+                        e.stopPropagation()
+                        onRemove()
+                    }}
+                    className="absolute top-2 right-2 p-1.5 text-slate-500 hover:text-red-400 bg-black/20 hover:bg-black/40 rounded-full transition-colors z-10"
+                >
+                    <X className="h-3 w-3" />
+                </button>
+            )}
+
             {/* Unified Header */}
             <div className={cn(
-                "flex flex-wrap items-center justify-between gap-y-2 mb-3",
+                "flex flex-wrap items-center justify-between gap-y-2 mb-3 pr-6", // Added pr-6 for close button
                 !isActive && "opacity-60"
             )}>
                 <div className="flex items-center gap-2">

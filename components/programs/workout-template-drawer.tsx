@@ -10,6 +10,7 @@ import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import { Plus } from "lucide-react"
 
+
 interface WorkoutTemplateDrawerProps {
     mode: 'create' | 'edit'
     programId?: string // Required for create
@@ -18,6 +19,7 @@ interface WorkoutTemplateDrawerProps {
     open?: boolean
     onOpenChange?: (open: boolean) => void
     onSuccess: () => void
+    trigger?: React.ReactNode
 }
 
 export function WorkoutTemplateDrawer({
@@ -27,7 +29,8 @@ export function WorkoutTemplateDrawer({
     currentTemplatesCount = 0,
     open: controlledOpen,
     onOpenChange: setControlledOpen,
-    onSuccess
+    onSuccess,
+    trigger
 }: WorkoutTemplateDrawerProps) {
     const [internalOpen, setInternalOpen] = useState(false)
     const [loading, setLoading] = useState(false)
@@ -96,7 +99,7 @@ export function WorkoutTemplateDrawer({
             description={mode === 'create'
                 ? "Aggiungi una giornata (es. Push A, Upper Body)."
                 : "Aggiorna i dettagli della scheda."}
-            trigger={defaultTrigger}
+            trigger={trigger || defaultTrigger}
             submitLabel={mode === 'create' ? "Crea Scheda" : "Salva Modifiche"}
             loadingLabel={loading ? "Salvataggio..." : undefined}
             loading={loading}

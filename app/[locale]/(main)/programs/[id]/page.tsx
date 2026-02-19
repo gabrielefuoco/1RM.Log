@@ -8,10 +8,11 @@ import { WorkoutTemplateList } from "@/components/programs/workout-template-list
 import { WorkoutTemplateCard } from "@/components/programs/workout-template-card"
 import { WorkoutTemplateDrawer } from "@/components/programs/workout-template-drawer"
 import { Button } from "@/components/ui/button"
-import { ArrowLeft, Plus, Play } from "lucide-react"
+import { ArrowLeft, Plus, Play, LayoutGrid, Columns } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { useRouter } from "next/navigation"
 import { Card, CardContent } from "@/components/ui/card"
+import { ProgramEditView } from "@/components/programs/program-edit-view"
 
 export default function ProgramDetailPage({ params }: { params: Promise<{ id: string }> }) {
     const router = useRouter()
@@ -21,29 +22,29 @@ export default function ProgramDetailPage({ params }: { params: Promise<{ id: st
     const [program, setProgram] = useState<Program | null>(null)
     const [templates, setTemplates] = useState<(WorkoutTemplate & { template_exercises: any[] })[]>([])
     const [loading, setLoading] = useState(true)
+    const [viewMode, setViewMode] = useState<'grid' | 'columns'>('grid')
 
-    useEffect(() => {
-        const loadData = async () => {
-            setLoading(true)
-            const supabase = createClient()
+    const loadData = async () => {
+        // setLoading(true) // Don't block UI on refresh if already loaded
+        const supabase = createClient()
 
-            // 1. Get Program Details
+        // 1. Get Program Details
+        if (!program) {
             const { data: prog } = await supabase
                 .from('programs')
                 .select('*')
                 .eq('id', id)
                 .single()
-
-            if (prog) {
-                setProgram(prog)
-                // 2. Get Templates
-                const temps = await getProgramTemplates(id)
-                setTemplates(temps)
-            }
-
-            setLoading(false)
+            if (prog) setProgram(prog)
         }
 
+        // 2. Get Templates
+        const temps = await getProgramTemplates(id)
+        setTemplates(temps)
+        setLoading(false)
+    }
+
+    useEffect(() => {
         loadData()
     }, [id])
 
@@ -72,37 +73,64 @@ export default function ProgramDetailPage({ params }: { params: Promise<{ id: st
             <div>
                 <div className="flex items-center justify-between mb-4">
                     <h2 className="text-sm font-bold text-slate-500 uppercase tracking-wider">Schede Allenamento</h2>
-                    <WorkoutTemplateDrawer
-                        mode="create"
-                        programId={id}
-                        currentTemplatesCount={templates.length}
-                        onSuccess={async () => {
-                            const temps = await getProgramTemplates(id)
-                            setTemplates(temps)
-                        }}
-                    />
+
+                    <div className="flex items-center gap-2">
+                        {/* View Toggle - Desktop Only */}
+                        <div className="hidden md:flex bg-zinc-900 rounded-lg p-1 border border-white/10">
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                className={`h-7 w-7 p-0 ${viewMode === 'grid' ? 'bg-white/10 text-white' : 'text-slate-500 hover:text-white'}`}
+                                onClick={() => setViewMode('grid')}
+                            >
+                                <LayoutGrid className="h-4 w-4" />
+                            </Button>
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                className={`h-7 w-7 p-0 ${viewMode === 'columns' ? 'bg-white/10 text-white' : 'text-slate-500 hover:text-white'}`}
+                                onClick={() => setViewMode('columns')}
+                            >
+                                <Columns className="h-4 w-4" />
+                            </Button>
+                        </div>
+
+                        <WorkoutTemplateDrawer
+                            mode="create"
+                            programId={id}
+                            currentTemplatesCount={templates.length}
+                            onSuccess={loadData}
+                        />
+                    </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {templates.map((template, index) => (
-                        <WorkoutTemplateCard
-                            key={template.id}
-                            template={template}
-                            index={index}
-                            onClick={(id) => router.push(`/programs/${id}/template/${template.id}`)}
-                            onPlay={(id) => router.push(`/workout/${id}`)}
-                        />
-                    ))
-                    }
+                {viewMode === 'grid' ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {templates.map((template, index) => (
+                            <WorkoutTemplateCard
+                                key={template.id}
+                                template={template}
+                                index={index}
+                                onClick={(id) => router.push(`/programs/${id}/template/${template.id}`)}
+                                onPlay={(id) => router.push(`/workout/${id}`)}
+                            />
+                        ))}
 
-                    {
-                        templates.length === 0 && (
+                        {templates.length === 0 && (
                             <div className="col-span-full text-center py-8 border border-dashed border-white/10 rounded-xl">
                                 <p className="text-slate-500">Nessuna scheda creata.</p>
                             </div>
-                        )
-                    }
-                </div>
+                        )}
+                    </div>
+                ) : (
+                    <div className="h-[calc(100vh-200px)]">
+                        <ProgramEditView
+                            programId={id}
+                            templates={templates}
+                            onRefresh={loadData}
+                        />
+                    </div>
+                )}
             </div>
 
         </div>

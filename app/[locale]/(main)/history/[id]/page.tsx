@@ -19,24 +19,15 @@ import {
     DropdownMenuTrigger,
     DropdownMenuSeparator
 } from "@/components/ui/dropdown-menu"
+import { ConfirmDrawer } from "@/components/ui/confirm-drawer"
 import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-} from "@/components/ui/alert-dialog"
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-} from "@/components/ui/dialog"
+    Drawer,
+    DrawerContent,
+    DrawerDescription,
+    DrawerFooter,
+    DrawerHeader,
+    DrawerTitle,
+} from "@/components/ui/drawer"
 import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
 import { WorkoutExerciseCard } from "@/components/workout/workout-exercise-card"
@@ -292,75 +283,65 @@ export default function SessionDetailPage({
             </div>
 
             {/* Delete Session Alert */}
-            <AlertDialog open={deleteSessionOpen} onOpenChange={setDeleteSessionOpen}>
-                <AlertDialogContent className="bg-zinc-900 border-white/10 text-white">
-                    <AlertDialogHeader>
-                        <AlertDialogTitle>Delete Workout?</AlertDialogTitle>
-                        <AlertDialogDescription className="text-slate-400">
-                            This action will delete the entire session and all recorded sets.
-                        </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                        <AlertDialogCancel className="bg-transparent border-white/10 text-white hover:bg-white/5 hover:text-white">Cancel</AlertDialogCancel>
-                        <AlertDialogAction
-                            onClick={(e) => {
-                                e.preventDefault()
-                                handleDeleteSession()
-                            }}
-                            className="bg-red-600 hover:bg-red-700 text-white border-none"
-                            disabled={isDeletingSession}
-                        >
-                            {isDeletingSession ? "Deleting..." : "Delete"}
-                        </AlertDialogAction>
-                    </AlertDialogFooter>
-                </AlertDialogContent>
-            </AlertDialog>
+            <ConfirmDrawer
+                open={deleteSessionOpen}
+                onOpenChange={setDeleteSessionOpen}
+                title="Delete Workout?"
+                description="This action will delete the entire session and all recorded sets."
+                confirmLabel={isDeletingSession ? "Deleting..." : "Delete"}
+                cancelLabel="Cancel"
+                onConfirm={handleDeleteSession}
+                loading={isDeletingSession}
+                variant="destructive"
+            />
 
-            {/* Edit Log Dialog */}
-            <Dialog open={!!editingLog} onOpenChange={(open) => !open && setEditingLog(null)}>
-                <DialogContent className="bg-zinc-900 border-white/10 text-white">
-                    <DialogHeader>
-                        <DialogTitle>Modify Set</DialogTitle>
-                        <DialogDescription>{editingLog?.exercise.name}</DialogDescription>
-                    </DialogHeader>
+            {/* Edit Log Drawer */}
+            <Drawer open={!!editingLog} onOpenChange={(open) => !open && setEditingLog(null)}>
+                <DrawerContent className="bg-zinc-900 border-t border-white/10 text-white">
+                    <div className="mx-auto w-full max-w-sm">
+                        <DrawerHeader>
+                            <DrawerTitle>Modify Set</DrawerTitle>
+                            <DrawerDescription>{editingLog?.exercise.name}</DrawerDescription>
+                        </DrawerHeader>
 
-                    <div className="grid grid-cols-2 gap-4 py-4">
-                        <div className="space-y-2">
-                            <Label>Weight (kg)</Label>
-                            <Input
-                                type="number"
-                                step="0.5"
-                                value={editLogWeight}
-                                onChange={(e) => setEditLogWeight(Number(e.target.value))}
-                                className="bg-zinc-950 border-white/10 text-white"
-                            />
+                        <div className="grid grid-cols-2 gap-4 px-4 py-4">
+                            <div className="space-y-2">
+                                <Label>Weight (kg)</Label>
+                                <Input
+                                    type="number"
+                                    step="0.5"
+                                    value={editLogWeight}
+                                    onChange={(e) => setEditLogWeight(Number(e.target.value))}
+                                    className="bg-zinc-950 border-white/10 text-white"
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <Label>Reps</Label>
+                                <Input
+                                    type="number"
+                                    value={editLogReps}
+                                    onChange={(e) => setEditLogReps(Number(e.target.value))}
+                                    className="bg-zinc-950 border-white/10 text-white"
+                                />
+                            </div>
+                            <div className="col-span-2 space-y-2">
+                                <Label>RIR (Optional)</Label>
+                                <Input
+                                    type="number"
+                                    value={editLogRir ?? ""}
+                                    onChange={(e) => setEditLogRir(e.target.value ? Number(e.target.value) : undefined)}
+                                    className="bg-zinc-950 border-white/10 text-white"
+                                />
+                            </div>
                         </div>
-                        <div className="space-y-2">
-                            <Label>Reps</Label>
-                            <Input
-                                type="number"
-                                value={editLogReps}
-                                onChange={(e) => setEditLogReps(Number(e.target.value))}
-                                className="bg-zinc-950 border-white/10 text-white"
-                            />
-                        </div>
-                        <div className="col-span-2 space-y-2">
-                            <Label>RIR (Optional)</Label>
-                            <Input
-                                type="number"
-                                value={editLogRir ?? ""}
-                                onChange={(e) => setEditLogRir(e.target.value ? Number(e.target.value) : undefined)}
-                                className="bg-zinc-950 border-white/10 text-white"
-                            />
-                        </div>
+
+                        <DrawerFooter>
+                            <Button onClick={handleUpdateLog} className="bg-primary text-background-dark font-bold w-full">Save</Button>
+                            <Button variant="outline" onClick={() => setEditingLog(null)} className="text-slate-400 border-white/10 w-full">Cancel</Button>
+                        </DrawerFooter>
                     </div>
-
-                    <DialogFooter>
-                        <Button variant="ghost" onClick={() => setEditingLog(null)} className="text-slate-400">Cancel</Button>
-                        <Button onClick={handleUpdateLog} className="bg-primary text-background-dark font-bold">Save</Button>
-                    </DialogFooter>
-                </DialogContent>
-            </Dialog>
+                </DrawerContent>
+            </Drawer>
 
         </div>
     )

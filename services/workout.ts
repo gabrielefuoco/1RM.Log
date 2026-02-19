@@ -209,34 +209,6 @@ export async function getPreviousLogs(exerciseId: string, limit: number = 5) {
 }
 
 /**
- * Get the full workout template with exercises for the runner
- */
-export async function getWorkoutRunnerData(templateId: string) {
-    const supabase = createClient()
-
-    const { data, error } = await supabase
-        .from('workout_templates')
-        .select(`
-            *,
-            template_exercises (
-                *,
-                exercise:exercises(*)
-            )
-        `)
-        .eq('id', templateId)
-        .single()
-
-    if (error) throw error
-
-    // Sort exercises by order
-    if (data && data.template_exercises) {
-        data.template_exercises.sort((a: any, b: any) => a.order - b.order)
-    }
-
-    return data
-}
-
-/**
  * Get all data needed to run an active session.
  * - Session details
  * - Linked Template (if any)

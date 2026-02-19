@@ -6,13 +6,12 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { ArrowLeft, GripVertical, Trash2, Pencil, MoreVertical } from "lucide-react"
 import { useRouter } from "next/navigation"
-import { AddTemplateExerciseDrawer } from "@/components/programs/add-template-exercise-drawer"
+import { TemplateExerciseDrawer } from "@/components/programs/template-exercise-drawer"
 import { removeTemplateExercise } from "@/services/exercises"
 import { deleteWorkoutTemplate } from "@/services/programs"
 import { toast } from "sonner"
-import { EditTemplateExerciseDrawer } from "@/components/programs/edit-template-exercise-drawer"
 import { TemplateExerciseCard } from "@/components/programs/template-exercise-card"
-import { EditTemplateDrawer } from "@/components/programs/edit-template-drawer"
+import { WorkoutTemplateDrawer } from "@/components/programs/workout-template-drawer"
 import { WorkoutTemplate, TemplateExercise } from "@/types/database"
 import {
     DropdownMenu,
@@ -21,16 +20,7 @@ import {
     DropdownMenuTrigger,
     DropdownMenuSeparator
 } from "@/components/ui/dropdown-menu"
-import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-} from "@/components/ui/alert-dialog"
+import { ConfirmDrawer } from "@/components/ui/confirm-drawer"
 
 
 export default function TemplateDetailPage({
@@ -174,7 +164,8 @@ export default function TemplateDetailPage({
             <div>
                 <div className="flex items-center justify-between mb-4">
                     <h2 className="text-sm font-bold text-slate-500 uppercase tracking-wider">Esercizi</h2>
-                    <AddTemplateExerciseDrawer
+                    <TemplateExerciseDrawer
+                        mode="add"
                         templateId={templateId}
                         currentExercisesCount={exercises.length}
                         onSuccess={loadData}
@@ -202,43 +193,32 @@ export default function TemplateDetailPage({
             </div>
 
             {/* Drawers & Dialogs */}
-            <EditTemplateExerciseDrawer
+            <TemplateExerciseDrawer
+                mode="edit"
                 templateExercise={editingExercise}
                 open={!!editingExercise}
                 onOpenChange={(open) => !open && setEditingExercise(null)}
                 onSuccess={loadData}
             />
 
-            <EditTemplateDrawer
+            <WorkoutTemplateDrawer
+                mode="edit"
                 template={template}
                 open={templateEditOpen}
                 onOpenChange={setTemplateEditOpen}
                 onSuccess={loadData}
             />
 
-            <AlertDialog open={deleteTemplateOpen} onOpenChange={setDeleteTemplateOpen}>
-                <AlertDialogContent className="bg-zinc-900 border-white/10 text-white">
-                    <AlertDialogHeader>
-                        <AlertDialogTitle>Eliminare {template.name}?</AlertDialogTitle>
-                        <AlertDialogDescription className="text-slate-400">
-                            Stai per eliminare questa scheda e tutti i suoi esercizi. L'azione è irreversibile.
-                        </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                        <AlertDialogCancel className="bg-transparent border-white/10 text-white hover:bg-white/5 hover:text-white">Annulla</AlertDialogCancel>
-                        <AlertDialogAction
-                            onClick={(e) => {
-                                e.preventDefault()
-                                handleDeleteTemplate()
-                            }}
-                            className="bg-red-600 hover:bg-red-700 text-white border-none"
-                            disabled={isDeletingTemplate}
-                        >
-                            {isDeletingTemplate ? "Eliminazione..." : "Elimina Scheda"}
-                        </AlertDialogAction>
-                    </AlertDialogFooter>
-                </AlertDialogContent>
-            </AlertDialog>
+            <ConfirmDrawer
+                open={deleteTemplateOpen}
+                onOpenChange={setDeleteTemplateOpen}
+                title={`Eliminare ${template.name}?`}
+                description="Stai per eliminare questa scheda e tutti i suoi esercizi. L'azione è irreversibile."
+                confirmLabel={isDeletingTemplate ? "Eliminazione..." : "Elimina Scheda"}
+                onConfirm={handleDeleteTemplate}
+                loading={isDeletingTemplate}
+                variant="destructive"
+            />
         </div>
     )
 }

@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import { getExercises, searchExercises } from "@/services/exercises"
 import { Exercise, BodyPart } from "@/types/database"
 import { ExerciseList } from "@/components/exercises/exercise-list"
-import { CreateExerciseDrawer } from "@/components/exercises/create-exercise-drawer"
+import { ExerciseDrawer } from "@/components/exercises/exercise-drawer"
 import { Input } from "@/components/ui/input"
 import { Search } from "lucide-react"
 import { useTranslations } from "next-intl"
@@ -69,7 +69,7 @@ export default function ExercisesPage() {
             <ExerciseList exercises={exercises} isLoading={loading} onRefresh={loadData} />
 
             {/* Create Action */}
-            <CreateExerciseDrawer onSuccess={loadData} />
+            <ExerciseDrawer mode="create" onSuccess={loadData} />
         </div>
     )
 }

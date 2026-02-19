@@ -12,19 +12,10 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-} from "@/components/ui/alert-dialog"
+import { ConfirmDrawer } from "@/components/ui/confirm-drawer"
 import { deleteExercise } from "@/services/exercises"
 import { toast } from "sonner"
-import { EditExerciseDrawer } from "./edit-exercise-drawer"
+import { ExerciseDrawer } from "./exercise-drawer"
 
 interface ExerciseListProps {
     exercises: Exercise[]
@@ -82,42 +73,33 @@ export function ExerciseList({ exercises, isLoading, onRefresh }: ExerciseListPr
             </div>
 
             {/* Edit Drawer */}
-            <EditExerciseDrawer
+            <ExerciseDrawer
+                mode="edit"
                 exercise={editingExercise}
                 open={editOpen}
                 onOpenChange={setEditOpen}
                 onSuccess={() => {
                     if (onRefresh) onRefresh()
-                    // Notification handled by drawer logic usually or here? Drawer has its own checks.
                     toast.success("Esercizio modificato")
                 }}
             />
 
             {/* Delete Confirmation */}
-            <AlertDialog open={!!exerciseToDelete} onOpenChange={(open) => !open && setExerciseToDelete(null)}>
-                <AlertDialogContent className="bg-zinc-900 border-white/10 text-white">
-                    <AlertDialogHeader>
-                        <AlertDialogTitle>Sei sicuro?</AlertDialogTitle>
-                        <AlertDialogDescription className="text-slate-400">
-                            Stai per eliminare <strong>{exerciseToDelete?.name}</strong>.
-                            Questa azione non può essere annullata. Se l'esercizio è usato in qualche workout storico, l'eliminazione potrebbe fallire o causare incongruenze.
-                        </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                        <AlertDialogCancel className="bg-transparent border-white/10 text-white hover:bg-white/5 hover:text-white">Annulla</AlertDialogCancel>
-                        <AlertDialogAction
-                            onClick={(e) => {
-                                e.preventDefault()
-                                handleDelete()
-                            }}
-                            className="bg-red-600 hover:bg-red-700 text-white border-none"
-                            disabled={isDeleting}
-                        >
-                            {isDeleting ? "Eliminazione..." : "Elimina"}
-                        </AlertDialogAction>
-                    </AlertDialogFooter>
-                </AlertDialogContent>
-            </AlertDialog>
+            <ConfirmDrawer
+                open={!!exerciseToDelete}
+                onOpenChange={(open) => !open && setExerciseToDelete(null)}
+                title="Sei sicuro?"
+                description={
+                    <>
+                        Stai per eliminare <strong>{exerciseToDelete?.name}</strong>.
+                        Questa azione non può essere annullata. Se l&apos;esercizio è usato in qualche workout storico, l&apos;eliminazione potrebbe fallire o causare incongruenze.
+                    </>
+                }
+                confirmLabel={isDeleting ? "Eliminazione..." : "Elimina"}
+                onConfirm={handleDelete}
+                loading={isDeleting}
+                variant="destructive"
+            />
         </>
     )
 }

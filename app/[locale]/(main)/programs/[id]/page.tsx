@@ -6,7 +6,7 @@ import { getProgramTemplates } from "@/services/programs"
 import { Program, WorkoutTemplate } from "@/types/database"
 import { WorkoutTemplateList } from "@/components/programs/workout-template-list"
 import { WorkoutTemplateCard } from "@/components/programs/workout-template-card"
-import { CreateWorkoutTemplateDrawer } from "@/components/programs/create-workout-template-drawer"
+import { WorkoutTemplateDrawer } from "@/components/programs/workout-template-drawer"
 import { Button } from "@/components/ui/button"
 import { ArrowLeft, Plus, Play } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
@@ -72,7 +72,8 @@ export default function ProgramDetailPage({ params }: { params: Promise<{ id: st
             <div>
                 <div className="flex items-center justify-between mb-4">
                     <h2 className="text-sm font-bold text-slate-500 uppercase tracking-wider">Schede Allenamento</h2>
-                    <CreateWorkoutTemplateDrawer
+                    <WorkoutTemplateDrawer
+                        mode="create"
                         programId={id}
                         currentTemplatesCount={templates.length}
                         onSuccess={async () => {

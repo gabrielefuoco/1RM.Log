@@ -61,7 +61,7 @@ export function ProgressionConfigurator({
             <div className="space-y-2">
                 <Label className="text-xs uppercase text-slate-500 font-bold tracking-wider">Progression Logic</Label>
                 <Select value={mode || 'static'} onValueChange={(v) => handleModeChange(v as ProgressionMode)}>
-                    <SelectTrigger className="bg-zinc-900 border-white/10 text-white">
+                    <SelectTrigger className="bg-card border-border text-white">
                         <SelectValue placeholder="Select logic" />
                     </SelectTrigger>
                     <SelectContent>
@@ -74,7 +74,7 @@ export function ProgressionConfigurator({
             </div>
 
             {/* Config Area */}
-            <div className="bg-zinc-900/40 rounded-xl p-4 border border-white/5 space-y-4">
+            <div className="bg-card/40 rounded-lg p-4 border border-border space-y-4">
                 {mode === 'static' && (
                     <div className="text-center py-4 text-zinc-500 text-sm italic">
                         Targets will remain constant until you manually change them.
@@ -94,7 +94,7 @@ export function ProgressionConfigurator({
                                 value={config.condition || 'all_sets_max_reps'}
                                 onValueChange={(v) => updateConfig('condition', v)}
                             >
-                                <SelectTrigger className="h-9 bg-zinc-950/80 border-white/10 text-white font-medium">
+                                <SelectTrigger className="h-9 bg-background/80 border-border text-white font-medium">
                                     <SelectValue />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -110,7 +110,7 @@ export function ProgressionConfigurator({
                                 type="number"
                                 value={config.increment_value || 2.5}
                                 onChange={(e) => updateConfig('increment_value', Number(e.target.value))}
-                                className="h-9 bg-zinc-950/80 border-white/10 text-white font-bold text-center"
+                                className="h-9 bg-background/80 border-border text-white font-bold text-center"
                             />
                         </div>
                     </div>
@@ -128,7 +128,7 @@ export function ProgressionConfigurator({
                                 type="number"
                                 value={config.increment_value || 2.5}
                                 onChange={(e) => updateConfig('increment_value', Number(e.target.value))}
-                                className="h-9 bg-zinc-950/80 border-white/10 text-white font-bold text-center"
+                                className="h-9 bg-background/80 border-border text-white font-bold text-center"
                             />
                         </div>
                     </div>
@@ -184,7 +184,7 @@ function CustomSequenceEditor({ config, onChange }: { config: any, onChange: (c:
 
             <div className="space-y-3 max-h-[40vh] overflow-y-auto pr-1 custom-scrollbar">
                 {(config.steps || []).map((step: any, i: number) => (
-                    <div key={i} className="bg-zinc-900/40 rounded-xl p-3 border border-white/5 space-y-3 relative group hover:bg-zinc-900/60 transition-colors">
+                    <div key={i} className="bg-card/40 rounded-lg p-3 border border-border space-y-3 relative group hover:bg-card/60 transition-colors">
                         <div className="flex items-center justify-between">
                             <span className="text-xs font-black text-white uppercase italic tracking-wider">Step {i + 1}</span>
                             <Button
@@ -201,7 +201,7 @@ function CustomSequenceEditor({ config, onChange }: { config: any, onChange: (c:
                             <div className="col-span-12 sm:col-span-4 space-y-1">
                                 <Label className="text-[10px] uppercase text-zinc-400 font-bold tracking-wider">Name</Label>
                                 <Input
-                                    className="h-9 text-xs font-bold px-2 bg-zinc-950/80 border-white/10 text-white rounded-lg"
+                                    className="h-9 text-xs font-bold px-2 bg-background/80 border-border text-white rounded-lg"
                                     value={step.name || ''}
                                     onChange={(e) => updateStep(i, 'name', e.target.value)}
                                     placeholder="e.g. Volume Week"
@@ -211,7 +211,7 @@ function CustomSequenceEditor({ config, onChange }: { config: any, onChange: (c:
                                 <Label className="text-[10px] uppercase text-zinc-400 font-bold tracking-wider text-center block">Sets</Label>
                                 <Input
                                     type="number"
-                                    className="h-9 text-sm text-center font-bold px-1 bg-zinc-950/80 border-white/10 text-white rounded-lg"
+                                    className="h-9 text-sm text-center font-bold px-1 bg-background/80 border-border text-white rounded-lg"
                                     value={step.sets}
                                     onChange={(e) => updateStep(i, 'sets', Number(e.target.value))}
                                 />
@@ -220,7 +220,7 @@ function CustomSequenceEditor({ config, onChange }: { config: any, onChange: (c:
                                 <Label className="text-[10px] uppercase text-zinc-400 font-bold tracking-wider text-center block">Reps</Label>
                                 <Input
                                     type="number"
-                                    className="h-9 text-sm text-center font-bold px-1 bg-zinc-950/80 border-white/10 text-white rounded-lg"
+                                    className="h-9 text-sm text-center font-bold px-1 bg-background/80 border-border text-white rounded-lg"
                                     value={step.reps}
                                     onChange={(e) => updateStep(i, 'reps', Number(e.target.value))}
                                 />
@@ -241,19 +241,19 @@ function CustomSequenceEditor({ config, onChange }: { config: any, onChange: (c:
                     </div>
                 ))}
                 {(config.steps || []).length === 0 && (
-                    <div className="text-center py-8 text-zinc-600 italic border border-dashed border-white/5 rounded-xl">
+                    <div className="text-center py-8 text-muted-foreground italic border border-dashed border-border rounded-lg">
                         No steps defined. Add a step to start.
                     </div>
                 )}
             </div>
 
-            <div className="space-y-2 pt-4 border-t border-white/5">
+            <div className="space-y-2 pt-4 border-t border-border">
                 <Label className="text-[10px] uppercase text-zinc-400 font-bold tracking-wider">Reference Load Source</Label>
                 <Select
                     value={config.reference_load_type || 'dynamic_estimated'}
                     onValueChange={(v) => onChange({ ...config, reference_load_type: v })}
                 >
-                    <SelectTrigger className="h-9 bg-zinc-950/80 border-white/10 text-white text-xs font-medium">
+                    <SelectTrigger className="h-9 bg-background/80 border-border text-white text-xs font-medium">
                         <SelectValue />
                     </SelectTrigger>
                     <SelectContent>

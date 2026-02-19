@@ -1,6 +1,25 @@
 import { createClient } from "@/lib/supabase/client"
 import { Program, CreateProgramInput, WorkoutTemplate } from "@/types/database"
 
+/**
+ * Deactivates all active programs for the current user,
+ * optionally excluding one by ID (e.g. the one being activated).
+ */
+async function deactivateOtherPrograms(excludeId?: string) {
+    const supabase = createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) throw new Error("User not authenticated")
+
+    let query = supabase
+        .from('programs')
+        .update({ is_active: false })
+        .eq('user_id', user.id)
+        .eq('is_active', true)
+
+    if (excludeId) query = query.neq('id', excludeId)
+    await query
+}
+
 export async function getActiveProgram() {
     const supabase = createClient()
 
@@ -41,16 +60,8 @@ export async function getProgramTemplates(programId: string) {
 export async function createProgram(program: CreateProgramInput) {
     const supabase = createClient()
 
-    // First, set all other programs to inactive if this one is active
     if (program.is_active) {
-        const { data: { user } } = await supabase.auth.getUser()
-        if (user) {
-            await supabase
-                .from('programs')
-                .update({ is_active: false })
-                .eq('user_id', user.id)
-                .eq('is_active', true) // Only update active ones
-        }
+        await deactivateOtherPrograms()
     }
 
     const { data, error } = await supabase
@@ -95,12 +106,8 @@ export interface UpdateProgramInput {
 export async function updateProgram(id: string, updates: UpdateProgramInput) {
     const supabase = createClient()
 
-    // If setting to active, deactivate others first
     if (updates.is_active) {
-        await supabase
-            .from('programs')
-            .update({ is_active: false })
-            .neq('id', 'placeholder')
+        await deactivateOtherPrograms(id)
     }
 
     const { data, error } = await supabase
@@ -128,15 +135,8 @@ export async function deleteProgram(id: string) {
 export async function toggleProgramActive(id: string) {
     const supabase = createClient()
 
-    // 1. Deactivate all (for this user)
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) throw new Error("User not authenticated")
-
-    await supabase
-        .from('programs')
-        .update({ is_active: false })
-        .eq('user_id', user.id)
-        .eq('is_active', true)
+    // 1. Deactivate all other programs
+    await deactivateOtherPrograms(id)
 
     // 2. Activate target
     const { data, error } = await supabase

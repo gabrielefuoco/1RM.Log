@@ -4,7 +4,7 @@ import { ReactNode } from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import { UniversalListCard } from "@/components/ui/universal-list-card"
 import { Badge } from "@/components/ui/badge"
-import { Sparkline } from "@/components/ui/sparkline"
+
 import { cn } from "@/lib/utils"
 
 export interface WorkoutExerciseCardProps {

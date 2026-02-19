@@ -1,14 +1,5 @@
-
 import { createClient } from "@/lib/supabase/client"
-
-export interface UserOneRm {
-    id: string
-    user_id: string
-    exercise_id: string
-    one_rm: number
-    type: 'manual' | 'training_max'
-    updated_at: string
-}
+import { UserOneRm } from "@/types/database"
 
 export async function getUserOneRm(exerciseId: string): Promise<UserOneRm | null> {
     const supabase = createClient()

@@ -726,7 +726,6 @@ export async function getVolumeStats(periodDays: number = 90) {
     return { current: currentPeriod, comparison: comparisonPeriod }
 }
 
-
 export async function getPerformanceFeed() {
     const supabase = await createClient()
     const { data: logs } = await supabase.from('exercise_logs').select('id, estimated_1rm, weight, reps, exercises(name), workout_sessions!inner(date)').order('workout_sessions(date)', { ascending: true })

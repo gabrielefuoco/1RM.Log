@@ -12,7 +12,7 @@ interface WorkoutTemplateListProps {
 export function WorkoutTemplateList({ templates }: WorkoutTemplateListProps) {
     if (templates.length === 0) {
         return (
-            <div className="text-center py-8 border border-dashed border-white/10 rounded-xl">
+            <div className="text-center py-8 border border-dashed border-white/10 rounded-lg">
                 <p className="text-slate-500">Nessuna scheda creata.</p>
             </div>
         )
@@ -21,9 +21,9 @@ export function WorkoutTemplateList({ templates }: WorkoutTemplateListProps) {
     return (
         <div className="space-y-3">
             {templates.map((template) => (
-                <Card key={template.id} className="bg-zinc-900/40 border-white/5 hover:bg-zinc-900/60 transition-colors cursor-pointer">
+                <Card key={template.id} className="bg-card/40 border-border hover:bg-card/60 transition-colors cursor-pointer">
                     <CardContent className="p-4 flex items-center gap-4">
-                        <div className="h-10 w-10 rounded-full bg-secondary/30 flex items-center justify-center shrink-0 border border-white/5 font-bold text-slate-300">
+                        <div className="h-10 w-10 rounded-full bg-secondary/30 flex items-center justify-center shrink-0 border border-border font-bold text-slate-300">
                             {template.order + 1}
                         </div>
 

@@ -1,7 +1,13 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import {
+    Drawer,
+    DrawerContent,
+    DrawerHeader,
+    DrawerTitle,
+    DrawerTrigger,
+} from "@/components/ui/drawer"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -85,67 +91,69 @@ export function EditOneRmDialog({ exerciseId, exerciseName, history1RM, onUpdate
     }
 
     return (
-        <Dialog open={open} onOpenChange={setOpen}>
-            <DialogTrigger asChild>
+        <Drawer open={open} onOpenChange={setOpen}>
+            <DrawerTrigger asChild>
                 {trigger || (
                     <Button variant="ghost" size="sm" className="h-6 px-2 text-xs text-muted-foreground gap-1">
                         <Trophy className="h-3 w-3" />
                         {isOverrideActive ? t("override") : t("historical")}
                     </Button>
                 )}
-            </DialogTrigger>
-            <DialogContent className="max-w-[90vw] rounded-xl">
-                <DialogHeader>
-                    <DialogTitle className="flex items-center gap-2">
-                        <Trophy className="h-5 w-5 text-amber-500" />
-                        {t("manage1rm")}
-                    </DialogTitle>
-                </DialogHeader>
+            </DrawerTrigger>
+            <DrawerContent className="bg-background border-t border-white/10">
+                <div className="mx-auto w-full max-w-sm">
+                    <DrawerHeader>
+                        <DrawerTitle className="flex items-center gap-2 text-white text-xl">
+                            <Trophy className="h-5 w-5 text-amber-500" />
+                            {t("manage1rm")}
+                        </DrawerTitle>
+                    </DrawerHeader>
 
-                <div className="space-y-6 py-2">
-                    <div className="bg-muted/30 p-4 rounded-lg space-y-2">
-                        <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">{t("exercise")}</span>
-                        <p className="font-bold text-lg">{exerciseName}</p>
-                    </div>
+                    <div className="p-4 space-y-6">
+                        <div className="bg-muted/30 p-4 rounded-lg space-y-2">
+                            <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">{t("exercise")}</span>
+                            <p className="font-bold text-lg">{exerciseName}</p>
+                        </div>
 
-                    <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                            <Label className="text-xs text-muted-foreground">{t("bestHistorical")}</Label>
-                            <div className="h-10 flex items-center px-3 rounded-md bg-muted/50 border border-transparent font-mono font-bold text-muted-foreground">
-                                {history1RM > 0 ? history1RM : "-"} kg
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                                <Label className="text-xs text-muted-foreground">{t("bestHistorical")}</Label>
+                                <div className="h-10 flex items-center px-3 rounded-md bg-muted/50 border border-transparent font-mono font-bold text-muted-foreground">
+                                    {history1RM > 0 ? history1RM : "-"} kg
+                                </div>
+                            </div>
+                            <div className="space-y-2">
+                                <Label className="text-xs text-amber-500 font-bold">{t("manualOverride")}</Label>
+                                <Input
+                                    type="number"
+                                    value={manualOneRm || ''}
+                                    onChange={(e) => setManualOneRm(Number(e.target.value))}
+                                    className="font-bold font-mono text-amber-500 border-amber-500/20 focus:border-amber-500"
+                                    placeholder="0"
+                                />
                             </div>
                         </div>
-                        <div className="space-y-2">
-                            <Label className="text-xs text-amber-500 font-bold">{t("manualOverride")}</Label>
-                            <Input
-                                type="number"
-                                value={manualOneRm || ''}
-                                onChange={(e) => setManualOneRm(Number(e.target.value))}
-                                className="font-bold font-mono text-amber-500 border-amber-500/20 focus:border-amber-500"
-                                placeholder="0"
-                            />
-                        </div>
-                    </div>
 
-                    <div className="flex flex-col gap-2 pt-2">
-                        <Button onClick={handleSave} disabled={loading} className="w-full gap-2 font-bold bg-amber-500 hover:bg-amber-600 text-black">
-                            <Save className="h-4 w-4" />
-                            {t("saveManually")}
-                        </Button>
-
-                        {isOverrideActive && (
-                            <Button onClick={handleReset} variant="outline" disabled={loading} className="w-full gap-2 text-muted-foreground">
-                                <RotateCcw className="h-4 w-4" />
-                                {t("restoreHistorical")}
+                        <div className="flex flex-col gap-2 pt-2">
+                            <Button onClick={handleSave} disabled={loading} className="w-full gap-2 font-bold bg-amber-500 hover:bg-amber-600 text-black">
+                                <Save className="h-4 w-4" />
+                                {t("saveManually")}
                             </Button>
-                        )}
-                    </div>
 
-                    <p className="text-[10px] text-muted-foreground text-center px-4 leading-tight">
-                        {t("overrideNotice")}
-                    </p>
+                            {isOverrideActive && (
+                                <Button onClick={handleReset} variant="outline" disabled={loading} className="w-full gap-2 text-muted-foreground">
+                                    <RotateCcw className="h-4 w-4" />
+                                    {t("restoreHistorical")}
+                                </Button>
+                            )}
+                        </div>
+
+                        <p className="text-[10px] text-muted-foreground text-center px-4 leading-tight">
+                            {t("overrideNotice")}
+                        </p>
+                    </div>
                 </div>
-            </DialogContent>
-        </Dialog>
+            </DrawerContent>
+        </Drawer>
     )
 }

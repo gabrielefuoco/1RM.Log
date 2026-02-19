@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import { createClient } from "@/lib/supabase/client"
 import { Program } from "@/types/database"
 import { ProgramCard } from "@/components/programs/program-card"
-import { CreateProgramDrawer } from "@/components/programs/create-program-drawer"
+import { ProgramDrawer } from "@/components/programs/program-drawer"
 import { Activity } from "lucide-react"
 import { useTranslations } from "next-intl"
 
@@ -105,7 +105,7 @@ export default function ProgramsPage() {
                 )}
             </section>
 
-            <CreateProgramDrawer onSuccess={loadPrograms} />
+            <ProgramDrawer mode="create" onSuccess={loadPrograms} />
         </div>
     )
 }

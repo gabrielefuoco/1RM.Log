@@ -47,16 +47,16 @@ export function ExercisePicker({ onSelect, trigger, open, onOpenChange }: Exerci
     return (
         <Drawer open={open} onOpenChange={onOpenChange}>
             {trigger && <DrawerTrigger asChild>{trigger}</DrawerTrigger>}
-            <DrawerContent className="h-[85vh] bg-zinc-950 border-white/10">
+            <DrawerContent className="h-[85vh] bg-background border-border">
                 <DrawerHeader>
                     <DrawerTitle className="text-center mb-4">Add Exercise</DrawerTitle>
                     <div className="relative">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                         <Input
                             value={query}
                             onChange={(e) => setQuery(e.target.value)}
                             placeholder="Search..."
-                            className="bg-zinc-900 border-white/10 pl-10"
+                            className="bg-card border-border pl-10"
                         />
                     </div>
                 </DrawerHeader>
@@ -65,7 +65,7 @@ export function ExercisePicker({ onSelect, trigger, open, onOpenChange }: Exerci
                     <ScrollArea className="flex-1">
                         <div className="grid gap-2">
                             {exercises.length === 0 && !isLoading && (
-                                <div className="text-center text-slate-500 py-10">
+                                <div className="text-center text-muted-foreground py-10">
                                     No exercises found.
                                 </div>
                             )}
@@ -74,17 +74,17 @@ export function ExercisePicker({ onSelect, trigger, open, onOpenChange }: Exerci
                                 <Button
                                     key={ex.id}
                                     variant="ghost"
-                                    className="w-full justify-start h-auto py-3 px-3 hover:bg-zinc-900 border border-transparent hover:border-primary/20 rounded-xl"
+                                    className="w-full justify-start h-auto py-3 px-3 hover:bg-card border border-transparent hover:border-primary/20 rounded-lg"
                                     onClick={() => onSelect(ex)}
                                 >
-                                    <div className="h-10 w-10 rounded-full bg-zinc-800 flex items-center justify-center mr-4 shrink-0">
+                                    <div className="h-10 w-10 rounded-full bg-card/80 flex items-center justify-center mr-4 shrink-0">
                                         <Dumbbell className="h-5 w-5 text-primary" />
                                     </div>
                                     <div className="text-left">
                                         <div className="font-bold text-white">{ex.name}</div>
-                                        <div className="text-xs text-slate-400 capitalize">{ex.body_parts?.join(', ')} • {ex.type}</div>
+                                        <div className="text-xs text-muted-foreground capitalize">{ex.body_parts?.join(', ')} • {ex.type}</div>
                                     </div>
-                                    <Plus className="ml-auto h-5 w-5 text-slate-500" />
+                                    <Plus className="ml-auto h-5 w-5 text-muted-foreground" />
                                 </Button>
                             ))}
                         </div>

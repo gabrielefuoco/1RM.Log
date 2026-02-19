@@ -3,14 +3,7 @@
 import { useQuery } from "@tanstack/react-query"
 import { getSmartChartData } from "@/app/actions/analysis"
 import { SmartChartConfig, SmartChartMetric, SmartChartType } from "@/types/analysis"
-import { ChartWidget } from "./chart-widget"
-import { TrendChart } from "./trend-chart"
-import { StackedAreaChart } from "./charts/stacked-area-chart"
-import { RadarChart } from "./charts/radar-chart"
-import { HistogramChart } from "./charts/histogram-chart"
-import { MultiLineChart } from "./charts/multi-line-chart"
-import { StackedBarChart } from "./charts/stacked-bar-chart"
-import { ScatterChart } from "./charts/scatter-chart"
+import dynamic from "next/dynamic"
 import { AnalysisGridItem } from "./analysis-grid"
 import { Skeleton } from "@/components/ui/skeleton"
 import {
@@ -19,6 +12,40 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu"
+
+// Dynamic Imports for Heavy Chart Components
+const TrendChart = dynamic(() => import("./trend-chart").then(mod => mod.TrendChart), {
+    loading: () => <ChartSkeleton />,
+    ssr: false
+})
+const StackedAreaChart = dynamic(() => import("./charts/stacked-area-chart").then(mod => mod.StackedAreaChart), {
+    loading: () => <ChartSkeleton />,
+    ssr: false
+})
+const RadarChart = dynamic(() => import("./charts/radar-chart").then(mod => mod.RadarChart), {
+    loading: () => <ChartSkeleton />,
+    ssr: false
+})
+const HistogramChart = dynamic(() => import("./charts/histogram-chart").then(mod => mod.HistogramChart), {
+    loading: () => <ChartSkeleton />,
+    ssr: false
+})
+const MultiLineChart = dynamic(() => import("./charts/multi-line-chart").then(mod => mod.MultiLineChart), {
+    loading: () => <ChartSkeleton />,
+    ssr: false
+})
+const StackedBarChart = dynamic(() => import("./charts/stacked-bar-chart").then(mod => mod.StackedBarChart), {
+    loading: () => <ChartSkeleton />,
+    ssr: false
+})
+const ScatterChart = dynamic(() => import("./charts/scatter-chart").then(mod => mod.ScatterChart), {
+    loading: () => <ChartSkeleton />,
+    ssr: false
+})
+
+function ChartSkeleton() {
+    return <Skeleton className="w-full h-full opacity-20 rounded-lg" />
+}
 import { MoreVertical, Edit2, Trash2, Settings2 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"

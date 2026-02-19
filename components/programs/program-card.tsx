@@ -17,19 +17,10 @@ import {
     DropdownMenuTrigger,
     DropdownMenuSeparator
 } from "@/components/ui/dropdown-menu"
-import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-} from "@/components/ui/alert-dialog"
+import { ConfirmDrawer } from "@/components/ui/confirm-drawer"
 import { deleteProgram, toggleProgramActive } from "@/services/programs"
 import { toast } from "sonner"
-import { EditProgramDrawer } from "./edit-program-drawer"
+import { ProgramDrawer } from "./program-drawer"
 
 interface ProgramCardProps {
     program: Program
@@ -90,7 +81,7 @@ export function ProgramCard({ program, onRefresh }: ProgramCardProps) {
                             <span className="text-xs text-slate-500 line-clamp-1">{program.description}</span>
                         )}
                         <div className="flex gap-2 mt-1">
-                            <Badge variant="outline" className="text-[10px] h-5 bg-white/5 border-white/10 text-slate-400">
+                            <Badge variant="outline" className="text-[10px] h-5 bg-white/5 border-border text-slate-400">
                                 {isActive ? "CURRENT MACROCYCLE" : "ARCHIVED"}
                             </Badge>
                         </div>
@@ -105,7 +96,7 @@ export function ProgramCard({ program, onRefresh }: ProgramCardProps) {
                                 <MoreVertical className="h-4 w-4" />
                             </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="w-48 bg-zinc-900 border-white/10 text-white">
+                        <DropdownMenuContent align="end" className="w-48 bg-card border-border text-white">
                             {!isActive && (
                                 <DropdownMenuItem onClick={handleToggleActive} className="focus:bg-primary/20 text-primary focus:text-primary cursor-pointer">
                                     <Power className="mr-2 h-4 w-4" /> Imposta Attivo
@@ -131,7 +122,8 @@ export function ProgramCard({ program, onRefresh }: ProgramCardProps) {
                 Let's use a wrapper or just the onClick prop.
             */}
 
-            <EditProgramDrawer
+            <ProgramDrawer
+                mode="edit"
                 program={program}
                 open={editOpen}
                 onOpenChange={setEditOpen}
@@ -141,34 +133,25 @@ export function ProgramCard({ program, onRefresh }: ProgramCardProps) {
                 }}
             />
 
-            <AlertDialog open={deleteOpen} onOpenChange={setDeleteOpen}>
-                <AlertDialogContent className="bg-zinc-900 border-white/10 text-white">
-                    <AlertDialogHeader>
-                        <AlertDialogTitle>Eliminare {program.name}?</AlertDialogTitle>
-                        <AlertDialogDescription className="text-slate-400">
-                            Stai per eliminare questo Programma e <strong>tutti i suoi Workout Templates</strong> associati.
-                            <br /><br />
-                            <span className="flex items-center gap-2 text-yellow-500">
-                                <AlertTriangle className="h-4 w-4" />
-                                Le sessioni storiche rimarranno, ma perderanno il riferimento al template originale.
-                            </span>
-                        </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                        <AlertDialogCancel className="bg-transparent border-white/10 text-white hover:bg-white/5 hover:text-white">Annulla</AlertDialogCancel>
-                        <AlertDialogAction
-                            onClick={(e) => {
-                                e.preventDefault()
-                                handleDelete()
-                            }}
-                            className="bg-red-600 hover:bg-red-700 text-white border-none"
-                            disabled={isDeleting}
-                        >
-                            {isDeleting ? "Eliminazione..." : "Elimina Tutto"}
-                        </AlertDialogAction>
-                    </AlertDialogFooter>
-                </AlertDialogContent>
-            </AlertDialog>
+            <ConfirmDrawer
+                open={deleteOpen}
+                onOpenChange={setDeleteOpen}
+                title={`Eliminare ${program.name}?`}
+                description={
+                    <>
+                        Stai per eliminare questo Programma e <strong>tutti i suoi Workout Templates</strong> associati.
+                        <br /><br />
+                        <span className="flex items-center gap-2 text-yellow-500">
+                            <AlertTriangle className="h-4 w-4" />
+                            Le sessioni storiche rimarranno, ma perderanno il riferimento al template originale.
+                        </span>
+                    </>
+                }
+                confirmLabel={isDeleting ? "Eliminazione..." : "Elimina Tutto"}
+                onConfirm={handleDelete}
+                loading={isDeleting}
+                variant="destructive"
+            />
         </>
     )
 }

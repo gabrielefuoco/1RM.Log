@@ -6,7 +6,7 @@ import { useExerciseHistory } from "@/hooks/use-exercise-history"
 import { Button } from "@/components/ui/button"
 import { Trash2, TrendingUp, Pencil } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
-import { Sparkline } from "@/components/ui/sparkline"
+
 
 interface TemplateExerciseCardProps {
     exercise: TemplateExercise
@@ -34,11 +34,7 @@ export function TemplateExerciseCard({
             mode="template"
             items={sets}
             onClick={() => onEdit(exercise)}
-            headerExtra={
-                <div className="flex items-center w-24 h-8">
-                    <Sparkline className="w-full h-full text-primary" data={historyData || []} />
-                </div>
-            }
+
             subtitle={
                 <div className="flex items-center gap-2 mt-0.5">
                     <div className="flex flex-wrap gap-1">

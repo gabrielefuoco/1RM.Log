@@ -10,8 +10,8 @@ import { calculate1RM, rirToRpe, rpeToRir } from "@/utils/formulas"
 import { Check, History, Timer } from "lucide-react"
 import { cn } from "@/lib/utils"
 
-import { ProgressionCalculator } from "@/services/progression"
 import { PlateCalculator } from "./plate-calculator"
+import { calculateSetSuggestion } from "@/hooks/use-set-suggestion"
 import {
     Dialog,
     DialogContent,
@@ -66,60 +66,20 @@ export function SetLogger({
 }: SetLoggerProps) {
     const t = useTranslations("Workout")
     // Progression Algorithm
-    const calculateSuggestion = () => {
-        const rounding = settings?.rounding_increment || 2.5
-        let suggestedWeight = 0;
-
-        // Priority 0: Back-off Set
-        if (templateSet?.is_backoff && templateSet?.backoff_percent && previousSetWeight && previousSetWeight > 0) {
-            suggestedWeight = previousSetWeight * (1 - templateSet.backoff_percent / 100)
-        }
-        // Priority 1: Percentage Target (Explicit or RPE-derived)
-        else if (userBest1RM && userBest1RM > 0) {
-            let percent = targetPercentage;
-
-            // If no explicit %, try to calculate from RPE/RIR + Reps
-            if (!percent && targetRir !== undefined && (targetRepsMin || targetRepsMax)) {
-                const reps = targetRepsMin || targetRepsMax || 5; // Fallback to 5
-                const totalEffort = reps + targetRir;
-                const decimal = 1 / (1 + totalEffort / 30);
-                percent = decimal * 100;
-            }
-
-            if (percent) {
-                suggestedWeight = userBest1RM * (percent / 100) * intensityMultiplier
-            }
-        }
-
-        if (suggestedWeight === 0 && previousLog && settings) {
-            const result = ProgressionCalculator.calculate({
-                mode: 'static', // Fallback, we don't know the exact mode here without context, but strictly calculation needs mode. 
-                // Wait, SetLogger shouldn't recalculate progression if it's already passed as prop!
-                // CHANGE: If progressionTarget is provided, use IT as the primary suggestion source.
-                config: {},
-                state: {},
-                history: [previousLog],
-                templateSet: templateSet || { reps_min: 0, reps_max: 0, rir: 0, type: 'work' } as any,
-                progressionSettings: settings
-            })
-            suggestedWeight = result.targetWeight ? result.targetWeight * intensityMultiplier : 0
-        }
-
-        // Priority 3: Progression Target Prop (The Real Progression Engine)
-        if (progressionTarget && progressionTarget.targetWeight) {
-            suggestedWeight = progressionTarget.targetWeight * intensityMultiplier
-        }
-
-        if (suggestedWeight === 0) return ""
-
-        // Apply Deload
-        if (isDeload) {
-            suggestedWeight = suggestedWeight * (1 - (settings?.deload_rate || 0.10))
-        }
-
-        // Apply Rounding
-        return (Math.round(suggestedWeight / rounding) * rounding).toFixed(rounding < 1 ? 1 : 1) // Keep decimals clean
-    }
+    const calculateSuggestion = () => calculateSetSuggestion({
+        previousLog,
+        targetRir,
+        targetRepsMin,
+        targetRepsMax,
+        targetPercentage,
+        userBest1RM,
+        settings,
+        intensityMultiplier,
+        isDeload,
+        templateSet,
+        previousSetWeight,
+        progressionTarget,
+    })
 
     const [weight, setWeight] = useState<string>(initialValues?.weight.toString() || calculateSuggestion() || (previousLog?.weight?.toString() ?? ""))
     const [reps, setReps] = useState<string>(initialValues?.reps.toString() || previousLog?.reps?.toString() || "")

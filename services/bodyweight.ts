@@ -23,24 +23,6 @@ export async function getBodyweightHistory(limit?: number) {
     return data as BodyweightLog[]
 }
 
-export async function getLatestBodyweight() {
-    const supabase = createClient()
-
-    const { data, error } = await supabase
-        .from('bodyweight_logs')
-        .select('*')
-        .order('date', { ascending: false })
-        .limit(1)
-        .maybeSingle()
-
-    if (error) {
-        console.error('Error fetching latest bodyweight:', error)
-        return null
-    }
-
-    return data as BodyweightLog | null
-}
-
 export async function addBodyweightLog(input: CreateBodyweightInput) {
     const supabase = createClient()
 

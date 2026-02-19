@@ -50,7 +50,7 @@ export function TemplateSetForm({
                     onClick={() => onTabChange('sets')}
                     className={cn(
                         "flex-1 py-2 text-xs font-bold uppercase tracking-wider rounded-lg transition-all",
-                        activeTab === 'sets' ? "bg-primary text-zinc-950 shadow-sm" : "hover:bg-white/5 hover:text-white text-slate-500"
+                        activeTab === 'sets' ? "bg-primary text-primary-foreground shadow-sm" : "hover:bg-muted/50 hover:text-foreground text-muted-foreground"
                     )}
                 >
                     Sets & Reps
@@ -59,7 +59,7 @@ export function TemplateSetForm({
                     onClick={() => onTabChange('progression')}
                     className={cn(
                         "flex-1 py-2 text-xs font-bold uppercase tracking-wider rounded-lg transition-all",
-                        activeTab === 'progression' ? "bg-primary text-zinc-950 shadow-sm" : "hover:bg-white/5 hover:text-white text-slate-500"
+                        activeTab === 'progression' ? "bg-primary text-primary-foreground shadow-sm" : "hover:bg-muted/50 hover:text-foreground text-muted-foreground"
                     )}
                 >
                     Progression
@@ -70,7 +70,7 @@ export function TemplateSetForm({
                 <div className="space-y-6">
                     <div className="pt-2 space-y-3">
                         <div className="flex items-center justify-between">
-                            <h3 className="text-[10px] font-black text-zinc-500 uppercase tracking-[0.2em] px-1">Set Details</h3>
+                            <h3 className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] px-1">Set Details</h3>
                             <Button
                                 variant="ghost"
                                 size="sm"
@@ -94,7 +94,7 @@ export function TemplateSetForm({
                                     <div key={i} className="bg-card/40 rounded-lg p-4 border border-border space-y-4 relative group hover:bg-card/60 transition-colors">
                                         <div className="flex items-center justify-between">
                                             <div className="flex items-center gap-3">
-                                                <span className="text-xs font-black text-white uppercase italic tracking-wider">Set {i + 1}</span>
+                                                <span className="text-xs font-black text-foreground uppercase italic tracking-wider">Set {i + 1}</span>
                                                 {isImpossible && (
                                                     <span className="flex items-center gap-1 text-[9px] text-red-500 font-bold bg-red-500/10 px-1.5 py-0.5 rounded border border-red-500/20">
                                                         <AlertTriangle className="h-3 w-3" />
@@ -108,7 +108,7 @@ export function TemplateSetForm({
                                                             "flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold border transition-colors",
                                                             isBackoff
                                                                 ? "bg-purple-500/10 text-purple-400 border-purple-500/20"
-                                                                : "bg-white/5 text-zinc-400 border-border hover:bg-white/10 hover:text-white"
+                                                                : "bg-muted/30 text-muted-foreground border-border hover:bg-muted hover:text-foreground"
                                                         )}
                                                     >
                                                         <ArrowDownRight className="h-3 w-3" />
@@ -119,7 +119,7 @@ export function TemplateSetForm({
                                             <Button
                                                 variant="ghost"
                                                 size="icon"
-                                                className="h-7 w-7 text-zinc-400 hover:text-red-400 hover:bg-red-500/10 transition-colors"
+                                                className="h-7 w-7 text-muted-foreground hover:text-red-400 hover:bg-red-500/10 transition-colors"
                                                 onClick={() => removeSet(i)}
                                             >
                                                 <Trash2 className="h-3.5 w-3.5" />
@@ -130,7 +130,9 @@ export function TemplateSetForm({
                                             {isRange ? (
                                                 <>
                                                     <div className="col-span-1 space-y-1.5 relative group/reps">
-                                                        <Label className="text-[10px] uppercase text-zinc-400 block font-bold text-center tracking-wider">Min</Label>
+                                                        <div className="flex items-center justify-center h-8 mb-1">
+                                                            <Label className="text-[10px] uppercase text-muted-foreground block font-bold text-center tracking-wider">Min</Label>
+                                                        </div>
                                                         <Input
                                                             type="number"
                                                             value={set.reps_min}
@@ -139,7 +141,9 @@ export function TemplateSetForm({
                                                         />
                                                     </div>
                                                     <div className="col-span-1 space-y-1.5 relative">
-                                                        <Label className="text-[10px] uppercase text-zinc-400 block font-bold text-center tracking-wider">Max</Label>
+                                                        <div className="flex items-center justify-center h-8 mb-1">
+                                                            <Label className="text-[10px] uppercase text-muted-foreground block font-bold text-center tracking-wider">Max</Label>
+                                                        </div>
                                                         <Input
                                                             type="number"
                                                             value={set.reps_max}
@@ -148,7 +152,7 @@ export function TemplateSetForm({
                                                         />
                                                         <button
                                                             onClick={() => updateSingleSet(i, { _ui_mode: 'fixed' })}
-                                                            className="absolute -left-[14px] top-[26px] z-10 w-4 h-4 bg-card rounded-full flex items-center justify-center text-[8px] text-zinc-400 hover:bg-card/80 hover:text-white border border-border"
+                                                            className="absolute -left-[14px] top-[42px] z-10 w-4 h-4 bg-card rounded-full flex items-center justify-center text-[8px] text-zinc-400 hover:bg-card/80 hover:text-white border border-border"
                                                             title="Fixed Reps"
                                                         >
                                                             =
@@ -157,7 +161,9 @@ export function TemplateSetForm({
                                                 </>
                                             ) : (
                                                 <div className="col-span-2 space-y-1.5 relative">
-                                                    <Label className="text-[10px] uppercase text-zinc-400 block font-bold text-center tracking-wider">Reps</Label>
+                                                    <div className="flex items-center justify-center h-8 mb-1">
+                                                        <Label className="text-[10px] uppercase text-muted-foreground block font-bold text-center tracking-wider">Reps</Label>
+                                                    </div>
                                                     <div className="relative">
                                                         <Input
                                                             type="number"
@@ -167,7 +173,7 @@ export function TemplateSetForm({
                                                         />
                                                         <button
                                                             onClick={() => updateSingleSet(i, { _ui_mode: 'range' })}
-                                                            className="absolute right-1 top-1/2 -translate-y-1/2 w-6 h-6 flex items-center justify-center rounded text-zinc-500 hover:bg-card hover:text-white transition-colors"
+                                                            className="absolute right-1 top-1/2 -translate-y-1/2 w-6 h-6 flex items-center justify-center rounded text-muted-foreground hover:bg-card hover:text-foreground transition-colors"
                                                             title="Split into Range"
                                                         >
                                                             <span className="text-[10px] font-mono tracking-tighter">{"<->"}</span>
@@ -177,7 +183,9 @@ export function TemplateSetForm({
                                             )}
 
                                             <div className="col-span-1 relative space-y-1.5 text-center">
-                                                <Label className="text-[10px] uppercase text-zinc-400 block font-bold text-center tracking-wider">RIR</Label>
+                                                <div className="flex items-center justify-center h-8 mb-1">
+                                                    <Label className="text-[10px] uppercase text-muted-foreground block font-bold text-center tracking-wider">RIR</Label>
+                                                </div>
                                                 <Input
                                                     type="number"
                                                     value={set.rir}
@@ -196,19 +204,19 @@ export function TemplateSetForm({
                                                                 "flex-1 h-full flex items-center justify-center text-[10px] font-black uppercase tracking-wider rounded transition-all duration-200",
                                                                 set._ui_weight_mode === 'absolute'
                                                                     ? "bg-card text-white shadow-sm border border-border"
-                                                                    : "text-zinc-600 hover:text-zinc-400 hover:bg-white/5"
+                                                                    : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
                                                             )}
                                                         >
                                                             KG
                                                         </button>
-                                                        <div className="w-[1px] h-3 bg-white/5 mx-1" />
+                                                        <div className="w-[1px] h-3 bg-border mx-1" />
                                                         <button
                                                             onClick={() => updateSingleSet(i, { _ui_weight_mode: 'percent' })}
                                                             className={cn(
                                                                 "flex-1 h-full flex items-center justify-center text-[10px] font-black uppercase tracking-wider rounded transition-all duration-200",
                                                                 set._ui_weight_mode !== 'absolute'
                                                                     ? "bg-amber-500 text-zinc-950 shadow-sm border border-amber-400/50"
-                                                                    : "text-zinc-600 hover:text-zinc-400 hover:bg-white/5"
+                                                                    : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
                                                             )}
                                                         >
                                                             %
@@ -234,7 +242,7 @@ export function TemplateSetForm({
                                                                 })}
                                                                 className="h-9 text-sm text-center font-bold bg-background text-white border-border focus:border-white/30"
                                                             />
-                                                            <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] font-bold text-zinc-600 pointer-events-none">kg</span>
+                                                            <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] font-bold text-muted-foreground/60 pointer-events-none">kg</span>
                                                         </div>
                                                     ) : (
                                                         <div className="relative">
@@ -265,8 +273,8 @@ export function TemplateSetForm({
 
                                         {/* Smart Hint Line */}
                                         <div className="flex justify-between items-center px-1 pt-1 opacity-60">
-                                            <span className="text-[9px] text-zinc-500 font-medium tracking-wide">
-                                                Intensity Est: <span className="text-zinc-300 font-mono">~{suggestedPercent.toFixed(0)}%</span>
+                                            <span className="text-[9px] text-muted-foreground font-medium tracking-wide">
+                                                Intensity Est: <span className="text-foreground font-mono">~{suggestedPercent.toFixed(0)}%</span>
                                             </span>
                                         </div>
                                     </div>

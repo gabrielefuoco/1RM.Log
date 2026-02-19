@@ -53,11 +53,11 @@ export function UniversalListCard({
             className={cn(
                 "relative overflow-hidden transition-all duration-300 group cursor-pointer",
                 // Base Styles
-                "bg-black/20 backdrop-blur-md border border-white/[0.03]",
+                "bg-card/40 backdrop-blur-md border border-border/40",
                 // Hover Effects
-                "hover:bg-black/30 hover:border-primary/20 hover:shadow-[0_8px_32px_-10px_rgba(0,255,163,0.1)]",
+                "hover:bg-card/60 hover:border-primary/20",
                 // Active State
-                isActive && "border-primary/40 bg-primary/[0.02] shadow-[0_0_30px_-5px_rgba(0,255,163,0.1)]",
+                isActive && "border-primary/40 bg-primary/[0.05] shadow-[0_0_30px_-5px_rgba(0,255,163,0.1)]",
                 className
             )}
             onClick={onClick}
@@ -65,7 +65,7 @@ export function UniversalListCard({
             {/* Active Glow/Indicator Line */}
             <div className={cn(
                 "absolute top-0 left-0 w-1 h-full transition-colors duration-300",
-                isActive ? "bg-primary" : "bg-white/5 group-hover:bg-primary/50"
+                isActive ? "bg-primary" : "bg-border/40 group-hover:bg-primary/50"
             )} />
 
             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-transparent to-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
@@ -79,7 +79,7 @@ export function UniversalListCard({
                     <div className="flex items-center gap-4 min-w-0">
                         {/* Drag Handle */}
                         {dragHandle && (
-                            <div className="shrink-0 text-zinc-600 hover:text-white cursor-grab active:cursor-grabbing -ml-2 mr-1">
+                            <div className="shrink-0 text-muted-foreground/60 hover:text-foreground cursor-grab active:cursor-grabbing -ml-2 mr-1">
                                 {dragHandle}
                             </div>
                         )}
@@ -91,7 +91,7 @@ export function UniversalListCard({
                                 isCompact ? "h-10 w-10 text-base" : "h-12 w-12 text-lg",
                                 isActive
                                     ? "bg-primary/20 border-primary/30 text-primary"
-                                    : "bg-black/40 border-white/5 text-slate-500 group-hover:text-slate-300"
+                                    : "bg-muted border-border/40 text-muted-foreground group-hover:text-foreground"
                             )}>
                                 {icon ? icon : (index! + 1).toString().padStart(2, '0')}
                             </div>
@@ -102,13 +102,13 @@ export function UniversalListCard({
                             <h3 className={cn(
                                 "font-heading uppercase tracking-tight leading-tight mb-0.5 transition-colors truncate",
                                 isCompact ? "text-lg md:text-xl" : "text-xl md:text-2xl",
-                                isActive ? "text-primary drop-shadow-[0_0_8px_rgba(0,255,163,0.4)]" : "text-white group-hover:text-primary/90"
+                                isActive ? "text-primary drop-shadow-[0_0_8px_rgba(0,255,163,0.4)]" : "text-foreground group-hover:text-primary/90"
                             )}>
                                 {title}
                             </h3>
 
                             {/* Subtitle / Meta */}
-                            <div className="text-xs text-slate-500 font-medium truncate">
+                            <div className="text-xs text-muted-foreground font-medium truncate">
                                 {subtitle}
                             </div>
                         </div>
@@ -130,8 +130,8 @@ export function UniversalListCard({
                                 className={cn(
                                     "transition-all duration-300 rounded-full",
                                     isCompact ? "h-8 w-8" : "h-10 w-10",
-                                    "bg-primary text-black shadow-[0_0_15px_rgba(0,255,163,0.4)]",
-                                    "hover:bg-white hover:text-black hover:scale-110"
+                                    "bg-primary text-primary-foreground shadow-[0_0_15px_rgba(0,255,163,0.4)]",
+                                    "hover:bg-primary-foreground hover:text-primary hover:scale-110"
                                 )}
                                 onClick={(e) => {
                                     e.stopPropagation()
@@ -152,7 +152,7 @@ export function UniversalListCard({
 
                 {/* Main Content Slot (Collapsible or Block) */}
                 {children && (
-                    <div className="border-t border-white/[0.03]">
+                    <div className="border-t border-border/40">
                         {children}
                     </div>
                 )}

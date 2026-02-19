@@ -67,63 +67,65 @@
 
 :root {
   /* CONSTANTS */
-  --radius: 0.5rem;
-  /* Rounded-lg (8px) - Softened Brutalist */
+  --radius: 0.5rem; /* Rounded-lg (8px) - Softened Brutalist */
 
-  /* LIGHT MODE (Not prioritized but defined) */
-  --background: #ffffff;
-  --foreground: #020a07;
+  /* LIGHT MODE (Improved) */
+  --background: #fafafa; /* Zinc 50 */
+  --foreground: #09090b; /* Zinc 950 */
 
-  --card: #f4f5f4;
-  --card-foreground: #020a07;
+  --card: #ffffff;
+  --card-foreground: #09090b;
 
   --popover: #ffffff;
-  --popover-foreground: #020a07;
+  --popover-foreground: #09090b;
 
-  --primary: #00ffa3;
-  --primary-foreground: #020a07;
+  --primary: #10b981; /* Emerald 500 (Default Green) */
+  --primary-foreground: #ffffff;
 
-  --secondary: #f4f5f4;
-  --secondary-foreground: #020a07;
+  --secondary: #f4f4f5; /* Zinc 100 */
+  --secondary-foreground: #18181b; /* Zinc 900 */
 
-  --muted: #f4f5f4;
-  --muted-foreground: #737373;
+  --muted: #f4f4f5; /* Zinc 100 */
+  --muted-foreground: #71717a; /* Zinc 500 */
 
-  --accent: #f4f5f4;
-  --accent-foreground: #020a07;
+  --accent: #f4f4f5; /* Zinc 100 */
+  --accent-foreground: #18181b; /* Zinc 900 */
 
   --destructive: #ef4444;
   --destructive-foreground: #ffffff;
 
-  --border: #e5e5e5;
-  --input: #e5e5e5;
-  --ring: #00ffa3;
+  --border: #e4e4e7; /* Zinc 200 */
+  --input: #e4e4e7;
+  --ring: #10b981; /* Emerald 500 */
 }
+
+/* ACCENT COLORS - LIGHT MODE OVERRIDES */
+[data-accent="blue"] { --primary: #3b82f6; --ring: #3b82f6; }
+[data-accent="violet"] { --primary: #8b5cf6; --ring: #8b5cf6; }
+[data-accent="orange"] { --primary: #f97316; --ring: #f97316; }
+[data-accent="red"] { --primary: #ef4444; --ring: #ef4444; }
+[data-accent="rose"] { --primary: #f43f5e; --ring: #f43f5e; }
+[data-accent="yellow"] { --primary: #eab308; --ring: #eab308; --primary-foreground: #09090b; }
 
 .dark {
   /* FUSION MODE: Industrial Jungle */
-  /* Background: Deep Organic Black */
   --background: #020a07;
   --foreground: #ffffff;
 
-  /* Card: Dark Jungle Green */
   --card: #0a1f18;
   --card-foreground: #ffffff;
 
   --popover: #0a1f18;
   --popover-foreground: #ffffff;
 
-  /* Primary: Electric Mint (The User's Neon) */
-  --primary: #00ffa3;
+  --primary: #00ffa3; /* Electric Mint (Default) */
   --primary-foreground: #020a07;
 
-  --secondary: #10b981;
-  /* Emerald 500 */
+  --secondary: #10b981; /* Emerald 500 */
   --secondary-foreground: #ffffff;
 
   --muted: #0f291e;
-  --muted-foreground: #6ee7b7;
-  /* Emerald 300 */
+  --muted-foreground: #6ee7b7; /* Emerald 300 */
 
   --accent: #0f291e;
   --accent-foreground: #00ffa3;
@@ -131,11 +133,86 @@
   --destructive: #aa2e2e;
   --destructive-foreground: #ffffff;
 
-  /* Borders: Visible but subtle Emerald */
-  --border: #10b98133;
-  /* Emerald 500 at 20% opacity */
+  --border: #10b98133; /* Emerald 500 at 20% opacity */
   --input: #10b98133;
   --ring: #00ffa3;
+}
+
+/* ACCENT COLORS - DARK MODE OVERRIDES */
+.dark[data-accent="blue"] {
+  --primary: #3b82f6; /* Blue 500 */
+  --ring: #3b82f6;
+  --background: #020617; /* Slate 950 */
+  --card: #0f172a; /* Slate 900 */
+  --popover: #0f172a;
+  --secondary: #1e293b; /* Slate 800 */
+  --muted: #1e293b;
+  --muted-foreground: #94a3b8;
+  --border: #1e293b;
+  --input: #1e293b;
+  --accent: #1e293b;
+  --accent-foreground: #60a5fa;
+}
+
+.dark[data-accent="violet"] {
+  --primary: #8b5cf6; /* Violet 500 */
+  --ring: #8b5cf6;
+  --background: #2e1065; /* Violet 950 (Deep base) */
+  --card: #4c1d95; /* Violet 900 */
+  --popover: #4c1d95;
+  --secondary: #5b21b6; /* Violet 800 */
+  --muted: #5b21b6;
+  --muted-foreground: #c4b5fd;
+  --border: #5b21b6;
+  --input: #5b21b6;
+  --accent: #5b21b6;
+  --accent-foreground: #a78bfa;
+}
+/* Revert violent to classic dark gray/zinc background for usability? */
+/* Let's stick to the "Industrial" theme concept but adapted for accents. */
+/* Actually, full colored backgrounds might be too much. Let's keep the dark backgrounds neutral mostly, or slightly tinted. */
+
+/* REVISED DARK THEME ACCENTS - Keeping Backgrounds Consistent/Neutral-ish */
+.dark[data-accent="blue"] {
+  --background: #02040a; 
+  --card: #0b1121;
+  --primary: #3b82f6; --ring: #3b82f6;
+  --secondary: #1e3a8a; --muted: #172554; --border: #1e3a8a; --input: #1e3a8a;
+}
+
+.dark[data-accent="violet"] {
+  --background: #05020a;
+  --card: #150a26;
+  --primary: #a78bfa; --primary-foreground: #000; --ring: #a78bfa;
+  --secondary: #4c1d95; --muted: #2e1065; --border: #4c1d95; --input: #4c1d95;
+}
+
+.dark[data-accent="orange"] {
+  --background: #0a0402;
+  --card: #210d06;
+  --primary: #fb923c; --ring: #fb923c;
+  --secondary: #7c2d12; --muted: #431407; --border: #7c2d12; --input: #7c2d12;
+}
+
+.dark[data-accent="red"] {
+  --background: #0a0202;
+  --card: #260808;
+  --primary: #f87171; --ring: #f87171;
+  --secondary: #7f1d1d; --muted: #450a0a; --border: #7f1d1d; --input: #7f1d1d;
+}
+
+.dark[data-accent="rose"] {
+  --background: #0a0204;
+  --card: #260611;
+  --primary: #fb7185; --ring: #fb7185;
+  --secondary: #881337; --muted: #4c0519; --border: #881337; --input: #881337;
+}
+
+.dark[data-accent="yellow"] {
+  --background: #0a0802;
+  --card: #261f06;
+  --primary: #facc15; --primary-foreground: #000; --ring: #facc15;
+  --secondary: #713f12; --muted: #422006; --border: #713f12; --input: #713f12;
 }
 
 @layer base {
@@ -146,9 +223,9 @@
   body {
     @apply bg-background text-foreground transition-colors duration-300;
     font-feature-settings: "rlig" 1, "calt" 1;
-    /* Subtle Grid Texture */
-    background-image: linear-gradient(rgba(16, 185, 129, 0.03) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(16, 185, 129, 0.03) 1px, transparent 1px);
+    /* Subtle Grid Texture - Adapts to primary color */
+    background-image: linear-gradient(color-mix(in srgb, var(--color-primary) 5%, transparent) 1px, transparent 1px),
+      linear-gradient(90deg, color-mix(in srgb, var(--color-primary) 5%, transparent) 1px, transparent 1px);
     background-size: 40px 40px;
   }
 
@@ -194,10 +271,16 @@
 
 @utility fusion-card-hover {
   @apply hover:border-primary hover:shadow-[4px_4px_0px_0px_#00ffa34d] hover:-translate-y-[2px] hover:-translate-x-[2px];
+  /* Dynamic shadow color based on primary */
+  box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-primary) 30%, transparent);
+  &:hover {
+    box-shadow: 4px 4px 0px 0px color-mix(in srgb, var(--color-primary) 30%, transparent);
+  }
 }
 
 @utility text-neon {
-  @apply text-primary drop-shadow-[0_0_10px_#00ffa366];
+  @apply text-primary;
+  filter: drop-shadow(0 0 5px color-mix(in srgb, var(--color-primary) 40%, transparent));
 }
 
 @utility container-padding {

@@ -45,7 +45,7 @@ export function PlateCalculator({ weight, barWeight = 20, maxPlateWeight = 20 }:
                     <Calculator className="h-3.5 w-3.5" />
                 </Button>
             </DialogTrigger>
-            <DialogContent className="bg-zinc-950 border-white/10 text-white max-w-[350px] rounded-3xl">
+            <DialogContent className="bg-background border-border max-w-[350px] rounded-3xl">
                 <DialogHeader>
                     <DialogTitle className="text-center text-primary uppercase tracking-widest font-black italic">
                         {t("plateCalculator")}
@@ -55,7 +55,7 @@ export function PlateCalculator({ weight, barWeight = 20, maxPlateWeight = 20 }:
                 <div className="flex flex-col items-center py-6 space-y-8">
                     {/* Weight Display */}
                     <div className="text-center">
-                        <span className="text-5xl font-black text-white italic">{weight}</span>
+                        <span className="text-5xl font-black text-foreground italic">{weight}</span>
                         <span className="text-xl font-bold text-primary ml-1">{t("weight")}</span>
                         <p className="text-[10px] text-muted-foreground uppercase tracking-widest mt-2">
                             {t("barPlates", { bar: barWeight, plates: weight - barWeight })}
@@ -63,7 +63,7 @@ export function PlateCalculator({ weight, barWeight = 20, maxPlateWeight = 20 }:
                     </div>
 
                     {/* Barbell Visualization */}
-                    <div className="relative w-full h-24 flex items-center justify-center bg-zinc-900/50 rounded-2xl border border-white/5 overflow-hidden">
+                    <div className="relative w-full h-24 flex items-center justify-center bg-muted/50 rounded-2xl border border-border overflow-hidden">
                         {/* Bar sleeve */}
                         <div className="absolute left-4 right-4 h-3 bg-gradient-to-b from-zinc-400 to-zinc-600 rounded-full opacity-40" />
 
@@ -100,16 +100,16 @@ export function PlateCalculator({ weight, barWeight = 20, maxPlateWeight = 20 }:
 
                     {/* Plates List */}
                     <div className="w-full grid grid-cols-2 gap-4">
-                        <div className="bg-zinc-900/40 p-3 rounded-2xl border border-white/5 text-center">
+                        <div className="bg-muted/40 p-3 rounded-2xl border border-border text-center">
                             <p className="text-[8px] text-muted-foreground uppercase font-black mb-1">{t("perSide")}</p>
                             <div className="flex flex-wrap justify-center gap-1">
                                 {neededPlates.map((p, i) => (
-                                    <span key={i} className="text-xs font-bold text-white px-2 py-0.5 bg-white/5 rounded-md border border-white/10">{p}</span>
+                                    <span key={i} className="text-xs font-bold text-foreground px-2 py-0.5 bg-muted rounded-md border border-border">{p}</span>
                                 ))}
                                 {neededPlates.length === 0 && <span className="text-xs font-bold text-muted-foreground">-</span>}
                             </div>
                         </div>
-                        <div className="bg-zinc-900/40 p-3 rounded-2xl border border-white/5 text-center">
+                        <div className="bg-muted/40 p-3 rounded-2xl border border-border text-center">
                             <p className="text-[8px] text-muted-foreground uppercase font-black mb-1">{t("totalPlates")}</p>
                             <div className="text-lg font-black text-primary">
                                 {neededPlates.length * 2}

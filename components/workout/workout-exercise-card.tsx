@@ -44,7 +44,7 @@ export function WorkoutExerciseCard({
         >
             <div className="overflow-hidden">
                 {/* Table Header */}
-                <div className="grid grid-cols-12 gap-2 py-2 px-2 text-[10px] font-black uppercase tracking-widest text-zinc-600 border-b border-white/5">
+                <div className="grid grid-cols-12 gap-2 py-2 px-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground border-b border-border/40">
                     <div className="col-span-1 text-center font-black">#</div>
                     <div className="col-span-3 text-center font-black">Reps</div>
                     <div className="col-span-3 text-center font-black">Load</div>
@@ -52,7 +52,7 @@ export function WorkoutExerciseCard({
                     <div className="col-span-3 text-right pr-2 font-black italic">Type</div>
                 </div>
 
-                <div className="divide-y divide-white/5">
+                <div className="divide-y divide-border/40">
                     {items.map((item, i) => {
                         const setNumber = mode === 'template' ? i + 1 : (item.set_number || i + 1)
                         const reps = mode === 'template'
@@ -67,17 +67,17 @@ export function WorkoutExerciseCard({
                         const isFailure = rir === 0
 
                         return (
-                            <div key={i} className="grid grid-cols-12 gap-2 py-3 px-3 text-[13px] items-center hover:bg-white/[0.02] transition-colors group/row">
-                                <div className="col-span-1 text-center font-mono text-zinc-700 font-black text-xs">
+                            <div key={i} className="grid grid-cols-12 gap-2 py-3 px-3 text-[13px] items-center hover:bg-muted/30 transition-colors group/row">
+                                <div className="col-span-1 text-center font-mono text-muted-foreground/60 font-black text-xs">
                                     {setNumber}
                                 </div>
                                 <div className="col-span-3 text-center font-black text-primary text-sm tracking-tight drop-shadow-[0_0_10px_rgba(0,255,163,0.3)]">
                                     {reps}
                                 </div>
-                                <div className="col-span-3 text-center font-bold text-zinc-200 tabular-nums">
+                                <div className="col-span-3 text-center font-bold text-foreground tabular-nums">
                                     {load}
                                 </div>
-                                <div className="col-span-2 text-center text-zinc-300 font-mono font-bold">
+                                <div className="col-span-2 text-center text-muted-foreground font-mono font-bold">
                                     {rir ?? '-'}
                                 </div>
                                 <div className="col-span-3 text-right">

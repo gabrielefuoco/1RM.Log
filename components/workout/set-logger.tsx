@@ -118,9 +118,9 @@ export function SetLogger({
         <div className={cn(
             "p-4 rounded-3xl border transition-all duration-300 relative group",
             isActive
-                ? "border-primary bg-muted/40 shadow-[0_0_25px_rgba(0,255,163,0.1)] scale-[1.01]"
+                ? "border-primary bg-primary/5 shadow-[0_0_25px_rgba(0,255,163,0.1)] scale-[1.01]"
                 : isSaved
-                    ? "border-white/5 bg-white/5"
+                    ? "border-border/40 bg-card/60"
                     : "border-border/50 bg-muted/20",
             isFuture && "opacity-40"
         )}
@@ -133,7 +133,7 @@ export function SetLogger({
                         e.stopPropagation()
                         onRemove()
                     }}
-                    className="absolute top-2 right-2 p-1.5 text-slate-500 hover:text-red-400 bg-black/20 hover:bg-black/40 rounded-full transition-colors z-10"
+                    className="absolute top-2 right-2 p-1.5 text-muted-foreground hover:text-red-400 bg-muted hover:bg-muted/80 rounded-full transition-colors z-10"
                 >
                     <X className="h-3 w-3" />
                 </button>
@@ -171,8 +171,8 @@ export function SetLogger({
                             >
                                 {(targetRepsMin || targetRir !== undefined || targetPercentage) && setType !== 'warmup' && (
                                     <div className={cn(
-                                        "flex items-center gap-1 text-[9px] font-bold uppercase tracking-tight px-2 py-1 rounded-lg border transition-colors hover:bg-white/10",
-                                        isActive ? "text-slate-200 bg-white/5 border-white/10" : "text-slate-400 bg-white/5 border-white/5"
+                                        "flex items-center gap-1 text-[9px] font-bold uppercase tracking-tight px-2 py-1 rounded-lg border transition-colors hover:bg-muted",
+                                        isActive ? "text-foreground bg-accent/40 border-border" : "text-muted-foreground bg-muted border-border/50"
                                     )}>
                                         <span className="text-slate-500 text-[8px]">{t("target")}:</span>
                                         <span>
@@ -193,8 +193,8 @@ export function SetLogger({
                                 )}
                                 {previousLog && (
                                     <div className={cn(
-                                        "flex items-center gap-1 text-[9px] uppercase font-black tracking-tight px-2 py-1 rounded-lg border transition-colors hover:bg-white/10",
-                                        isActive ? "text-primary/80 bg-primary/5 border-primary/10" : "text-primary/40 bg-primary/5 border-transparent"
+                                        "flex items-center gap-1 text-[9px] uppercase font-black tracking-tight px-2 py-1 rounded-lg border transition-colors hover:bg-muted",
+                                        isActive ? "text-primary/80 bg-primary/5 border-primary/20" : "text-primary/40 bg-primary/5 border-transparent"
                                     )}>
                                         <History className="h-3 w-3 opacity-50" />
                                         <span>
@@ -209,13 +209,13 @@ export function SetLogger({
                                 )}
                             </div>
                         </DialogTrigger>
-                        <DialogContent className="bg-zinc-950 border-white/10 text-white max-w-[90vw] rounded-3xl">
+                        <DialogContent className="bg-background border-border max-w-[90vw] rounded-3xl">
                             <DialogHeader>
                                 <DialogTitle className="text-xl font-black uppercase tracking-widest text-primary flex items-center gap-2">
                                     <History className="h-5 w-5" />
                                     {t("setDetails")} {setNumber}
                                 </DialogTitle>
-                                <DialogDescription className="text-slate-500 font-bold uppercase text-[10px]">
+                                <DialogDescription className="text-muted-foreground font-bold uppercase text-[10px]">
                                     {t("infoDetails")}
                                 </DialogDescription>
                             </DialogHeader>
@@ -223,14 +223,14 @@ export function SetLogger({
                             <div className="grid gap-6 py-4">
                                 {(targetRepsMin || targetRir !== undefined || targetPercentage) && setType !== 'warmup' && (
                                     <div className="space-y-2">
-                                        <h5 className="text-[10px] font-black text-slate-500 uppercase tracking-widest">{t("targetToday")}</h5>
-                                        <div className="bg-white/5 border border-white/10 rounded-2xl p-4 flex items-center justify-between">
+                                        <h5 className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">{t("targetToday")}</h5>
+                                        <div className="bg-muted border border-border/50 rounded-2xl p-4 flex items-center justify-between">
                                             <div>
-                                                <div className="text-3xl font-black text-white flex items-baseline gap-2">
+                                                <div className="text-3xl font-black text-foreground flex items-baseline gap-2">
                                                     {targetPercentage ? <span className="text-amber-500 text-lg">{targetPercentage}%</span> : null}
                                                     <span>{targetRepsMin}{targetRepsMax ? `-${targetRepsMax}` : ''}</span>
                                                 </div>
-                                                <div className="text-[10px] font-bold text-slate-500 uppercase">{t("objective")}</div>
+                                                <div className="text-[10px] font-bold text-muted-foreground uppercase">{t("objective")}</div>
                                             </div>
                                             <div className="text-right">
                                                 <div className="text-3xl font-black text-primary">
@@ -238,7 +238,7 @@ export function SetLogger({
                                                         ? (settings?.intensity_type === 'RPE' ? `RPE ${rirToRpe(targetRir)}` : `RIR ${targetRir}`)
                                                         : '-'}
                                                 </div>
-                                                <div className="text-[10px] font-bold text-slate-500 uppercase">{t("targetEffort")}</div>
+                                                <div className="text-[10px] font-bold text-muted-foreground uppercase">{t("targetEffort")}</div>
                                             </div>
                                         </div>
                                         {targetPercentage && userBest1RM && (
@@ -252,11 +252,11 @@ export function SetLogger({
 
                                 {previousLog && (
                                     <div className="space-y-2">
-                                        <h5 className="text-[10px] font-black text-slate-500 uppercase tracking-widest">{t("lastPerformance")}</h5>
+                                        <h5 className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">{t("lastPerformance")}</h5>
                                         <div className="bg-primary/5 border border-primary/10 rounded-2xl p-4 flex items-center justify-between gap-2">
                                             <div className="shrink-0">
-                                                <div className="text-2xl font-black text-white">
-                                                    {previousLog.weight}<span className="text-xs text-slate-500 ml-0.5 uppercase">kg</span>
+                                                <div className="text-2xl font-black text-foreground">
+                                                    {previousLog.weight}<span className="text-xs text-muted-foreground ml-0.5 uppercase">kg</span>
                                                     <span className="mx-1.5 text-slate-700">×</span>
                                                     {previousLog.reps}
                                                 </div>
@@ -268,13 +268,13 @@ export function SetLogger({
                                                         ? (settings?.intensity_type === 'RPE' ? `RPE ${rirToRpe(previousLog.rir)}` : `RIR ${previousLog.rir}`)
                                                         : '-'}
                                                 </div>
-                                                <div className="text-[10px] font-bold text-slate-500 uppercase">{t("effort")}</div>
+                                                <div className="text-[10px] font-bold text-muted-foreground uppercase">{t("effort")}</div>
                                             </div>
                                             <div className="text-right shrink-0">
                                                 <div className="text-2xl font-black text-primary/80">
                                                     {(previousLog.weight * (1 + (previousLog.reps || 0) / 30)).toFixed(1)}<span className="text-xs ml-0.5 uppercase">kg</span>
                                                 </div>
-                                                <div className="text-[10px] font-bold text-slate-500 uppercase">{t("est1rm")}</div>
+                                                <div className="text-[10px] font-bold text-muted-foreground uppercase">{t("est1rm")}</div>
                                             </div>
                                         </div>
                                     </div>
@@ -286,13 +286,13 @@ export function SetLogger({
             </div>
 
             {isSaved ? (
-                <div className="flex items-center justify-between bg-black/20 p-3 rounded-2xl border border-white/5">
+                <div className="flex items-center justify-between bg-muted/30 p-3 rounded-2xl border border-border/40">
                     <div className="flex items-baseline gap-2">
-                        <span className="text-2xl font-black text-white">{weight}</span>
-                        <span className="text-xs font-bold text-slate-500 uppercase tracking-tighter">kg</span>
-                        <span className="text-xs text-slate-700 mx-1">/</span>
-                        <span className="text-2xl font-black text-white">{reps}</span>
-                        <span className="text-xs font-bold text-slate-500 uppercase tracking-tighter">{t("reps")}</span>
+                        <span className="text-2xl font-black text-foreground">{weight}</span>
+                        <span className="text-xs font-bold text-muted-foreground uppercase tracking-tighter">kg</span>
+                        <span className="text-xs text-muted-foreground/30 mx-1">/</span>
+                        <span className="text-2xl font-black text-foreground">{reps}</span>
+                        <span className="text-xs font-bold text-muted-foreground uppercase tracking-tighter">{t("reps")}</span>
                     </div>
                     <div className="flex items-center gap-3">
                         <div className="text-right">
@@ -325,7 +325,7 @@ export function SetLogger({
                                 {isActive && <PlateCalculator weight={Number(weight) || 0} maxPlateWeight={settings?.max_plate_weight} />}
                             </div>
                             {isFuture ? (
-                                <div className="h-11 w-full bg-white/5 rounded-xl border border-white/5 flex items-center justify-center font-black text-white/20">
+                                <div className="h-11 w-full bg-muted/40 rounded-xl border border-border/40 flex items-center justify-center font-black text-muted-foreground/20">
                                     {previousLog?.weight || '-'}
                                 </div>
                             ) : (
@@ -335,7 +335,7 @@ export function SetLogger({
                                     value={weight}
                                     onChange={(e) => setWeight(e.target.value)}
                                     className={cn(
-                                        "h-11 bg-white/5 border-white/10 text-base font-black rounded-xl text-center focus:border-primary/50 transition-colors",
+                                        "h-11 bg-muted/40 border-border/40 text-base font-black rounded-xl text-center focus:border-primary/50 transition-colors",
                                         isProgression && "text-primary shadow-[0_0_15px_rgba(0,255,163,0.1)]"
                                     )}
                                     placeholder="0"
@@ -351,7 +351,7 @@ export function SetLogger({
                                 <span className="text-[8px] font-black text-muted-foreground/60 uppercase tracking-tighter">{t("reps")}</span>
                             </div>
                             {isFuture ? (
-                                <div className="h-11 w-full bg-white/5 rounded-xl border border-white/5 flex items-center justify-center font-black text-white/20">
+                                <div className="h-11 w-full bg-muted/40 rounded-xl border border-border/40 flex items-center justify-center font-black text-muted-foreground/20">
                                     -
                                 </div>
                             ) : (
@@ -360,7 +360,7 @@ export function SetLogger({
                                     inputMode="numeric"
                                     value={reps}
                                     onChange={(e) => setReps(e.target.value)}
-                                    className="h-11 bg-white/5 border-white/10 text-base font-black rounded-xl text-center focus:border-primary/50 transition-colors"
+                                    className="h-11 bg-muted/40 border-border/40 text-base font-black rounded-xl text-center focus:border-primary/50 transition-colors"
                                     placeholder="0"
                                     autoComplete="off"
                                     data-lpignore="true"
@@ -390,7 +390,7 @@ export function SetLogger({
                                 </span>
                             </div>
                             {isFuture ? (
-                                <div className="h-11 w-full bg-white/5 rounded-xl border border-white/5 flex items-center justify-center font-black text-white/20">
+                                <div className="h-11 w-full bg-muted/40 rounded-xl border border-border/40 flex items-center justify-center font-black text-muted-foreground/20">
                                     -
                                 </div>
                             ) : (
@@ -410,7 +410,7 @@ export function SetLogger({
                                             setRir(val)
                                         }
                                     }}
-                                    className="h-11 bg-white/5 border-white/10 text-base font-black rounded-xl text-center focus:border-primary/50 transition-colors"
+                                    className="h-11 bg-muted/40 border-border/40 text-base font-black rounded-xl text-center focus:border-primary/50 transition-colors"
                                     placeholder="-"
                                     autoComplete="off"
                                     data-lpignore="true"

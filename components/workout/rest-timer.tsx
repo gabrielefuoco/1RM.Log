@@ -75,12 +75,12 @@ export function RestTimer({ initialSeconds = 90, onComplete, onClose, isOpen }: 
     if (isMinimized) {
         return (
             <div
-                className="fixed bottom-20 right-4 z-50 bg-primary text-background-dark rounded-full p-2 pl-4 pr-3 flex items-center gap-3 shadow-[0_0_20px_rgba(0,255,157,0.4)] cursor-pointer animate-in slide-in-from-bottom-10"
+                className="fixed bottom-20 right-4 z-50 bg-primary text-primary-foreground rounded-full p-2 pl-4 pr-3 flex items-center gap-3 shadow-[0_0_20px_rgba(0,255,157,0.4)] cursor-pointer animate-in slide-in-from-bottom-10"
                 onClick={() => setIsMinimized(false)}
             >
                 <TimerIcon className="h-4 w-4 animate-pulse" />
                 <span className="font-bold font-mono">{formatTime(seconds)}</span>
-                <Button variant="ghost" size="icon" className="h-6 w-6 rounded-full hover:bg-black/10" onClick={(e) => { e.stopPropagation(); onClose(); }}>
+                <Button variant="ghost" size="icon" className="h-6 w-6 rounded-full hover:bg-primary-foreground/10" onClick={(e) => { e.stopPropagation(); onClose(); }}>
                     <X className="h-3 w-3" />
                 </Button>
             </div>
@@ -95,19 +95,19 @@ export function RestTimer({ initialSeconds = 90, onComplete, onClose, isOpen }: 
                 onClick={onClose}
             />
 
-            <div className="relative w-full max-w-sm bg-zinc-900/95 backdrop-blur-xl border border-primary/30 rounded-3xl p-6 shadow-[0_0_40px_rgba(0,0,0,0.5),0_0_20px_rgba(19,236,109,0.1)] animate-in zoom-in-95 duration-200">
+            <div className="relative w-full max-w-sm bg-card/95 backdrop-blur-xl border border-primary/30 rounded-3xl p-6 shadow-[0_0_40px_rgba(0,0,0,0.5),0_0_20px_rgba(19,236,109,0.1)] animate-in zoom-in-95 duration-200">
                 <div className="flex items-center justify-between mb-6">
                     <div className="flex items-center gap-3">
                         <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
                             <TimerIcon className="h-5 w-5 text-primary" />
                         </div>
-                        <h3 className="font-bold text-white text-xl">{t("restTitle")}</h3>
+                        <h3 className="font-bold text-foreground text-xl">{t("restTitle")}</h3>
                     </div>
                     <div className="flex items-center gap-1">
-                        <Button variant="ghost" size="icon" className="rounded-full hover:bg-white/5" onClick={() => setIsMinimized(true)}>
+                        <Button variant="ghost" size="icon" className="rounded-full hover:bg-muted" onClick={() => setIsMinimized(true)}>
                             <Minimize2 className="h-5 w-5 text-slate-400" />
                         </Button>
-                        <Button variant="ghost" size="icon" className="rounded-full hover:bg-white/5" onClick={onClose}>
+                        <Button variant="ghost" size="icon" className="rounded-full hover:bg-muted" onClick={onClose}>
                             <X className="h-5 w-5 text-slate-400" />
                         </Button>
                     </div>
@@ -116,7 +116,7 @@ export function RestTimer({ initialSeconds = 90, onComplete, onClose, isOpen }: 
                 <div className="flex flex-col items-center justify-center py-4">
                     <div className={cn(
                         "text-7xl font-black font-mono tracking-tighter transition-all duration-300",
-                        seconds <= 10 ? "text-red-500 scale-110 animate-pulse" : "text-white"
+                        seconds <= 10 ? "text-red-500 scale-110 animate-pulse" : "text-foreground"
                     )}>
                         {formatTime(seconds)}
                     </div>
@@ -124,22 +124,22 @@ export function RestTimer({ initialSeconds = 90, onComplete, onClose, isOpen }: 
                 </div>
 
                 <div className="grid grid-cols-4 gap-2 mt-8">
-                    <Button variant="outline" className="h-12 border-white/5 bg-white/5 hover:bg-white/10 hover:border-white/10 text-slate-300" onClick={() => adjustTime(-30)}>
+                    <Button variant="outline" className="h-12 border-border bg-muted/50 hover:bg-muted text-muted-foreground" onClick={() => adjustTime(-30)}>
                         -30s
                     </Button>
-                    <Button variant="outline" className="h-12 border-white/5 bg-white/5 hover:bg-white/10 hover:border-white/10 text-slate-300" onClick={() => adjustTime(-10)}>
+                    <Button variant="outline" className="h-12 border-border bg-muted/50 hover:bg-muted text-muted-foreground" onClick={() => adjustTime(-10)}>
                         -10s
                     </Button>
-                    <Button variant="outline" className="h-12 border-white/5 bg-white/5 hover:bg-white/10 hover:border-white/10 text-slate-300" onClick={() => adjustTime(10)}>
+                    <Button variant="outline" className="h-12 border-border bg-muted/50 hover:bg-muted text-muted-foreground" onClick={() => adjustTime(10)}>
                         +10s
                     </Button>
-                    <Button variant="outline" className="h-12 border-white/5 bg-white/5 hover:bg-white/10 hover:border-white/10 text-slate-300" onClick={() => adjustTime(30)}>
+                    <Button variant="outline" className="h-12 border-border bg-muted/50 hover:bg-muted text-muted-foreground" onClick={() => adjustTime(30)}>
                         +30s
                     </Button>
                 </div>
 
                 <Button
-                    className="w-full mt-6 h-14 bg-primary text-background-dark font-black text-lg rounded-2xl hover:bg-primary/90 shadow-[0_0_20px_rgba(19,236,109,0.2)]"
+                    className="w-full mt-6 h-14 bg-primary text-primary-foreground font-black text-lg rounded-2xl hover:bg-primary/90 shadow-[0_0_20px_rgba(19,236,109,0.2)]"
                     onClick={onClose}
                 >
                     {t("skipRest")}

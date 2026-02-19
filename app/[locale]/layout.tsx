@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter, Oswald, JetBrains_Mono } from "next/font/google";
 import "../globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
+import { AccentProvider } from "@/components/theme/accent-provider";
 import { QueryProvider } from "@/components/query-provider";
 import { cn } from "@/lib/utils";
 import { Toaster } from "@/components/ui/sonner";
@@ -87,10 +88,12 @@ export default async function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            <QueryProvider>
-              {children}
-            </QueryProvider>
-            <Toaster />
+            <AccentProvider>
+              <QueryProvider>
+                {children}
+              </QueryProvider>
+              <Toaster />
+            </AccentProvider>
           </ThemeProvider>
         </NextIntlClientProvider>
       </body>

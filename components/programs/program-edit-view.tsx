@@ -230,13 +230,13 @@ export function ProgramEditView({ programId, templates, onRefresh }: ProgramEdit
                 {createPortal(
                     <DragOverlay>
                         {activeExercise ? (
-                            <div className="w-[320px] opacity-90 cursor-grabbing bg-zinc-900 rounded-xl border border-primary/50 shadow-2xl skew-y-2">
+                            <div className="w-[320px] opacity-90 cursor-grabbing bg-black/80 backdrop-blur-xl rounded-xl border border-primary/50 shadow-[0_0_50px_-12px_var(--primary)] overflow-hidden scale-105 rotate-2">
                                 <TemplateExerciseCard
                                     exercise={activeExercise}
                                     index={0}
                                     onEdit={() => { }}
                                     onRemove={() => { }}
-                                    dragHandle={<div className="p-1"><GripVertical className="h-4 w-4 bg-primary/20 rounded-full text-primary" /></div>}
+                                    dragHandle={<div className="p-1 text-primary"><GripVertical className="h-5 w-5" /></div>}
                                 />
                             </div>
                         ) : null}

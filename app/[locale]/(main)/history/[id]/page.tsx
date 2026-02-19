@@ -251,7 +251,7 @@ export default function SessionDetailPage({
                         <WorkoutExerciseCard
                             key={idx}
                             title={group.exerciseName}
-                            index={idx + 1}
+                            index={idx}
                             mode="history"
                             items={group.logs}
                             subtitle={

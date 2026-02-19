@@ -30,7 +30,7 @@ export function TemplateExerciseCard({
     return (
         <WorkoutExerciseCard
             title={exercise.exercise?.name || "Exercise"}
-            index={index + 1}
+            index={index}
             mode="template"
             items={sets}
             onClick={() => onEdit(exercise)}

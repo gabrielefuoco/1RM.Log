@@ -27,29 +27,7 @@ export function ProgramEditView({ programId, templates, onRefresh }: ProgramEdit
                     ))}
 
                     {/* Add New Template Column/Button */}
-                    <div className="w-[320px] shrink-0 h-[calc(100vh-220px)] border border-dashed border-white/10 rounded-xl bg-white/5 flex flex-col items-center justify-center p-6 gap-4">
-                        <div className="h-12 w-12 rounded-full bg-white/5 flex items-center justify-center text-slate-500">
-                            <Plus className="h-6 w-6" />
-                        </div>
-                        <div className="text-center">
-                            <h3 className="font-bold text-slate-300">Nuova Scheda</h3>
-                            <p className="text-xs text-slate-500 mt-1 max-w-[200px] whitespace-normal">
-                                Aggiungi una nuova giornata di allenamento a questo programma.
-                            </p>
-                        </div>
 
-                        <WorkoutTemplateDrawer
-                            mode="create"
-                            programId={programId}
-                            currentTemplatesCount={templates.length}
-                            onSuccess={onRefresh}
-                            trigger={
-                                <Button className="mt-2">
-                                    Crea Scheda
-                                </Button>
-                            }
-                        />
-                    </div>
                 </div>
                 <ScrollBar orientation="horizontal" />
             </ScrollArea>

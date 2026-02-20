@@ -112,7 +112,7 @@ export function ProgramDrawer({ mode, program, open: controlledOpen, onOpenChang
                     />
                 </div>
                 <div className="space-y-2">
-                    <Label htmlFor="prog-desc" className="text-white">Descrizione (Opzionale)</Label>
+                    <Label htmlFor="prog-desc" className="text-foreground">Descrizione (Opzionale)</Label>
                     {mode === 'create' ? (
                         <Input
                             id="prog-desc"
@@ -133,7 +133,7 @@ export function ProgramDrawer({ mode, program, open: controlledOpen, onOpenChang
                 </div>
                 {mode === 'edit' && (
                     <div className="space-y-2">
-                        <Label htmlFor="prog-date" className="text-white">Data Inizio</Label>
+                        <Label htmlFor="prog-date" className="text-foreground">Data Inizio</Label>
                         <Input
                             id="prog-date"
                             type="date"

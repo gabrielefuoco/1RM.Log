@@ -48,7 +48,7 @@ export function PRConfirmationDialog({
                         <DrawerTitle className="text-xl font-black uppercase tracking-widest">
                             {t("newRecords")}
                         </DrawerTitle>
-                        <DrawerDescription className="text-slate-400">
+                        <DrawerDescription className="text-muted-foreground">
                             {t("prDescription", { count: updates.length })}
                         </DrawerDescription>
                     </DrawerHeader>
@@ -61,10 +61,10 @@ export function PRConfirmationDialog({
                                         {update.exerciseName}
                                     </div>
                                     <div className="flex items-center gap-3 text-xs font-mono">
-                                        <span className="text-slate-500 line-through decoration-white/20">
+                                        <span className="text-muted-foreground line-through decoration-foreground/20">
                                             {update.old1Rm}kg
                                         </span>
-                                        <span className="text-slate-700">→</span>
+                                        <span className="text-muted-foreground/50">→</span>
                                         <span className="text-primary font-black text-lg">
                                             {update.new1Rm}kg
                                         </span>

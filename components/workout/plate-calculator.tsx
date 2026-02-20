@@ -120,7 +120,7 @@ export function PlateCalculator({ weight, barWeight = 20, maxPlateWeight = 20 }:
 
                 <Button
                     variant="ghost"
-                    className="w-full text-muted-foreground hover:text-white uppercase text-[10px] font-black tracking-widest mt-2"
+                    className="w-full text-muted-foreground hover:text-foreground uppercase text-[10px] font-black tracking-widest mt-2"
                     onClick={() => { }}
                 >
                     {t("close")}

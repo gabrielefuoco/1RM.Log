@@ -66,7 +66,7 @@ export default function RecapPage({ params }: { params: Promise<{ sessionId: str
     }
 
     if (loading) return <div className="h-screen flex items-center justify-center bg-background"><Loader2 className="animate-spin text-primary" /></div>
-    if (!recapData) return <div className="h-screen flex items-center justify-center text-white">{t("dataNotFound")}</div>
+    if (!recapData) return <div className="h-screen flex items-center justify-center text-foreground">{t("dataNotFound")}</div>
 
     const { session, logs, currentVolume, currentReps, volumeDelta, prs } = recapData
     const dateLocale = locale === 'it' ? it : enUS
@@ -79,7 +79,7 @@ export default function RecapPage({ params }: { params: Promise<{ sessionId: str
                 <div className="relative z-10 inline-flex items-center justify-center h-16 w-16 bg-primary/20 rounded-full border border-primary/30 mb-4 shadow-[0_0_30px_rgba(0,255,163,0.2)]">
                     <Trophy className="h-8 w-8 text-primary" />
                 </div>
-                <h1 className="text-3xl font-black uppercase tracking-tighter text-white italic">{t("title")}</h1>
+                <h1 className="text-3xl font-black uppercase tracking-tighter text-foreground italic">{t("title")}</h1>
                 <p className="text-muted-foreground font-bold uppercase text-[10px] tracking-[0.3em]">
                     {format(new Date(session.date), "EEEE d MMMM", { locale: dateLocale })}
                 </p>
@@ -100,7 +100,7 @@ export default function RecapPage({ params }: { params: Promise<{ sessionId: str
                                     <div className="relative z-10 flex items-center justify-between">
                                         <div>
                                             <p className="text-[10px] text-primary uppercase font-black tracking-widest mb-0.5">{t("est1rmRecord")}</p>
-                                            <h3 className="text-lg font-bold text-white uppercase">{pr.exerciseName}</h3>
+                                            <h3 className="text-lg font-bold text-foreground uppercase">{pr.exerciseName}</h3>
                                             <p className="text-xs text-muted-foreground font-bold">
                                                 {pr.weight}kg x {pr.reps} reps
                                             </p>
@@ -129,7 +129,7 @@ export default function RecapPage({ params }: { params: Promise<{ sessionId: str
                             <span className="text-[9px] font-black uppercase tracking-widest">{t("totalVolume")}</span>
                         </div>
                         <div className="flex items-end gap-2">
-                            <span className="text-2xl font-black text-white">{currentVolume.toLocaleString()}</span>
+                            <span className="text-2xl font-black text-foreground">{currentVolume.toLocaleString()}</span>
                             <span className="text-[10px] font-bold text-muted-foreground mb-1.5">KG</span>
                         </div>
                         {volumeDelta !== 0 && (
@@ -149,7 +149,7 @@ export default function RecapPage({ params }: { params: Promise<{ sessionId: str
                             <span className="text-[9px] font-black uppercase tracking-widest">{t("totalReps")}</span>
                         </div>
                         <div className="flex items-end gap-2">
-                            <span className="text-2xl font-black text-white">{currentReps}</span>
+                            <span className="text-2xl font-black text-foreground">{currentReps}</span>
                             <span className="text-[10px] font-bold text-muted-foreground mb-1.5">REPS</span>
                         </div>
                         <div className="flex items-center gap-1 text-[10px] text-muted-foreground font-bold uppercase">
@@ -166,7 +166,7 @@ export default function RecapPage({ params }: { params: Promise<{ sessionId: str
                         </div>
                         <div>
                             <p className="text-[9px] text-muted-foreground uppercase font-black tracking-widest">{t("sessionDuration")}</p>
-                            <p className="text-base font-bold text-white">
+                            <p className="text-base font-bold text-foreground">
                                 {Math.floor((session.duration_seconds || 0) / 60)}m {(session.duration_seconds || 0) % 60}s
                             </p>
                         </div>
@@ -177,7 +177,7 @@ export default function RecapPage({ params }: { params: Promise<{ sessionId: str
                 <div className="space-y-6 pt-4 border-t border-border/50">
                     <div className="space-y-4">
                         <div className="flex items-center justify-between">
-                            <h2 className="text-xs font-black uppercase tracking-widest text-white">{t("difficulty")}</h2>
+                            <h2 className="text-xs font-black uppercase tracking-widest text-foreground">{t("difficulty")}</h2>
                             <span className={cn(
                                 "text-lg font-black",
                                 rpe <= 4 ? "text-green-500" : rpe <= 7 ? "text-primary" : "text-orange-500"
@@ -198,7 +198,7 @@ export default function RecapPage({ params }: { params: Promise<{ sessionId: str
                     </div>
 
                     <div className="space-y-2">
-                        <h2 className="text-xs font-black uppercase tracking-widest text-white">{t("sessionNotes")}</h2>
+                        <h2 className="text-xs font-black uppercase tracking-widest text-foreground">{t("sessionNotes")}</h2>
                         <Textarea
                             placeholder={t("notesPlaceholder")}
                             value={notes}

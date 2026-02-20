@@ -68,20 +68,20 @@ export function WorkoutExerciseCard({
 
                         return (
                             <div key={i} className="grid grid-cols-12 gap-2 py-4 px-4 text-[13px] items-center hover:bg-muted/20 transition-colors group/row">
-                                <div className="col-span-1 text-center font-heading text-slate-400 font-black text-sm">
+                                <div className="col-span-1 text-center font-heading text-muted-foreground font-black text-sm">
                                     {setNumber}
                                 </div>
                                 <div className="col-span-3 text-center font-black text-base tracking-tight text-primary shadow-primary/20 drop-shadow-sm">
                                     {reps}
                                 </div>
-                                <div className="col-span-3 text-center font-bold text-white tabular-nums tracking-tighter">
+                                <div className="col-span-3 text-center font-bold text-foreground tabular-nums tracking-tighter">
                                     {load}
                                 </div>
-                                <div className="col-span-2 text-center text-slate-300 font-heading font-black text-sm">
+                                <div className="col-span-2 text-center text-foreground/80 font-heading font-black text-sm">
                                     {rir ?? '-'}
                                 </div>
                                 <div className="col-span-3 text-right">
-                                    <span className="text-[9px] text-slate-500 uppercase font-black italic tracking-[0.15em] opacity-80">
+                                    <span className="text-[9px] text-muted-foreground uppercase font-black italic tracking-[0.15em] opacity-80">
                                         {isFailure ? "Failure" : "Straight"}
                                     </span>
                                 </div>

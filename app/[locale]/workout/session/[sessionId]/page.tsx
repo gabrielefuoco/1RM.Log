@@ -37,9 +37,9 @@ export default function SessionRunnerPage({ params }: { params: Promise<{ sessio
     if (s.runnerExercises.length === 0) {
         return (
             <div className="flex flex-col items-center justify-center min-h-screen p-6 text-center space-y-6">
-                <h2 className="text-2xl font-bold text-white">{s.t("emptyTitle")}</h2>
-                <p className="text-slate-400">{s.t("emptySubtitle")}</p>
-                <Button onClick={() => s.setIsPickerOpen(true)} className="bg-primary text-background-dark font-bold px-8 py-6 text-lg rounded-full">
+                <h2 className="text-2xl font-bold text-foreground">{s.t("emptyTitle")}</h2>
+                <p className="text-muted-foreground">{s.t("emptySubtitle")}</p>
+                <Button onClick={() => s.setIsPickerOpen(true)} className="bg-primary text-primary-foreground font-bold px-8 py-6 text-lg rounded-full">
                     <Plus className="mr-2" /> {s.t("addExercise")}
                 </Button>
                 <ExercisePicker
@@ -64,8 +64,8 @@ export default function SessionRunnerPage({ params }: { params: Promise<{ sessio
                 <div className="hidden lg:block lg:col-span-3 space-y-6">
                     <div className="sticky top-6">
                         <div className="mb-4">
-                            <h2 className="text-xl font-heading font-bold text-white uppercase tracking-tight mb-1">Sessione</h2>
-                            <p className="text-xs text-slate-500 font-mono uppercase tracking-widest">
+                            <h2 className="text-xl font-heading font-bold text-foreground uppercase tracking-tight mb-1">Sessione</h2>
+                            <p className="text-xs text-muted-foreground font-mono uppercase tracking-widest">
                                 {s.runnerExercises.reduce((acc, ex) => acc + ex.logs.filter(l => l.set_type === 'work').length, 0)} Sets completati
                             </p>
                         </div>
@@ -87,18 +87,18 @@ export default function SessionRunnerPage({ params }: { params: Promise<{ sessio
                                             "p-3 rounded-xl border cursor-pointer transition-all group relative overflow-hidden",
                                             isCurrent
                                                 ? "bg-primary/10 border-primary/30 shadow-[0_0_15px_rgba(0,255,163,0.1)]"
-                                                : "bg-zinc-900/30 border-transparent hover:bg-zinc-900/50 hover:border-white/5"
+                                                : "bg-muted/30 border-transparent hover:bg-muted/50 hover:border-border"
                                         )}
                                     >
                                         <div className="flex items-center justify-between gap-2 relative z-10">
                                             <div className="flex-1 min-w-0">
                                                 <p className={cn(
                                                     "font-bold text-sm truncate",
-                                                    isCurrent ? "text-white" : "text-slate-400 group-hover:text-slate-200"
+                                                    isCurrent ? "text-foreground" : "text-muted-foreground group-hover:text-foreground/80"
                                                 )}>
                                                     {exState.exercise.name}
                                                 </p>
-                                                <p className="text-[10px] text-slate-500 mt-0.5">
+                                                <p className="text-[10px] text-muted-foreground mt-0.5">
                                                     {setsDone} / {exState.targetSets} Sets
                                                 </p>
                                             </div>
@@ -119,7 +119,7 @@ export default function SessionRunnerPage({ params }: { params: Promise<{ sessio
                             })}
                         </div>
 
-                        <div className="pt-6 mt-6 border-t border-white/5">
+                        <div className="pt-6 mt-6 border-t border-border">
                             <Button
                                 variant="outline"
                                 className="w-full border-red-900/30 bg-red-900/10 text-red-400 hover:bg-red-900/20"
@@ -175,7 +175,7 @@ export default function SessionRunnerPage({ params }: { params: Promise<{ sessio
                                         onClick={() => s.setCurrentIndex(idx)}
                                         className={cn(
                                             "h-1 rounded-full transition-all cursor-pointer",
-                                            idx === s.currentIndex ? "w-8 bg-primary shadow-[0_0_8px_rgba(0,255,163,0.6)]" : "w-2 bg-slate-800"
+                                            idx === s.currentIndex ? "w-8 bg-primary shadow-[0_0_8px_rgba(0,255,163,0.6)]" : "w-2 bg-muted"
                                         )}
                                     />
                                 ))}
@@ -183,7 +183,7 @@ export default function SessionRunnerPage({ params }: { params: Promise<{ sessio
                         </div>
 
                         <div className="hidden lg:block">
-                            <div className="bg-zinc-900/30 border border-white/5 rounded-2xl p-6 backdrop-blur-sm relative overflow-hidden">
+                            <div className="bg-muted/30 border border-border rounded-2xl p-6 relative overflow-hidden">
                                 <div className="absolute top-0 right-0 p-4 flex gap-2">
                                     <Button size="sm" variant="ghost" onClick={() => s.setIsPickerOpen(true)}>
                                         <Plus className="h-4 w-4 mr-2" /> Aggiungi
@@ -196,7 +196,7 @@ export default function SessionRunnerPage({ params }: { params: Promise<{ sessio
                                             "text-xs font-bold border transition-all",
                                             s.isDeload
                                                 ? "bg-purple-500/20 text-purple-400 border-purple-500/30"
-                                                : "bg-white/5 text-slate-500 border-white/5 hover:bg-white/10"
+                                                : "bg-muted/30 text-muted-foreground border-border hover:bg-muted/50"
                                         )}
                                     >
                                         {s.isDeload ? s.t("deloadOn") : s.t("deloadOff")}
@@ -338,7 +338,7 @@ export default function SessionRunnerPage({ params }: { params: Promise<{ sessio
                         </Button>
                         <Button
                             variant="outline"
-                            className="h-12 border-white/10 bg-white/5 text-slate-300 font-bold rounded-xl hover:bg-white/10 transition-all flex items-center justify-center gap-2"
+                            className="h-12 border-border bg-muted/30 text-muted-foreground font-bold rounded-xl hover:bg-muted/50 transition-all flex items-center justify-center gap-2"
                             onClick={s.addExtraSet}
                         >
                             <Plus className="h-4 w-4" />
@@ -408,34 +408,34 @@ export default function SessionRunnerPage({ params }: { params: Promise<{ sessio
                 {/* RIGHT COLUMN: History Context (Desktop Only) */}
                 <div className="hidden lg:block lg:col-span-3">
                     <div className="sticky top-6">
-                        <h3 className="text-sm font-black text-slate-500 uppercase tracking-widest mb-4 flex items-center gap-2">
+                        <h3 className="text-sm font-black text-muted-foreground uppercase tracking-widest mb-4 flex items-center gap-2">
                             <History className="h-4 w-4" />
                             {s.t("history")}
                         </h3>
 
                         {currentItem.historyLogs && currentItem.historyLogs.length > 0 ? (
-                            <div className="space-y-3 relative before:absolute before:left-3.5 before:top-2 before:bottom-2 before:w-px before:bg-white/5">
+                            <div className="space-y-3 relative before:absolute before:left-3.5 before:top-2 before:bottom-2 before:w-px before:bg-border">
                                 {currentItem.historyLogs.map((log) => (
                                     <div key={log.id} className="relative pl-8">
-                                        <div className="absolute left-1.5 top-2 h-4 w-4 rounded-full border-2 border-zinc-900 bg-zinc-800 z-10" />
-                                        <div className="bg-zinc-900/40 border border-white/5 rounded-lg p-3">
+                                        <div className="absolute left-1.5 top-2 h-4 w-4 rounded-full border-2 border-card bg-muted z-10" />
+                                        <div className="bg-muted/40 border border-border rounded-lg p-3">
                                             <div className="flex items-center justify-between mb-1">
-                                                <span className="text-[10px] text-slate-500 uppercase font-bold">
+                                                <span className="text-[10px] text-muted-foreground uppercase font-bold">
                                                     {new Date(log.created_at).toLocaleDateString()}
                                                 </span>
                                                 <span className="text-xs font-black text-primary">
-                                                    {calculate1RM(log.weight, log.reps)}KG <span className="text-[9px] text-slate-500 font-normal">e1RM</span>
+                                                    {calculate1RM(log.weight, log.reps)}KG <span className="text-[9px] text-muted-foreground font-normal">e1RM</span>
                                                 </span>
                                             </div>
                                             <div className="flex items-baseline gap-2">
-                                                <span className="text-lg font-bold text-white">{log.weight}</span>
-                                                <span className="text-xs text-slate-500">kg</span>
-                                                <span className="text-sm text-slate-600">x</span>
-                                                <span className="text-lg font-bold text-white">{log.reps}</span>
+                                                <span className="text-lg font-bold text-foreground">{log.weight}</span>
+                                                <span className="text-xs text-muted-foreground">kg</span>
+                                                <span className="text-sm text-muted-foreground/70">x</span>
+                                                <span className="text-lg font-bold text-foreground">{log.reps}</span>
                                             </div>
                                             {log.rir !== null && (
                                                 <div className="mt-1 flex gap-2">
-                                                    <Badge variant="outline" className="text-[9px] bg-transparent border-white/10 text-slate-500 h-5">
+                                                    <Badge variant="outline" className="text-[9px] bg-transparent border-border text-muted-foreground h-5">
                                                         RIR {log.rir}
                                                     </Badge>
                                                 </div>
@@ -445,8 +445,8 @@ export default function SessionRunnerPage({ params }: { params: Promise<{ sessio
                                 ))}
                             </div>
                         ) : (
-                            <div className="p-4 border border-dashed border-white/10 rounded-lg text-center">
-                                <p className="text-xs text-slate-500">Nessuna storia disponibile per questo esercizio.</p>
+                            <div className="p-4 border border-dashed border-border rounded-lg text-center">
+                                <p className="text-xs text-muted-foreground">Nessuna storia disponibile per questo esercizio.</p>
                             </div>
                         )}
                     </div>

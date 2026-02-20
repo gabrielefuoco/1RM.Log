@@ -103,7 +103,7 @@ export function EditOneRmDialog({ exerciseId, exerciseName, history1RM, onUpdate
             <DrawerContent className="bg-background border-t border-border">
                 <div className="mx-auto w-full max-w-sm">
                     <DrawerHeader>
-                        <DrawerTitle className="flex items-center gap-2 text-white text-xl">
+                        <DrawerTitle className="flex items-center gap-2 text-foreground text-xl">
                             <Trophy className="h-5 w-5 text-amber-500" />
                             {t("manage1rm")}
                         </DrawerTitle>

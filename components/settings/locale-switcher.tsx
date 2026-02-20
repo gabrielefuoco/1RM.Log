@@ -26,7 +26,7 @@ export function LocaleSwitcher() {
             disabled={isPending}
             className="flex items-center gap-2 group"
         >
-            <Languages className="h-4 w-4 text-slate-400 group-hover:text-primary transition-colors" />
+            <Languages className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
             <span className="font-bold uppercase tracking-tight">
                 {locale === "it" ? "English" : "Italiano"}
             </span>

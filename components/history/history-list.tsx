@@ -49,7 +49,7 @@ export function HistoryList({ sessions }: HistoryListProps) {
                         {/* Monthly Summary Header */}
                         <div className="sticky top-[73px] z-30 bg-background/95 backdrop-blur-md pt-4 pb-2 border-b border-primary/10 flex items-end justify-between group">
                             <div className="space-y-0.5">
-                                <h3 className="text-xl font-black text-white italic uppercase tracking-tighter transition-colors group-hover:text-primary">
+                                <h3 className="text-xl font-black text-foreground italic uppercase tracking-tighter transition-colors group-hover:text-primary">
                                     {monthYear}
                                 </h3>
                                 <div className="flex gap-4 text-[10px] font-black uppercase tracking-widest text-zinc-500">

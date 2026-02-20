@@ -43,7 +43,7 @@ export function ConfirmDrawer({
                     <DrawerHeader>
                         <DrawerTitle className="text-foreground text-xl">{title}</DrawerTitle>
                         {description && (
-                            <DrawerDescription className="text-slate-400">
+                            <DrawerDescription className="text-muted-foreground">
                                 {description}
                             </DrawerDescription>
                         )}

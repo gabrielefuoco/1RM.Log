@@ -57,10 +57,10 @@ export function SessionHeader({
                             <ChevronLeft className="h-5 w-5" />
                         </Button>
                     )}
-                    <Badge className="bg-zinc-800/50 text-slate-500 border-zinc-700/50 uppercase text-[9px] tracking-[0.1em] font-black px-2 py-0.5">
+                    <Badge className="bg-muted/50 text-muted-foreground border-border uppercase text-[9px] tracking-[0.1em] font-black px-2 py-0.5">
                         {exercise.type || t("exercise")}
                     </Badge>
-                    <span className="text-[10px] text-slate-600 font-black tracking-tighter uppercase">
+                    <span className="text-[10px] text-muted-foreground/70 font-black tracking-tighter uppercase">
                         {currentExerciseIndex + 1} / {totalExercises}
                     </span>
                 </div>
@@ -75,7 +75,7 @@ export function SessionHeader({
                                 "h-7 px-2 text-[9px] font-black uppercase tracking-[0.15em] border transition-all mr-1",
                                 isDeload
                                     ? "bg-purple-500/20 text-purple-400 border-purple-500/30 shadow-[0_0_10px_rgba(168,85,247,0.2)]"
-                                    : "bg-zinc-800/30 text-slate-500 border-zinc-700/30 hover:bg-zinc-800/50"
+                                    : "bg-muted/30 text-muted-foreground border-border hover:bg-muted/50"
                             )}
                         >
                             {isDeload ? "DL ON" : "DL"}
@@ -95,7 +95,7 @@ export function SessionHeader({
                         <Button
                             variant="ghost"
                             size="icon"
-                            className="text-slate-600 hover:text-primary h-8 w-8 transition-colors"
+                            className="text-muted-foreground/70 hover:text-primary h-8 w-8 transition-colors"
                             onClick={onSwapExercise}
                             title="Swap Exercise"
                         >
@@ -117,7 +117,7 @@ export function SessionHeader({
 
             {/* Exercise Name */}
             <div className="space-y-1">
-                <h1 className="text-3xl font-black text-white italic leading-[0.9] uppercase tracking-tighter">
+                <h1 className="text-3xl font-black text-foreground italic leading-[0.9] uppercase tracking-tighter">
                     {exercise.name}
                 </h1>
                 <p className="text-[9px] text-primary/60 uppercase tracking-[0.25em] font-black">
@@ -137,12 +137,12 @@ export function SessionHeader({
                         )}></div>
 
                         <div className="flex-1 py-4 pl-4 text-center">
-                            <p className="text-[8px] text-slate-500 uppercase font-black tracking-widest">{t("sets")}</p>
-                            <p className="text-2xl font-black text-white mt-0.5 leading-none">{templateData.target_sets}</p>
+                            <p className="text-[8px] text-muted-foreground uppercase font-black tracking-widest">{t("sets")}</p>
+                            <p className="text-2xl font-black text-foreground mt-0.5 leading-none">{templateData.target_sets}</p>
                         </div>
-                        <div className="w-px h-10 bg-white/5"></div>
+                        <div className="w-px h-10 bg-border"></div>
                         <div className="flex-1 py-4 text-center">
-                            <p className="text-[8px] text-slate-500 uppercase font-black tracking-widest">RIR</p>
+                            <p className="text-[8px] text-muted-foreground uppercase font-black tracking-widest">RIR</p>
                             <p className={cn(
                                 "text-2xl font-black mt-0.5 leading-none",
                                 isDeload ? "text-purple-400" : "text-primary shadow-primary/20"
@@ -150,11 +150,11 @@ export function SessionHeader({
                                 {templateData.target_rir ?? '-'}
                             </p>
                         </div>
-                        <div className="w-px h-10 bg-white/5"></div>
+                        <div className="w-px h-10 bg-border"></div>
                         <div className="flex-1 py-4 text-center">
-                            <p className="text-[8px] text-slate-500 uppercase font-black tracking-widest">{t("reps")}</p>
-                            <p className="text-2xl font-black text-white mt-0.5 leading-none">
-                                {templateData.target_reps_min}<span className="text-xs text-slate-600 mx-0.5">-</span>{templateData.target_reps_max}
+                            <p className="text-[8px] text-muted-foreground uppercase font-black tracking-widest">{t("reps")}</p>
+                            <p className="text-2xl font-black text-foreground mt-0.5 leading-none">
+                                {templateData.target_reps_min}<span className="text-xs text-muted-foreground/70 mx-0.5">-</span>{templateData.target_reps_max}
                             </p>
                         </div>
                     </div>
@@ -173,16 +173,16 @@ export function SessionHeader({
                 >
                     <div className="flex items-center gap-3">
                         <div className={cn(
-                            "h-8 w-8 rounded-xl bg-zinc-800/50 flex items-center justify-center transition-all duration-300",
+                            "h-8 w-8 rounded-xl bg-muted/50 flex items-center justify-center transition-all duration-300",
                             isExpanded && "bg-primary/20 shadow-sm shadow-primary/30"
                         )}>
-                            <ChevronRight className={cn("h-4 w-4 text-slate-500 transition-all", isExpanded && "text-primary rotate-90")} />
+                            <ChevronRight className={cn("h-4 w-4 text-muted-foreground transition-all", isExpanded && "text-primary rotate-90")} />
                         </div>
                         <div className="flex-1">
-                            <p className="text-[10px] text-slate-600 uppercase tracking-[0.1em] font-black">{t("nextPrefix")}:</p>
-                            <p className="text-base font-black text-white italic truncate">{nextExercise.name.toUpperCase()}</p>
+                            <p className="text-[10px] text-muted-foreground/70 uppercase tracking-[0.1em] font-black">{t("nextPrefix")}:</p>
+                            <p className="text-base font-black text-foreground italic truncate">{nextExercise.name.toUpperCase()}</p>
                         </div>
-                        {!isExpanded && <Info className="h-4 w-4 text-slate-700" />}
+                        {!isExpanded && <Info className="h-4 w-4 text-muted-foreground/50" />}
                     </div>
 
                     {isExpanded && (

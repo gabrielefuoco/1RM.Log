@@ -108,7 +108,7 @@ export default function TemplateDetailPage({
     }
 
 
-    if (loading) return <div className="p-8 text-center text-slate-500">Caricamento scheda...</div>
+    if (loading) return <div className="p-8 text-center text-muted-foreground">Caricamento scheda...</div>
     if (!template) return <div className="p-8 text-center text-red-400">Scheda non trovata</div>
 
     return (
@@ -118,7 +118,7 @@ export default function TemplateDetailPage({
                 <Button
                     variant="ghost"
                     size="sm"
-                    className="-ml-3 w-fit text-slate-400 hover:text-white"
+                    className="-ml-3 w-fit text-muted-foreground hover:text-foreground"
                     onClick={() => router.back()}
                 >
                     <ArrowLeft className="h-4 w-4 mr-1" />
@@ -126,12 +126,12 @@ export default function TemplateDetailPage({
                 </Button>
 
                 <div className="flex items-center justify-between">
-                    <h1 className="text-2xl font-bold text-white tracking-tight flex items-center gap-2">
+                    <h1 className="text-2xl font-bold text-foreground tracking-tight flex items-center gap-2">
                         {template.name}
                         <Button
                             variant="ghost"
                             size="icon"
-                            className="h-8 w-8 text-slate-500 hover:text-white"
+                            className="h-8 w-8 text-muted-foreground hover:text-foreground"
                             onClick={() => setTemplateEditOpen(true)}
                         >
                             <Pencil className="h-4 w-4" />
@@ -140,15 +140,15 @@ export default function TemplateDetailPage({
 
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="icon" className="text-slate-400 hover:text-white">
+                            <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground">
                                 <MoreVertical className="h-5 w-5" />
                             </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="bg-zinc-900 border-white/10 text-white">
+                        <DropdownMenuContent align="end" className="bg-popover border-border">
                             <DropdownMenuItem onClick={() => setTemplateEditOpen(true)}>
                                 Rinominia
                             </DropdownMenuItem>
-                            <DropdownMenuSeparator className="bg-white/10" />
+                            <DropdownMenuSeparator className="bg-border" />
                             <DropdownMenuItem
                                 onClick={() => setDeleteTemplateOpen(true)}
                                 className="text-red-400 focus:text-red-400 focus:bg-red-900/20"
@@ -163,7 +163,7 @@ export default function TemplateDetailPage({
             {/* Exercises List */}
             <div>
                 <div className="flex items-center justify-between mb-4">
-                    <h2 className="text-sm font-bold text-slate-500 uppercase tracking-wider">Esercizi</h2>
+                    <h2 className="text-sm font-bold text-muted-foreground uppercase tracking-wider">Esercizi</h2>
                     <TemplateExerciseDrawer
                         mode="add"
                         templateId={templateId}
@@ -184,9 +184,9 @@ export default function TemplateDetailPage({
                     ))}
 
                     {exercises.length === 0 && (
-                        <div className="text-center py-8 border border-dashed border-white/10 rounded-xl">
-                            <p className="text-slate-500">Nessun esercizio aggiunto.</p>
-                            <p className="text-xs text-slate-600 mt-1">Clicca "Aggiungi Esercizio" per iniziare.</p>
+                        <div className="text-center py-8 border border-dashed border-border rounded-xl">
+                            <p className="text-muted-foreground">Nessun esercizio aggiunto.</p>
+                            <p className="text-xs text-muted-foreground/70 mt-1">Clicca "Aggiungi Esercizio" per iniziare.</p>
                         </div>
                     )}
                 </div>

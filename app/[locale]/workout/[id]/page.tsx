@@ -29,7 +29,7 @@ export default function StartWorkoutPage({ params }: { params: Promise<{ id: str
     return (
         <div className="h-screen flex flex-col items-center justify-center bg-background gap-4">
             <Loader2 className="h-10 w-10 animate-spin text-primary" />
-            <p className="text-slate-400 font-medium animate-pulse">Avvio allenamento...</p>
+            <p className="text-muted-foreground font-medium animate-pulse">Avvio allenamento...</p>
         </div>
     )
 }

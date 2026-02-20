@@ -38,30 +38,30 @@ export default function RegisterPage() {
 
     if (success) {
         return (
-            <div className="min-h-screen flex flex-col items-center justify-center px-6 bg-background-dark text-center">
+            <div className="min-h-screen flex flex-col items-center justify-center px-6 bg-background text-center">
                 <h1 className="text-3xl font-bold text-primary mb-4">Controlla la tua email</h1>
-                <p className="text-slate-400 mb-8">Ti abbiamo inviato un link per confermare la registrazione.</p>
+                <p className="text-muted-foreground mb-8">Ti abbiamo inviato un link per confermare la registrazione.</p>
                 <Link href="/login">
-                    <Button className="bg-white/10 hover:bg-white/20 text-white">Torna al Login</Button>
+                    <Button className="bg-muted/50 hover:bg-muted/70 text-foreground">Torna al Login</Button>
                 </Link>
             </div>
         )
     }
 
     return (
-        <div className="min-h-screen flex flex-col items-center justify-center px-6 bg-background-dark">
+        <div className="min-h-screen flex flex-col items-center justify-center px-6 bg-background">
             <div className="relative mb-8 flex items-center justify-center">
                 <div className="absolute w-32 h-32 bg-primary/20 rounded-full blur-3xl"></div>
                 <div className="relative flex flex-col items-center">
                     <h1 className="text-5xl font-bold tracking-tighter text-primary">1RM</h1>
-                    <p className="text-white font-bold tracking-tight mt-2">REGISTRAZIONE</p>
+                    <p className="text-foreground font-bold tracking-tight mt-2">REGISTRAZIONE</p>
                 </div>
             </div>
 
             <div className="w-full max-w-sm space-y-6">
                 <div className="space-y-2 text-center">
-                    <h1 className="text-3xl font-bold text-white">Crea Account</h1>
-                    <p className="text-slate-400">Inizia il tuo viaggio.</p>
+                    <h1 className="text-3xl font-bold text-foreground">Crea Account</h1>
+                    <p className="text-muted-foreground">Inizia il tuo viaggio.</p>
                 </div>
 
                 {error && (
@@ -74,7 +74,7 @@ export default function RegisterPage() {
                     <div className="space-y-2">
                         <Input
                             name="email"
-                            className="bg-zinc-900/50 border-white/10 text-white h-12 rounded-xl focus-visible:ring-primary"
+                            className="bg-card border-border text-foreground h-12 rounded-xl focus-visible:ring-primary"
                             placeholder="Email"
                             type="email"
                             required
@@ -83,7 +83,7 @@ export default function RegisterPage() {
                     <div className="space-y-2">
                         <Input
                             name="password"
-                            className="bg-zinc-900/50 border-white/10 text-white h-12 rounded-xl focus-visible:ring-primary"
+                            className="bg-card border-border text-foreground h-12 rounded-xl focus-visible:ring-primary"
                             placeholder="Password (min 6 caratteri)"
                             type="password"
                             required
@@ -92,13 +92,13 @@ export default function RegisterPage() {
                     <Button
                         type="submit"
                         disabled={isLoading}
-                        className="w-full h-12 bg-primary text-background-dark font-bold text-lg rounded-xl hover:bg-primary/90 transition-colors"
+                        className="w-full h-12 bg-primary text-primary-foreground font-bold text-lg rounded-xl hover:bg-primary/90 transition-colors"
                     >
                         {isLoading ? <Loader2 className="animate-spin" /> : "REGISTRATI"}
                     </Button>
                 </form>
 
-                <div className="text-center text-sm text-slate-400">
+                <div className="text-center text-sm text-muted-foreground">
                     Hai già un account?{" "}
                     <Link href="/login" className="text-primary hover:underline font-bold">
                         Accedi

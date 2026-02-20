@@ -174,12 +174,12 @@ export function SetLogger({
                                         "flex items-center gap-1 text-[9px] font-bold uppercase tracking-tight px-2 py-1 rounded-lg border transition-colors hover:bg-muted",
                                         isActive ? "text-foreground bg-accent/40 border-border" : "text-muted-foreground bg-muted border-border/50"
                                     )}>
-                                        <span className="text-slate-500 text-[8px]">{t("target")}:</span>
+                                        <span className="text-muted-foreground text-[8px]">{t("target")}:</span>
                                         <span>
                                             {targetPercentage ? (
                                                 <span className="text-amber-500 mr-1">{targetPercentage}%</span>
                                             ) : null}
-                                            {targetRepsMin}{targetRepsMax ? `-${targetRepsMax}` : ''} <span className="text-slate-500 font-normal">{t("reps")}</span>
+                                            {targetRepsMin}{targetRepsMax ? `-${targetRepsMax}` : ''} <span className="text-muted-foreground font-normal">{t("reps")}</span>
                                             {targetRir !== undefined && (
                                                 <>
                                                     <span className="mx-1 text-white/20">|</span>
@@ -257,10 +257,10 @@ export function SetLogger({
                                             <div className="shrink-0">
                                                 <div className="text-2xl font-black text-foreground">
                                                     {previousLog.weight}<span className="text-xs text-muted-foreground ml-0.5 uppercase">kg</span>
-                                                    <span className="mx-1.5 text-slate-700">×</span>
+                                                    <span className="mx-1.5 text-muted-foreground/50">×</span>
                                                     {previousLog.reps}
                                                 </div>
-                                                <div className="text-[10px] font-bold text-slate-500 uppercase">{t("performance")}</div>
+                                                <div className="text-[10px] font-bold text-muted-foreground uppercase">{t("performance")}</div>
                                             </div>
                                             <div className="text-center shrink-0">
                                                 <div className="text-2xl font-black text-primary">

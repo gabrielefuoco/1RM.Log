@@ -21,7 +21,7 @@ export function DailyReadiness({ onComplete }: DailyReadinessProps) {
         if (score <= 2) return { label: t("tired"), color: "text-orange-500", icon: Battery }
         if (score <= 3) return { label: t("good"), color: "text-primary", icon: Zap }
         if (score <= 4) return { label: t("energized"), color: "text-green-500", icon: Dna }
-        return { label: t("unstoppable"), color: "text-white shadow-primary", icon: Zap }
+        return { label: t("unstoppable"), color: "text-foreground shadow-primary", icon: Zap }
     }
 
     const status = getStatusText()
@@ -30,7 +30,7 @@ export function DailyReadiness({ onComplete }: DailyReadinessProps) {
     return (
         <div className="space-y-8 p-6 bg-card border border-border rounded-3xl animate-in fade-in slide-in-from-bottom-4 duration-500">
             <div className="text-center space-y-2">
-                <h2 className="text-2xl font-black uppercase tracking-tighter text-white italic">{t("readyTitle")}</h2>
+                <h2 className="text-2xl font-black uppercase tracking-tighter text-foreground italic">{t("readyTitle")}</h2>
                 <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest">{t("readySubtitle")}</p>
             </div>
 
@@ -68,7 +68,7 @@ export function DailyReadiness({ onComplete }: DailyReadinessProps) {
                             onClick={() => setAdjustment('volume')}
                             className={cn(
                                 "flex flex-col items-center p-4 rounded-2xl border transition-all",
-                                adjustment === 'volume' ? "bg-orange-500/20 border-orange-500 text-white" : "bg-muted/30 border-border text-muted-foreground"
+                                adjustment === 'volume' ? "bg-orange-500/20 border-orange-500 text-foreground" : "bg-muted/30 border-border text-muted-foreground"
                             )}
                         >
                             <span className="text-xs font-black uppercase mb-1">{t("volumeCut")}</span>
@@ -78,7 +78,7 @@ export function DailyReadiness({ onComplete }: DailyReadinessProps) {
                             onClick={() => setAdjustment('intensity')}
                             className={cn(
                                 "flex flex-col items-center p-4 rounded-2xl border transition-all",
-                                adjustment === 'intensity' ? "bg-orange-500/20 border-orange-500 text-white" : "bg-muted/30 border-border text-muted-foreground"
+                                adjustment === 'intensity' ? "bg-orange-500/20 border-orange-500 text-foreground" : "bg-muted/30 border-border text-muted-foreground"
                             )}
                         >
                             <span className="text-xs font-black uppercase mb-1">{t("intensityCut")}</span>

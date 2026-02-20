@@ -59,41 +59,41 @@ export default function HistoryPage() {
         <div className="space-y-8 pt-4 pb-24 container-padding">
             {/* Header */}
             <div>
-                <h1 className="text-4xl font-black text-white italic uppercase tracking-tighter leading-none mb-2">{t("title")}</h1>
-                <p className="text-zinc-500 font-bold uppercase tracking-widest text-[10px]">{t("subtitle")}</p>
+                <h1 className="text-4xl font-black text-foreground italic uppercase tracking-tighter leading-none mb-2">{t("title")}</h1>
+                <p className="text-muted-foreground font-bold uppercase tracking-widest text-[10px]">{t("subtitle")}</p>
             </div>
 
             {/* Quick Stats Dashboard */}
             <div className="grid grid-cols-3 gap-3">
                 {[
-                    { label: "WORKOUTS", value: stats.totalWorkouts, color: "text-white" },
+                    { label: "WORKOUTS", value: stats.totalWorkouts, color: "text-foreground" },
                     { label: "TOTAL SETS", value: stats.totalSets, color: "text-primary" },
                     { label: "CONSISTENCY", value: `${stats.consistency}%`, color: "text-amber-500" },
                 ].map((stat, i) => (
-                    <div key={i} className="bg-zinc-900/40 border border-white/5 rounded-2xl p-3 flex flex-col items-center justify-center text-center">
-                        <span className="text-[9px] font-black text-zinc-500 tracking-[0.2em] mb-1">{stat.label}</span>
+                    <div key={i} className="bg-muted/50 border border-border rounded-2xl p-3 flex flex-col items-center justify-center text-center">
+                        <span className="text-[9px] font-black text-muted-foreground tracking-[0.2em] mb-1">{stat.label}</span>
                         <span className={cn("text-xl font-black italic tracking-tighter", stat.color)}>{stat.value}</span>
                     </div>
                 ))}
             </div>
 
             {/* Calendar Card */}
-            <div className="bg-zinc-900/50 border border-white/5 rounded-3xl p-4 flex justify-center shadow-2xl shadow-black/50 relative overflow-hidden group">
+            <div className="bg-card border border-border rounded-3xl p-4 flex justify-center shadow-xl relative overflow-hidden group">
                 <div className="absolute top-0 right-0 w-24 h-24 bg-primary/5 blur-3xl pointer-events-none" />
                 <CalendarComponent
                     mode="single"
                     selected={date}
                     onSelect={setDate}
-                    className="rounded-md border-0 text-zinc-300"
+                    className="rounded-md border-0 text-foreground"
                     classNames={{
                         day: "h-9 w-9 md:h-14 md:w-14 text-center text-sm md:text-xl p-0 relative focus-within:relative focus-within:z-20",
                         day_button: cn(
                             buttonVariants({ variant: "ghost" }),
                             "h-9 w-9 md:h-14 md:w-14 p-0 font-normal aria-selected:opacity-100 font-sans hover:bg-primary/20 hover:text-primary transition-colors md:text-xl"
                         ),
-                        weekday: "text-zinc-500 rounded-md w-9 md:w-14 font-black text-[0.6rem] md:text-[0.8rem] uppercase tracking-widest text-center",
+                        weekday: "text-muted-foreground rounded-md w-9 md:w-14 font-black text-[0.6rem] md:text-[0.8rem] uppercase tracking-widest text-center",
                         month_caption: "flex justify-center pt-1 relative items-center mb-4 md:mb-8",
-                        caption_label: "text-sm md:text-xl font-black uppercase tracking-widest italic text-white",
+                        caption_label: "text-sm md:text-xl font-black uppercase tracking-widest italic text-foreground",
                     }}
                     modifiers={{
                         workout: workoutDays
@@ -108,14 +108,14 @@ export default function HistoryPage() {
             {/* List */}
             <div>
                 <div className="flex items-center gap-4 mb-6">
-                    <div className="h-px flex-1 bg-gradient-to-r from-transparent via-white/10 to-transparent" />
-                    <h2 className="text-xs font-black text-zinc-500 uppercase tracking-[0.3em]">{t("recent")}</h2>
-                    <div className="h-px flex-1 bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+                    <div className="h-px flex-1 bg-gradient-to-r from-transparent via-border to-transparent" />
+                    <h2 className="text-xs font-black text-muted-foreground uppercase tracking-[0.3em]">{t("recent")}</h2>
+                    <div className="h-px flex-1 bg-gradient-to-r from-transparent via-border to-transparent" />
                 </div>
 
                 {loading ? (
                     <div className="text-center py-20">
-                        <div className="animate-pulse text-zinc-600 font-black uppercase tracking-widest text-sm">{t("loading")}...</div>
+                        <div className="animate-pulse text-muted-foreground font-black uppercase tracking-widest text-sm">{t("loading")}...</div>
                     </div>
                 ) : (
                     <HistoryList sessions={sessions} />

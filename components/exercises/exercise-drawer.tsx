@@ -105,8 +105,8 @@ export function ExerciseDrawer({
                 <div className="mx-auto w-full max-w-sm">
                     <DrawerHeader>
                         <DrawerTitle className={mode === 'edit'
-                            ? "text-2xl font-black text-white italic uppercase tracking-tighter leading-none mb-1"
-                            : "text-white text-xl"}>
+                            ? "text-2xl font-black text-foreground italic uppercase tracking-tighter leading-none mb-1"
+                            : "text-foreground text-xl"}>
                             {title}
                         </DrawerTitle>
                         <DrawerDescription className={mode === 'edit'
@@ -127,8 +127,8 @@ export function ExerciseDrawer({
                                 id="exercise-name"
                                 placeholder="e.g. Incline Dumbbell Press"
                                 className={mode === 'edit'
-                                    ? "bg-card/40 border-border text-white h-11 focus:border-primary/20 transition-all rounded-lg"
-                                    : "bg-card/50 border-border text-white"}
+                                    ? "bg-card/40 border-border text-foreground h-11 focus:border-primary/20 transition-all rounded-lg"
+                                    : "bg-card/50 border-border text-foreground"}
                                 value={name}
                                 onChange={(e) => setName(e.target.value)}
                             />
@@ -146,24 +146,24 @@ export function ExerciseDrawer({
                                 onChange={setBodyParts}
                                 placeholder="Choose categories..."
                                 className={mode === 'edit'
-                                    ? "bg-card/40 border-border text-white focus:border-primary/20 transition-all rounded-lg"
-                                    : "bg-card/50 border-border text-white"}
+                                    ? "bg-card/40 border-border text-foreground focus:border-primary/20 transition-all rounded-lg"
+                                    : "bg-card/50 border-border text-foreground"}
                             />
                         </div>
 
                         <div className="space-y-2">
                             <Label className={mode === 'edit'
                                 ? "text-muted-foreground font-bold uppercase tracking-widest text-[9px] ml-1"
-                                : "text-white"}>
+                                : "text-foreground"}>
                                 Equipment Type
                             </Label>
                             <Select value={type} onValueChange={(v) => setType(v as ExerciseType)}>
                                 <SelectTrigger className={mode === 'edit'
-                                    ? "bg-card/40 border-border text-white h-11 focus:border-primary/20 transition-all rounded-lg"
-                                    : "bg-card/50 border-border text-white"}>
+                                    ? "bg-card/40 border-border text-foreground h-11 focus:border-primary/20 transition-all rounded-lg"
+                                    : "bg-card/50 border-border text-foreground"}>
                                     <SelectValue />
                                 </SelectTrigger>
-                                <SelectContent className="bg-card border-border text-white">
+                                <SelectContent className="bg-card border-border">
                                     {EQUIPMENT_TYPE_OPTIONS.map(t => (
                                         <SelectItem key={t.value} value={t.value} className="capitalize focus:bg-primary/20 focus:text-primary">{t.label}</SelectItem>
                                     ))}
@@ -177,16 +177,16 @@ export function ExerciseDrawer({
                             onClick={handleSubmit}
                             disabled={loading}
                             className={mode === 'edit'
-                                ? "w-full bg-primary text-background-dark font-black uppercase tracking-widest hover:bg-primary/90 transition-all h-12 rounded-lg"
-                                : "w-full bg-primary text-background-dark font-bold hover:bg-primary/90"}>
+                                ? "w-full bg-primary text-primary-foreground font-black uppercase tracking-widest hover:bg-primary/90 transition-all h-12 rounded-lg"
+                                : "w-full bg-primary text-primary-foreground font-bold hover:bg-primary/90"}>
                             {submitText}
                         </Button>
                         <DrawerClose asChild>
                             <Button
                                 variant={mode === 'edit' ? "ghost" : "outline"}
                                 className={mode === 'edit'
-                                    ? "w-full text-muted-foreground hover:text-white font-bold uppercase tracking-widest text-xs h-10"
-                                    : "w-full border-border text-white hover:bg-white/5 hover:text-white"}>
+                                    ? "w-full text-muted-foreground hover:text-foreground font-bold uppercase tracking-widest text-xs h-10"
+                                    : "w-full border-border hover:bg-muted"}>
                                 Cancel
                             </Button>
                         </DrawerClose>

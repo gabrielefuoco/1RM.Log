@@ -81,7 +81,7 @@ export function ExercisePicker({ onSelect, trigger, open, onOpenChange }: Exerci
                                         <Dumbbell className="h-5 w-5 text-primary" />
                                     </div>
                                     <div className="text-left">
-                                        <div className="font-bold text-white">{ex.name}</div>
+                                        <div className="font-bold text-foreground">{ex.name}</div>
                                         <div className="text-xs text-muted-foreground capitalize">{ex.body_parts?.join(', ')} • {ex.type}</div>
                                     </div>
                                     <Plus className="ml-auto h-5 w-5 text-muted-foreground" />

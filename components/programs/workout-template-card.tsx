@@ -42,7 +42,7 @@ export function WorkoutTemplateCard({
             primaryActionIcon={<Play className="h-4 w-4 fill-current ml-0.5" />}
 
             subtitle={
-                <div className="flex items-center gap-2 text-xs text-slate-500 font-medium">
+                <div className="flex items-center gap-2 text-xs text-muted-foreground font-medium">
                     <span className="flex items-center gap-1.5 bg-white/5 px-2 py-0.5 rounded-md">
                         <Dumbbell className="h-3 w-3" />
                         {exerciseCount} Exercises

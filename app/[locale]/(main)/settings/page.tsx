@@ -78,7 +78,7 @@ export default function SettingsPage() {
             <Card className="border-border/50">
                 <CardHeader className="pb-2">
                     <CardTitle className="text-lg flex items-center gap-2">
-                        <SettingsIcon className="h-5 w-5 text-slate-400" />
+                        <SettingsIcon className="h-5 w-5 text-muted-foreground" />
                         {t("app")}
                     </CardTitle>
                 </CardHeader>
@@ -124,7 +124,7 @@ export default function SettingsPage() {
             <Card className="border-border/50">
                 <CardHeader className="pb-2">
                     <CardTitle className="text-lg flex items-center gap-2">
-                        <ShieldAlert className="h-5 w-5 text-slate-400" />
+                        <ShieldAlert className="h-5 w-5 text-muted-foreground" />
                         {t("account")}
                     </CardTitle>
                 </CardHeader>

@@ -63,8 +63,8 @@ export default function ProgramsPage() {
         <div className="space-y-8 pt-4 pb-24">
             {/* Header */}
             <div className="flex flex-col gap-1">
-                <h1 className="text-2xl font-bold text-white tracking-tight">{t("title")}</h1>
-                <p className="text-sm text-slate-400">{t("subtitle")}</p>
+                <h1 className="text-2xl font-bold text-foreground tracking-tight">{t("title")}</h1>
+                <p className="text-sm text-muted-foreground">{t("subtitle")}</p>
                 {errorMsg && (
                     <div className="p-3 bg-red-500/10 border border-red-500/20 text-red-500 text-xs rounded font-mono">
                         {errorMsg}
@@ -76,32 +76,32 @@ export default function ProgramsPage() {
             <section>
                 <div className="flex items-center gap-2 mb-3">
                     <Activity className="h-4 w-4 text-primary" />
-                    <h2 className="text-sm font-bold text-slate-200 uppercase tracking-wider">{t("activeProgram")}</h2>
+                    <h2 className="text-sm font-bold text-foreground/80 uppercase tracking-wider">{t("activeProgram")}</h2>
                 </div>
 
                 {loading ? (
-                    <div className="h-24 rounded-lg bg-zinc-900/50 animate-pulse" />
+                    <div className="h-24 rounded-lg bg-muted/50 animate-pulse" />
                 ) : activeProgram ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                         <ProgramCard program={activeProgram} onRefresh={loadPrograms} />
                     </div>
                 ) : (
-                    <div className="p-6 rounded-lg border border-dashed border-white/10 text-center">
-                        <p className="text-slate-500 text-sm">{t("noActiveProgram")}</p>
+                    <div className="p-6 rounded-lg border border-dashed border-border text-center">
+                        <p className="text-muted-foreground text-sm">{t("noActiveProgram")}</p>
                     </div>
                 )}
             </section>
 
             {/* History Section */}
             <section>
-                <h2 className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-3">{t("history")}</h2>
+                <h2 className="text-sm font-bold text-muted-foreground uppercase tracking-wider mb-3">{t("history")}</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {pastPrograms.map(p => (
                         <ProgramCard key={p.id} program={p} onRefresh={loadPrograms} />
                     ))}
                 </div>
                 {!loading && pastPrograms.length === 0 && (
-                    <p className="text-xs text-slate-600">{t("noPastPrograms")}</p>
+                    <p className="text-xs text-muted-foreground">{t("noPastPrograms")}</p>
                 )}
             </section>
 

@@ -33,20 +33,20 @@ export default function LoginPage() {
     }
 
     return (
-        <div className="min-h-screen flex flex-col items-center justify-center px-6 bg-background-dark">
+        <div className="min-h-screen flex flex-col items-center justify-center px-6 bg-background">
             {/* Logo Area */}
             <div className="relative mb-8 flex items-center justify-center">
                 <div className="absolute w-32 h-32 bg-primary/20 rounded-full blur-3xl"></div>
                 <div className="relative flex flex-col items-center">
                     <h1 className="text-5xl font-bold tracking-tighter text-primary">1RM</h1>
-                    <p className="text-white font-bold tracking-tight mt-2">LOGBOOK</p>
+                    <p className="text-foreground font-bold tracking-tight mt-2">LOGBOOK</p>
                 </div>
             </div>
 
             <div className="w-full max-w-sm space-y-6">
                 <div className="space-y-2 text-center">
-                    <h1 className="text-3xl font-bold text-white">Bentornato</h1>
-                    <p className="text-slate-400">Inserisci le tue credenziali per accedere</p>
+                    <h1 className="text-3xl font-bold text-foreground">Bentornato</h1>
+                    <p className="text-muted-foreground">Inserisci le tue credenziali per accedere</p>
                 </div>
 
                 {error && (
@@ -59,7 +59,7 @@ export default function LoginPage() {
                     <div className="space-y-2">
                         <Input
                             name="email"
-                            className="bg-zinc-900/50 border-white/10 text-white h-12 rounded-xl focus-visible:ring-primary"
+                            className="bg-card border-border text-foreground h-12 rounded-xl focus-visible:ring-primary"
                             placeholder="Email"
                             type="email"
                             required
@@ -68,7 +68,7 @@ export default function LoginPage() {
                     <div className="space-y-2">
                         <Input
                             name="password"
-                            className="bg-zinc-900/50 border-white/10 text-white h-12 rounded-xl focus-visible:ring-primary"
+                            className="bg-card border-border text-foreground h-12 rounded-xl focus-visible:ring-primary"
                             placeholder="Password"
                             type="password"
                             required
@@ -77,13 +77,13 @@ export default function LoginPage() {
                     <Button
                         type="submit"
                         disabled={isLoading}
-                        className="w-full h-12 bg-primary text-background-dark font-bold text-lg rounded-xl hover:bg-primary/90 transition-colors"
+                        className="w-full h-12 bg-primary text-primary-foreground font-bold text-lg rounded-xl hover:bg-primary/90 transition-colors"
                     >
                         {isLoading ? <Loader2 className="animate-spin" /> : "ACCEDI"}
                     </Button>
                 </form>
 
-                <div className="text-center text-sm text-slate-400">
+                <div className="text-center text-sm text-muted-foreground">
                     Non hai un account?{" "}
                     <Link href="/register" className="text-primary hover:underline font-bold">
                         Registrati

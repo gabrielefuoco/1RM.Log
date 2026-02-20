@@ -52,11 +52,11 @@ export function ExerciseList({ exercises, isLoading, onRefresh }: ExerciseListPr
     }
 
     if (isLoading) {
-        return <div className="text-center text-slate-500 mt-10">Caricamento esercizi...</div>
+        return <div className="text-center text-muted-foreground mt-10">Caricamento esercizi...</div>
     }
 
     if (exercises.length === 0) {
-        return <div className="text-center text-slate-500 mt-10">Nessun esercizio trovato.</div>
+        return <div className="text-center text-muted-foreground mt-10">Nessun esercizio trovato.</div>
     }
 
     return (
@@ -123,7 +123,7 @@ function ExerciseCard({ exercise, onEdit, onDelete }: { exercise: Exercise, onEd
             icon={getIcon()}
             subtitle={
                 <div className="flex items-center gap-1 mt-0.5">
-                    <span className="text-zinc-500 font-bold uppercase tracking-widest text-[9px] truncate">
+                    <span className="text-muted-foreground font-bold uppercase tracking-widest text-[9px] truncate">
                         {exercise.body_parts?.join(', ')} • {exercise.type}
                     </span>
                 </div>
@@ -132,12 +132,12 @@ function ExerciseCard({ exercise, onEdit, onDelete }: { exercise: Exercise, onEd
                 <div className="flex items-center gap-1 opacity-20 group-hover:opacity-100 transition-opacity">
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400 hover:text-white hover:bg-white/10">
+                            <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-foreground hover:bg-muted">
                                 <MoreVertical className="h-4 w-4" />
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end" className="w-40 bg-popover border-border">
-                            <DropdownMenuItem onClick={onEdit} className="focus:bg-white/10 focus:text-white cursor-pointer">
+                            <DropdownMenuItem onClick={onEdit} className="focus:bg-muted cursor-pointer">
                                 <Pencil className="mr-2 h-4 w-4" /> Modifica
                             </DropdownMenuItem>
                             <DropdownMenuItem onClick={onDelete} className="focus:bg-red-900/30 text-red-400 focus:text-red-400 cursor-pointer">

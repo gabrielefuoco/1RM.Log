@@ -105,10 +105,10 @@ export function RestTimer({ initialSeconds = 90, onComplete, onClose, isOpen }: 
                     </div>
                     <div className="flex items-center gap-1">
                         <Button variant="ghost" size="icon" className="rounded-full hover:bg-muted" onClick={() => setIsMinimized(true)}>
-                            <Minimize2 className="h-5 w-5 text-slate-400" />
+                            <Minimize2 className="h-5 w-5 text-muted-foreground" />
                         </Button>
                         <Button variant="ghost" size="icon" className="rounded-full hover:bg-muted" onClick={onClose}>
-                            <X className="h-5 w-5 text-slate-400" />
+                            <X className="h-5 w-5 text-muted-foreground" />
                         </Button>
                     </div>
                 </div>
@@ -120,7 +120,7 @@ export function RestTimer({ initialSeconds = 90, onComplete, onClose, isOpen }: 
                     )}>
                         {formatTime(seconds)}
                     </div>
-                    <p className="text-slate-500 text-xs mt-2 uppercase tracking-widest font-bold">{t("remainingTime")}</p>
+                    <p className="text-muted-foreground text-xs mt-2 uppercase tracking-widest font-bold">{t("remainingTime")}</p>
                 </div>
 
                 <div className="grid grid-cols-4 gap-2 mt-8">

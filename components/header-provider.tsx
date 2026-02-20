@@ -1,7 +1,6 @@
 "use client"
 
-import React, { createContext, useContext, useState, useCallback, useEffect } from "react"
-import { usePathname } from "next/navigation"
+import React, { createContext, useContext, useState, useCallback } from "react"
 
 interface HeaderState {
     title?: string
@@ -18,13 +17,6 @@ const HeaderContext = createContext<HeaderContextType | undefined>(undefined)
 
 export function HeaderProvider({ children }: { children: React.ReactNode }) {
     const [state, setState] = useState<HeaderState>({})
-    const pathname = usePathname()
-
-    // Reset header on navigation
-    // This ensures that if a page doesn't set a header, it doesn't show the previous page's header
-    useEffect(() => {
-        setState({})
-    }, [pathname])
 
     const setHeader = useCallback((config: HeaderState) => {
         setState(config)

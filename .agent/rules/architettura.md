@@ -14,9 +14,10 @@
 - **Configurazione**: `staleTime: 60000` (1 minuto). `refetchOnWindowFocus: false`.
 - **Pattern**: I hook personalizzati in `hooks/` wrappano le chiamate Supabase.
 
-### Mutazioni & Sync
+### Mutazioni, Modelli Locali & UI State
+- **Hooks Centralizzati per Editing**: Per l'editing di liste complesse (es. Configurazione Set per Esercizio), l'app delega tutto lo stato a un hook orchestratore centralizzato (es. `useTemplateSetEditor`) per mantenere isolata la logica rispetto alla UI.
 - **Pattern Imperativo**: Le mutazioni pesanti (come salvare un set nel runner) utilizzano chiamate dirette ai `services/` seguite da aggiornamenti manuali dello stato locale del componente per garantire reattività istantanea senza attendere l'invalidazione della query.
-- **Stable React Keys**: Nelle liste dinamiche (es. `SetLogger` nel runner), usa sempre chiavi stabili basate sull'identità logica (`set-${type}-${number}`) invece dell'indice dell'array per preservare lo stato interno dei componenti (timer, input manuali) durante i re-render.
+- **Stable React Keys per DND**: Nelle liste dinamiche o che supportano Drag-and-Drop (es. `@dnd-kit`), usa **SEMPRE** chiavi stabili basate sull'identità logica generata ad-hoc (`_id: crypto.randomUUID()`) per ogni elemento per preservare lo stato interno dei componenti (timer, input manuali, posizioni di ref) durante i re-render o i riordinamenti.
 
 ## 3. Service Layer
 - **Percorso**: `services/*.ts`.

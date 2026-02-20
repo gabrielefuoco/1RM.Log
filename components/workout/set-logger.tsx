@@ -347,8 +347,22 @@ export function SetLogger({
                         </div>
 
                         <div className="col-span-2">
-                            <div className="flex items-center gap-1 mb-1.5 ml-1">
-                                <span className="text-[8px] font-black text-muted-foreground/60 uppercase tracking-tighter">{t("reps")}</span>
+                            <div className="flex items-center justify-between mb-1.5 px-1">
+                                <span className="text-[8px] font-black text-muted-foreground/60 uppercase tracking-tighter flex-shrink-0">{t("reps")}</span>
+                                {(targetPercentage || (templateSet?.is_backoff && templateSet?.backoff_percent)) ? (
+                                    <div className="flex items-center justify-end gap-1">
+                                        {templateSet?.is_backoff && (
+                                            <span className="text-[8px] font-black tracking-tighter text-purple-400 bg-purple-500/10 px-1 rounded-sm uppercase whitespace-nowrap">
+                                                -{templateSet.backoff_percent}%
+                                            </span>
+                                        )}
+                                        {targetPercentage && (
+                                            <span className="text-[8px] font-black tracking-tighter text-amber-500 bg-amber-500/10 px-1 rounded-sm uppercase whitespace-nowrap">
+                                                {targetPercentage}%
+                                            </span>
+                                        )}
+                                    </div>
+                                ) : null}
                             </div>
                             {isFuture ? (
                                 <div className="h-11 w-full bg-muted/40 rounded-xl border border-border/40 flex items-center justify-center font-black text-muted-foreground/20">
@@ -367,21 +381,7 @@ export function SetLogger({
                                     data-1p-ignore="true"
                                 />
                             )}
-                            {/* Suggestion Badge */}
-                            {(targetPercentage || (templateSet?.is_backoff && templateSet?.backoff_percent)) && (
-                                <div className="flex items-center gap-2 mb-2 justify-center">
-                                    {templateSet?.is_backoff && (
-                                        <Badge variant="outline" className="text-[10px] h-5 bg-purple-500/10 text-purple-400 border-purple-500/20 px-1.5">
-                                            Drop {templateSet.backoff_percent}%
-                                        </Badge>
-                                    )}
-                                    {targetPercentage && (
-                                        <Badge variant="outline" className="text-[10px] h-5 bg-amber-500/10 text-amber-500 border-amber-500/20 px-1.5">
-                                            {targetPercentage}% 1RM
-                                        </Badge>
-                                    )}
-                                </div>
-                            )}        </div>
+                        </div>
 
                         <div className="col-span-2">
                             <div className="flex items-center gap-1 mb-1.5 ml-1">

@@ -9,6 +9,7 @@ La struttura segue un modello piramidale dal piano alla singola esecuzione:
 - **`progression_definitions`**: Libreria di schemi di progressione riutilizzabili.
 - **`workout_templates`**: Sessioni tipo (Mesociclo/Microciclo).
 - **`template_exercises`**: Configurazione esercizio (Sets, Reps, **Progression Mode**).
+  - N.B. I dati dei set all'interno di un template exercise (`sets_data`) supportano le nuove proprietà `is_backoff`, `backoff_percent` e `weight_mode: 'percent' | 'absolute'`, dove percentuale e peso assoluto sono mutualmente esclusivi (gestiti sempre in stato pulito salvando `undefined` per i campi inutilizzati).
 - **`workout_sessions`**: Esecuzione reale in data X.
 - **`exercise_logs`**: Singolo set (Peso, Reps, RIR, 1RM Stimato).
 - **`bodyweight_logs`**: Tracciamento peso corporeo nel tempo.

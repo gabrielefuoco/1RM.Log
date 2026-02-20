@@ -26,14 +26,15 @@ Lo stack è definito e installato. **Non deviare da queste scelte.**
 -   **PWA**: `@ducanh2912/next-pwa` (Supporto offline/installazione).
 
 ### 🛠 Librerie Core
+-   **Drag & Drop**: `@dnd-kit/core`, `@dnd-kit/sortable` (Standard per liste riordinabili).
 -   **Forms**: `react-hook-form` + `zod` (Validazione schema).
 -   **Analytics**: `recharts` (Grafici trend 1RM).
 -   **UX**: `sonner` (Toast notifications), `@formkit/auto-animate` (Liste).
 -   **Utils**: `date-fns`, `react-timer-hook`, `clsx`, `tailwind-merge`.
 
 > [!IMPORTANT]
-> **Comando di Avvio**: Usa sempre `npm run dev` (configurato per usare Webpack).
-> Turbopack è attualmente disabilitato per incompatibilità con il plugin PWA.
+> **Comando di Avvio**: Usa sempre `npm run dev` o `next dev` (configurato globalmente per usare Webpack via config).
+> Turbopack è formalmente deprecato dal workflow a causa di continui problemi con il plugin PWA.
 
 ## 3. Architettura Dati (Supabase)
 Lo schema è definito in `supabase/schema.sql`.
@@ -68,9 +69,8 @@ Il cuore pulsante dell'app. Non solo "suggerimenti", ma un motore deterministico
 
 ### D. UI Mobile-First
 -   Input numerici giganti.
--   Nessuno scroll orizzontale.
+-   Dialog complessi sostituiti proattivamente con **Drawer bottom-up** esplorabili, specialmente per configurazioni di liste ed esercizi.
 -   Dark Mode di default (OLED friendly).
-
 
 ## 5. Regole di Sviluppo
 1.  **Non reinventare**: Usa i componenti Shadcn per tutto.

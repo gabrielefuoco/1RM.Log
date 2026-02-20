@@ -15,21 +15,25 @@ L'app utilizza un design ad alto contrasto, OLED-friendly, con accenti neon orga
 - **UI/Body**: **Inter**. Per leggibilità su schermi piccoli.
 - **Data/Timers**: **JetBrains Mono**. Per un look tecnico/ingegneristico.
 
-## 3. Tailwind CSS v4 & Utility
+## 3. Tailwind CSS v4 & Utility Personali
 Utilizziamo Tailwind v4 con plugin `tailwindcss-animate`.
 ### Utility Personalizzate (in `globals.css`):
-- `@utility fusion-card`: Background card + border subtle + rounded-lg.
-- `@utility fusion-card-hover`: Effetto hover con shadow neon e traslazione 2px.
-- `@utility text-neon`: Drop-shadow del colore primary.
+- **Border Radius Standardizzato**: Usa sempre `rounded-lg` (8px) per container esterni/cards, e `rounded-md` (6px) per elementi interni (badge, input). Evita raggi non standard.
+- **`.card-hover-fx`**: Aggiungi questa classe agli elementi interattivi (come card di allenamento) per abilitare l'effetto di sollevamento con drop-shadow neon (`translate-y-[-2px] hover:shadow-[0_4px_12px_rgba(0,255,163,0.15)]`).
+- **`@utility fusion-card`**: Background card + border subtle + rounded-lg.
+- **`@utility text-neon`**: Drop-shadow del colore primary.
 
 ## 4. Pattern UI Mobile-First
 - **Touch Targets**: Minimo 44x44px per bottoni interattivi.
-- **Input Numerici**: Usa sempre `inputMode="decimal"` o `numeric` per tastiere immediate.
+- **Input Numerici**: Usa sempre `inputMode="decimal"` o `numeric` per tastiere immediate (es. pesi e RIR).
 - **Navigazione**: Bottom bar su mobile con FAB centrale per azioni principali.
+- **Containers**: Nessuno scroll orizzontale in body.
 
 ## 5. Componenti Core & Pattern Avanzati
-- **Shadcn/ui**: Base per tutti i componenti atomici (Button, Card, Dialog).
-- **Detail Popups**: Per informazioni secondarie o storiche (es. Target/Last performance), usa un `Dialog` triggerato da badge cliccabili invece di sovraffollare la UI principale.
-- **Explicit Labels**: Evitare abbreviazioni criptiche (es. preferire "RIR 2" a "R2") per garantire chiarezza immediata sotto sforzo intenso.
-- **Sonner**: Per notifiche toast.
-- **Recharts**: Per grafici (colore neon `#13ec6d`).
+- **Shadcn/ui**: Base per tutti i componenti atomici (`Button`, `Card`, ecc).
+- **Drawers / Sheets**: Per configurazioni complesse o modifiche multi-step su mobile, **prediligi i Drawers o Sheets rispetto ai normali Dialogs**, per offrire una migliore UX "bottom-up" esplorabile.
+- **Detail Popups**: Per informazioni secondarie o storiche rapide (es. storico performance), usa `Dialog` leggeri o popover triggerati da icone, evitando di sovraccaricare la view principale.
+- **Liste Drag-and-Drop**: Utilizza `@dnd-kit/core` e `sortable` per configurazioni di liste visive (esercizi, set).
+- **Explicit Labels**: Evitare abbreviazioni criptiche (es. preferire "RIR 2" a "R2") per garantire chiarezza.
+- **Notifiche**: `sonner` per toast actions.
+- **Charts**: `recharts` per dashboard e trend (colore neon `#13ec6d`).

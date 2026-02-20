@@ -37,7 +37,13 @@ Ogni esercizio in una scheda può avere una modalità specifica:
 -   **Logica**: Segue una lista predefinita di step (es. Settimana 1: 70%, Settimana 2: 75%...).
 -   **Avanzamento**: Manuale o automatico a fine mesociclo.
 
-### B. Carryover Intra-Sessione
+### B. Gestione dei Back-off Set
+Quando si aggiungono serie di back-off e si riordinano le serie:
+-   **Natura "Slot-Based"**: Le proprietà di back-off (`is_backoff`, `backoff_percent`) non appartengono al singolo set fisico trascinato col DND, ma rimangono ancorate alla posizione (Slot) in cui si trovavano. Spostare un set normale al fondo (dove prima c'era un back-off) non sposterà lo status di back-off in alto, ma farà diventare back-off il set spinto verso il fondo.
+-   **Sicurezza**: Il primo set (indice 0) non può mai essere un set di back-off (viene castato a `false` forzatamente).
+-   **Weight Mode Sync**: abilitare il backback-off forza il `weight_mode` a `percent`.
+
+### C. Carryover Intra-Sessione
 -   Se l'utente modifica il peso nel Set 1, il suggerimento per i Set successivi si adatta immediatamente ("Live Carryover").
 
 ## 3. Arrotondamento Carichi

@@ -130,10 +130,40 @@ export function useTemplateSetEditor({
 
     const reorderSets = useCallback((startIndex: number, endIndex: number) => {
         setSetsData(prev => {
+            // 1. Extract the backoff structure from the current array
+            const backoffStructure = prev.map(set => ({
+                is_backoff: set.is_backoff,
+                backoff_percent: set.backoff_percent
+            }))
+
+            // 2. Perform the reorder on the full array
             const result = Array.from(prev)
             const [removed] = result.splice(startIndex, 1)
             result.splice(endIndex, 0, removed)
-            return result
+
+            // 3. Re-apply the backoff structure to the new slots
+            return result.map((set, index) => {
+                const targetSlot = backoffStructure[index] || { is_backoff: false, backoff_percent: undefined }
+                // First set can NEVER be backoff, enforcing safety
+                if (index === 0) {
+                    return { ...set, is_backoff: false, backoff_percent: undefined }
+                }
+
+                // If a back-off is applied but the set was visually not in percent mode originally, maybe adjust it
+                // Actually, the slot dictate the backoff state.
+                const updated = {
+                    ...set,
+                    is_backoff: targetSlot.is_backoff,
+                    backoff_percent: targetSlot.backoff_percent
+                }
+
+                // Ensure UI consistency for backoffs
+                if (updated.is_backoff) {
+                    updated._ui_weight_mode = 'percent'
+                    updated.weight_mode = 'percent'
+                }
+                return updated
+            })
         })
     }, [])
 

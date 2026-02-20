@@ -90,13 +90,13 @@ export function DesktopSidebar() {
                         >
                             {/* Neon Indicator for Active */}
                             {isActive && (
-                                <div className="absolute left-0 top-0 bottom-0 w-1 bg-primary shadow-[0_0_10px_rgba(0,255,163,0.8)]" />
+                                <div className="absolute left-0 top-0 bottom-0 w-1 bg-primary shadow-sm shadow-primary/80" />
                             )}
 
                             <item.icon
                                 className={cn(
                                     "h-5 w-5 transition-transform group-hover:scale-110",
-                                    isActive ? "text-primary drop-shadow-[0_0_5px_rgba(0,255,163,0.5)]" : "text-slate-500 group-hover:text-white"
+                                    isActive ? "text-primary filter drop-shadow-[0_0_5px_var(--primary)]" : "text-slate-500 group-hover:text-white"
                                 )}
                             />
                             <span className="font-heading font-bold tracking-wide uppercase text-sm">

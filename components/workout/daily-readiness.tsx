@@ -37,7 +37,7 @@ export function DailyReadiness({ onComplete }: DailyReadinessProps) {
             <div className="flex flex-col items-center gap-4 py-4">
                 <div className={cn(
                     "h-20 w-20 rounded-full flex items-center justify-center border-2 transition-all duration-300",
-                    score <= 2 ? "border-orange-500/50 bg-orange-500/10" : "border-primary/50 bg-primary/10 shadow-[0_0_30px_rgba(0,255,163,0.1)]"
+                    score <= 2 ? "border-orange-500/50 bg-orange-500/10" : "border-primary/50 bg-primary/10 shadow-xl shadow-primary/20"
                 )}>
                     <StatusIcon className={cn("h-10 w-10", status.color)} />
                 </div>
@@ -90,7 +90,7 @@ export function DailyReadiness({ onComplete }: DailyReadinessProps) {
 
             <Button
                 onClick={() => onComplete({ score, adjustment })}
-                className="w-full h-14 bg-primary text-background font-black text-base uppercase tracking-widest rounded-2xl shadow-[0_0_20px_rgba(0,255,163,0.3)]"
+                className="w-full h-14 bg-primary text-background font-black text-base uppercase tracking-widest rounded-2xl shadow-lg shadow-primary/40"
             >
                 {t("startTraining")} <Check className="ml-2 h-5 w-5" />
             </Button>

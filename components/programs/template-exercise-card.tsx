@@ -41,7 +41,7 @@ export function TemplateExerciseCard({
                 <div className="flex items-center gap-2 mt-0.5">
                     <div className="flex flex-wrap gap-1">
                         {bodyParts.slice(0, 3).map((bp) => (
-                            <Badge key={bp} variant="secondary" className="text-[9px] h-3.5 px-1.5 bg-white/5 text-zinc-500 border-none font-black uppercase tracking-tighter">
+                            <Badge key={bp} variant="secondary" className="h-5 px-2 tracking-widest">
                                 {bp}
                             </Badge>
                         ))}

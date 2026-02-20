@@ -12,6 +12,7 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu"
+import { useAccent, ACCENT_COLORS } from "@/components/theme/accent-provider"
 
 // Dynamic Imports for Heavy Chart Components
 const TrendChart = dynamic(() => import("./trend-chart").then(mod => mod.TrendChart), {
@@ -58,6 +59,9 @@ interface SmartChartProps {
 }
 
 export function SmartChart({ config, onDelete, onEdit }: SmartChartProps) {
+    const { accent } = useAccent()
+    const primaryAccentColor = ACCENT_COLORS[accent]
+
     const { data: chartData, isLoading, error } = useQuery({
         queryKey: ['smart-chart', config.metric, config.params],
         queryFn: () => getSmartChartData(config)
@@ -123,7 +127,7 @@ export function SmartChart({ config, onDelete, onEdit }: SmartChartProps) {
                     <TrendChart
                         data={data as any[]}
                         comparisonData={config.params.showComparison ? comparison : undefined}
-                        primaryColor={getMetricColor(config.metric)}
+                        primaryColor={getMetricColor(config.metric, primaryAccentColor)}
                         unit={getMetricUnit(config.metric)}
                     />
                 )
@@ -131,7 +135,7 @@ export function SmartChart({ config, onDelete, onEdit }: SmartChartProps) {
                 return (
                     <MultiLineChart
                         data={data as any[]}
-                        lines={getLineConfig(config, namesMap)}
+                        lines={getLineConfig(config, namesMap, primaryAccentColor)}
                         yAxisUnit={getMetricUnit(config.metric)}
                     />
                 )
@@ -149,7 +153,7 @@ export function SmartChart({ config, onDelete, onEdit }: SmartChartProps) {
                         data={data as any[]}
                         dataKey="value"
                         categoryKey="subject"
-                        color={getMetricColor(config.metric)}
+                        color={getMetricColor(config.metric, primaryAccentColor)}
                     />
                 )
             case 'histogram':
@@ -158,7 +162,7 @@ export function SmartChart({ config, onDelete, onEdit }: SmartChartProps) {
                         data={data as any[]}
                         xKey="rir"
                         yKey="count"
-                        color={getMetricColor(config.metric)}
+                        color={getMetricColor(config.metric, primaryAccentColor)}
                     />
                 )
             case 'scatter':
@@ -268,17 +272,18 @@ const renderHeaderInfo = (config: SmartChartConfig, data: any) => {
     return latest.value
 }
 
-function getMetricColor(metric: string) {
+function getMetricColor(metric: string, accentColor: string) {
     const colors: Record<string, string> = {
-        '1rm': '#00ffa3',
+        '1rm': accentColor,
         'volume': '#3b82f6',
         'bodyweight': '#a3a3a3',
         'hard_sets': '#facc15',
         'intensity': '#f97316',
         'rel_strength': '#ec4899',
-        'dots': '#8b5cf6'
+        'dots': '#8b5cf6',
+        'normalized': accentColor
     }
-    return colors[metric] || '#ffffff'
+    return colors[metric] || accentColor
 }
 
 function getMetricUnit(metric: string) {
@@ -312,11 +317,11 @@ function getBarConfig(metric: string) {
     return []
 }
 
-function getLineConfig(config: SmartChartConfig, namesMap: Record<string, string>) {
+function getLineConfig(config: SmartChartConfig, namesMap: Record<string, string>, accentColor: string) {
     const ids = config.params.exerciseIds || []
 
     if (config.metric === 'normalized' || (ids.length > 1 && (config.metric === '1rm' || config.metric === 'rel_strength'))) {
-        const colors = ['#00ffa3', '#3b82f6', '#f97316', '#ef4444', '#eab308']
+        const colors = [accentColor, '#3b82f6', '#f97316', '#ef4444', '#eab308']
         return ids.map((id, i) => ({
             key: id,
             color: colors[i % colors.length],
@@ -331,7 +336,7 @@ function getLineConfig(config: SmartChartConfig, namesMap: Record<string, string
         return [{ key: 'value', color: '#ec4899', name: 'Ratio (xBW)' }]
     }
     if (config.metric === '1rm') {
-        return [{ key: 'value', color: '#00ffa3', name: '1RM' }]
+        return [{ key: 'value', color: accentColor, name: '1RM' }]
     }
     return []
 }

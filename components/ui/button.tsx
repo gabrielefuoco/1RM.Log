@@ -9,7 +9,7 @@ const buttonVariants = cva(
     {
         variants: {
             variant: {
-                default: "bg-primary text-primary-foreground font-heading uppercase tracking-widest hover:bg-white hover:text-black shadow-[0_0_15px_rgba(0,255,163,0.3)] hover:shadow-none transition-all",
+                default: "bg-primary text-primary-foreground font-heading uppercase tracking-widest hover:brightness-110 active:scale-95 transition-all shadow-md shadow-primary/20",
                 destructive:
                     "bg-destructive text-destructive-foreground hover:bg-destructive/90",
                 outline:
@@ -18,7 +18,7 @@ const buttonVariants = cva(
                     "bg-secondary text-secondary-foreground hover:bg-secondary/80 font-heading uppercase",
                 ghost: "hover:bg-accent hover:text-accent-foreground",
                 link: "text-primary underline-offset-4 hover:underline",
-                neon: "bg-primary text-background font-heading uppercase tracking-widest shadow-[0_0_20px_rgba(0,255,163,0.4)] hover:scale-105 transition-transform",
+                neon: "bg-primary text-background font-heading uppercase tracking-widest shadow-lg shadow-primary/40 hover:scale-105 transition-transform",
             },
             size: {
                 default: "h-11 px-4 py-2", // 44px for Touch

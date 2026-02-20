@@ -10,9 +10,18 @@ const Card = React.forwardRef<
         ref={ref}
         className={cn(
             "rounded-lg border bg-card text-card-foreground shadow-sm transition-all duration-200",
-            "border-border/50 hover:border-primary hover:shadow-[4px_4px_0px_0px_rgba(0,255,163,0.3)] hover:-translate-y-[1px] hover:-translate-x-[1px]",
+            "border-border/50 hover:border-primary hover:-translate-y-[1px] hover:-translate-x-[1px]",
             className
         )}
+        style={{
+            '--hover-shadow': 'color-mix(in srgb, var(--primary) 30%, transparent)'
+        } as React.CSSProperties}
+        onMouseEnter={(e) => {
+            e.currentTarget.style.boxShadow = '4px 4px 0px 0px var(--hover-shadow)';
+        }}
+        onMouseLeave={(e) => {
+            e.currentTarget.style.boxShadow = '';
+        }}
         {...props}
     />
 ))

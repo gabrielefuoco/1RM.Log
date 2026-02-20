@@ -48,9 +48,10 @@ export function WeeklyProgress() {
                             className={cn(
                                 "flex items-center justify-center w-10 h-10 rounded-lg border transition-all duration-300",
                                 d.status === "completed"
-                                    ? "bg-primary text-background border-primary shadow-[0_0_10px_rgba(0,255,163,0.4)] scale-105"
+                                    ? "bg-primary text-primary-foreground border-primary scale-105"
                                     : "bg-transparent border-input text-muted-foreground"
                             )}
+                            style={d.status === "completed" ? { boxShadow: '0 0 15px color-mix(in srgb, var(--primary) 40%, transparent)' } : {}}
                         >
                             {d.status === "completed" ? (
                                 <Check className="w-5 h-5" strokeWidth={3} />

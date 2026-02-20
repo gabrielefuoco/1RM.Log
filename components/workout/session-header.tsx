@@ -132,8 +132,8 @@ export function SessionHeader({
                     <div className="relative flex items-center bg-zinc-900/60 rounded-2xl border border-white/5 overflow-hidden backdrop-blur-sm">
                         {/* Status bar left accent */}
                         <div className={cn(
-                            "absolute left-0 top-0 bottom-0 w-1 transition-colors shadow-[0_0_10px_rgba(0,255,163,0.3)]",
-                            isDeload ? "bg-purple-500 shadow-[0_0_10px_rgba(168,85,247,0.3)]" : "bg-primary"
+                            "absolute left-0 top-0 bottom-0 w-1 transition-colors shadow-sm shadow-primary/40",
+                            isDeload ? "bg-purple-500 shadow-sm shadow-purple-500/40" : "bg-primary"
                         )}></div>
 
                         <div className="flex-1 py-4 pl-4 text-center">
@@ -174,7 +174,7 @@ export function SessionHeader({
                     <div className="flex items-center gap-3">
                         <div className={cn(
                             "h-8 w-8 rounded-xl bg-zinc-800/50 flex items-center justify-center transition-all duration-300",
-                            isExpanded && "bg-primary/20 shadow-[0_0_10px_rgba(0,255,163,0.2)]"
+                            isExpanded && "bg-primary/20 shadow-sm shadow-primary/30"
                         )}>
                             <ChevronRight className={cn("h-4 w-4 text-slate-500 transition-all", isExpanded && "text-primary rotate-90")} />
                         </div>

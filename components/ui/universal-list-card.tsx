@@ -57,7 +57,7 @@ export function UniversalListCard({
                 // Hover Effects
                 "hover:bg-card/60 hover:border-primary/20",
                 // Active State
-                isActive && "border-primary/40 bg-primary/[0.05] shadow-[0_0_30px_-5px_rgba(0,255,163,0.1)]",
+                isActive && "border-primary/40 bg-primary/[0.05] shadow-lg shadow-primary/10",
                 className
             )}
             onClick={onClick}
@@ -87,11 +87,11 @@ export function UniversalListCard({
                         {/* Index / Icon Box */}
                         {(icon || index !== undefined) && (
                             <div className={cn(
-                                "flex flex-col items-center justify-center shrink-0 font-heading font-bold shadow-inner transition-colors rounded-xl border",
-                                isCompact ? "h-10 w-10 text-base" : "h-12 w-12 text-lg",
+                                "flex flex-col items-center justify-center shrink-0 font-heading font-black transition-colors rounded-lg border",
+                                isCompact ? "h-11 w-11 text-sm bg-zinc-900 shadow-inner" : "h-14 w-14 text-base",
                                 isActive
                                     ? "bg-primary/20 border-primary/30 text-primary"
-                                    : "bg-muted border-border/40 text-muted-foreground group-hover:text-foreground"
+                                    : "bg-muted/30 border-white/5 text-muted-foreground group-hover:text-foreground"
                             )}>
                                 {icon ? icon : (index! + 1).toString().padStart(2, '0')}
                             </div>
@@ -102,7 +102,7 @@ export function UniversalListCard({
                             <h3 className={cn(
                                 "font-heading uppercase tracking-tight leading-tight mb-0.5 transition-colors truncate",
                                 isCompact ? "text-lg md:text-xl" : "text-xl md:text-2xl",
-                                isActive ? "text-primary drop-shadow-[0_0_8px_rgba(0,255,163,0.4)]" : "text-foreground group-hover:text-primary/90"
+                                isActive ? "text-primary filter drop-shadow-[0_0_8px_var(--primary)]" : "text-foreground group-hover:text-primary/90"
                             )}>
                                 {title}
                             </h3>
@@ -130,7 +130,7 @@ export function UniversalListCard({
                                 className={cn(
                                     "transition-all duration-300 rounded-full",
                                     isCompact ? "h-8 w-8" : "h-10 w-10",
-                                    "bg-primary text-primary-foreground shadow-[0_0_15px_rgba(0,255,163,0.4)]",
+                                    "bg-primary text-primary-foreground shadow-lg shadow-primary/40",
                                     "hover:bg-primary-foreground hover:text-primary hover:scale-110"
                                 )}
                                 onClick={(e) => {

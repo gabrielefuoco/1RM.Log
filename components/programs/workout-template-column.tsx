@@ -73,14 +73,14 @@ export function WorkoutTemplateColumn({ template, exercises, onRefresh }: Workou
     }
 
     return (
-        <div className="flex-1 min-w-[400px] flex flex-col h-full bg-black/20 backdrop-blur-md rounded-xl border border-white/5 overflow-hidden shadow-xl">
+        <div className="flex-1 min-w-[380px] md:min-w-[450px] flex flex-col h-full bg-zinc-950/40 backdrop-blur-xl rounded-[2rem] border border-white/5 overflow-hidden shadow-2xl">
             {/* Header */}
-            <div className="flex items-center justify-between p-4 border-b border-white/5 bg-white/[0.02]">
-                <div className="flex items-center gap-3 overflow-hidden">
-                    <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center text-sm font-bold text-primary border border-primary/20 shrink-0 shadow-[0_0_10px_-4px_var(--primary)]">
+            <div className="flex items-center justify-between p-6 pb-4 border-b border-white/5 bg-white/[0.01]">
+                <div className="flex items-center gap-4 overflow-hidden">
+                    <div className="h-10 w-10 rounded-full bg-primary/20 flex items-center justify-center text-sm font-black text-primary border-2 border-primary shadow-[0_0_15px_rgba(0,255,163,0.3)] shrink-0">
                         {template.order + 1}
                     </div>
-                    <h3 className="font-heading font-bold text-white truncate text-lg tracking-wide" title={template.name}>
+                    <h3 className="font-heading font-black text-white truncate text-2xl tracking-tighter italic" title={template.name}>
                         {template.name}
                     </h3>
                 </div>
@@ -137,7 +137,7 @@ export function WorkoutTemplateColumn({ template, exercises, onRefresh }: Workou
                     currentExercisesCount={exercises.length}
                     onSuccess={onRefresh}
                     trigger={
-                        <Button variant="ghost" className="w-full justify-center text-slate-500 hover:text-primary hover:bg-primary/5 border border-dashed border-white/10 hover:border-primary/30 h-10 text-xs font-bold uppercase tracking-widest transition-all">
+                        <Button variant="ghost" className="w-full justify-center text-slate-400 hover:text-primary hover:bg-primary/5 border border-dashed border-white/10 hover:border-primary/30 h-12 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] transition-all">
                             <Plus className="h-4 w-4 mr-2" /> Aggiungi Esercizio
                         </Button>
                     }

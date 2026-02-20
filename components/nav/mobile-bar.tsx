@@ -51,7 +51,7 @@ export function MobileNav() {
                                     className={cn(
                                         "flex h-16 w-16 items-center justify-center rounded-2xl transition-all duration-300 active:scale-95 text-black",
                                         "bg-primary",
-                                        "shadow-[0_8px_20px_rgba(0,255,163,0.4)] hover:shadow-[0_12px_30px_rgba(0,255,163,0.6)] group-hover:-translate-y-1",
+                                        "shadow-lg shadow-primary/40 hover:shadow-xl hover:shadow-primary/60 group-hover:-translate-y-1",
                                         "border-4 border-background"
                                     )}
                                 >
@@ -73,7 +73,7 @@ export function MobileNav() {
                             <item.icon
                                 className={cn(
                                     "h-5 w-5 transition-all duration-300",
-                                    isActive ? "text-primary drop-shadow-[0_0_8px_rgba(0,255,163,0.6)] scale-110" : "text-foreground group-hover:scale-110"
+                                    isActive ? "text-primary filter drop-shadow-[0_0_8px_var(--primary)] scale-110" : "text-foreground group-hover:scale-110"
                                 )}
                                 strokeWidth={isActive ? 2.5 : 2}
                             />

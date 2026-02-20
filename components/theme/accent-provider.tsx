@@ -4,6 +4,16 @@ import React, { createContext, useContext, useEffect, useState } from "react"
 
 export type AccentColor = "green" | "blue" | "violet" | "orange" | "red" | "rose" | "yellow"
 
+export const ACCENT_COLORS: Record<AccentColor, string> = {
+    green: "#10b981",
+    blue: "#3b82f6",
+    violet: "#8b5cf6",
+    orange: "#f97316",
+    red: "#ef4444",
+    rose: "#f43f5e",
+    yellow: "#eab308",
+}
+
 interface AccentContextType {
     accent: AccentColor
     setAccent: (accent: AccentColor) => void

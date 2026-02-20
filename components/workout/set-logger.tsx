@@ -118,7 +118,7 @@ export function SetLogger({
         <div className={cn(
             "p-4 rounded-3xl border transition-all duration-300 relative group",
             isActive
-                ? "border-primary bg-primary/5 shadow-[0_0_25px_rgba(0,255,163,0.1)] scale-[1.01]"
+                ? "border-primary bg-primary/5 shadow-lg shadow-primary/20 scale-[1.01]"
                 : isSaved
                     ? "border-border/40 bg-card/60"
                     : "border-border/50 bg-muted/20",
@@ -336,7 +336,7 @@ export function SetLogger({
                                     onChange={(e) => setWeight(e.target.value)}
                                     className={cn(
                                         "h-11 bg-muted/40 border-border/40 text-base font-black rounded-xl text-center focus:border-primary/50 transition-colors",
-                                        isProgression && "text-primary shadow-[0_0_15px_rgba(0,255,163,0.1)]"
+                                        isProgression && "text-primary shadow-sm shadow-primary/20"
                                     )}
                                     placeholder="0"
                                     autoComplete="off"

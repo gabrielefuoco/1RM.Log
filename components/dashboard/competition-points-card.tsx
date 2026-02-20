@@ -98,7 +98,7 @@ function PointItem({ label, value, description, highlight = false }: { label: st
             </TooltipProvider>
             <span className={cn(
                 "text-2xl font-black tabular-nums tracking-tighter",
-                highlight ? "text-primary drop-shadow-[0_0_8px_rgba(0,255,163,0.3)]Scale-110" : "text-white"
+                highlight ? "text-primary filter drop-shadow-[0_0_8px_var(--primary)] Scale-110" : "text-white"
             )}>{value}</span>
         </div>
     )

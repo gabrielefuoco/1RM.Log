@@ -225,11 +225,7 @@ export function ProgramEditView({ programId, templates, onRefresh }: ProgramEdit
 
     return (
         <div className="h-full w-full">
-            <div className="mb-8 px-1">
-                <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground mb-2">
-                    Schede Allenamento
-                </h2>
-            </div>
+
             <DndContext
                 sensors={sensors}
                 collisionDetection={closestCenter}

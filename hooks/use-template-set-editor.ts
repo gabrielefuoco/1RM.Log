@@ -3,6 +3,7 @@ import { TemplateSet, ProgressionMode } from "@/types/database"
 import { calculatePercentFromRepsAndRir, estimateRIR } from "@/utils/formulas"
 
 export interface ExtendedTemplateSet extends TemplateSet {
+    _id: string
     _ui_mode?: 'fixed' | 'range'
     _ui_weight_mode?: 'percent' | 'absolute'
 }
@@ -30,12 +31,14 @@ export function useTemplateSetEditor({
         if (initialSets && initialSets.length > 0) {
             setSetsData(initialSets.map(s => ({
                 ...s,
+                _id: crypto.randomUUID(),
                 _ui_mode: s.reps_min === s.reps_max ? 'fixed' : 'range',
                 _ui_weight_mode: s.weight_absolute ? 'absolute' : 'percent'
             })))
         } else {
             // Default first set
             setSetsData([{
+                _id: crypto.randomUUID(),
                 reps_min: 8,
                 reps_max: 8,
                 rir: 2,
@@ -104,7 +107,7 @@ export function useTemplateSetEditor({
                 reps_min: 8, reps_max: 8, rir: 2, type: 'straight',
                 _ui_mode: 'fixed' as const, _ui_weight_mode: 'percent' as const
             }
-            return [...prev, { ...lastSet }]
+            return [...prev, { ...lastSet, _id: crypto.randomUUID() }]
         })
     }, [])
 
@@ -117,13 +120,22 @@ export function useTemplateSetEditor({
 
     const getCleanSets = useCallback(() => {
         return setsData.map(s => {
-            const { _ui_mode, _ui_weight_mode, ...rest } = s
+            const { _id, _ui_mode, _ui_weight_mode, ...rest } = s
             // Ensure consistency before saving
             if (rest.weight_absolute) rest.weight_mode = 'absolute'
             else if (rest.percentage || rest.backoff_percent) rest.weight_mode = 'percent'
             return rest
         })
     }, [setsData])
+
+    const reorderSets = useCallback((startIndex: number, endIndex: number) => {
+        setSetsData(prev => {
+            const result = Array.from(prev)
+            const [removed] = result.splice(startIndex, 1)
+            result.splice(endIndex, 0, removed)
+            return result
+        })
+    }, [])
 
     return {
         setsData,
@@ -136,6 +148,7 @@ export function useTemplateSetEditor({
         updateSingleSet,
         addSet,
         removeSet,
+        reorderSets,
         getCleanSets
     }
 }

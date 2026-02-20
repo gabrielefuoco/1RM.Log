@@ -60,7 +60,9 @@ export function WorkoutExerciseCard({
                             : item.reps
 
                         const load = mode === 'template'
-                            ? (item.weight_mode === 'percent' ? `${item.percentage}%` : `${item.weight_absolute || '---'}kg`)
+                            ? (item.weight_mode === 'percent'
+                                ? `${item.is_backoff ? item.backoff_percent : item.percentage}%`
+                                : `${item.weight_absolute || '---'}kg`)
                             : `${item.weight}kg`
 
                         const rir = mode === 'template' ? item.rir : item.rir

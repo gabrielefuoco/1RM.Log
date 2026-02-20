@@ -87,6 +87,10 @@ export function useTemplateSetEditor({
                 if (updates.is_backoff) {
                     updatedSet._ui_weight_mode = 'percent'
                     updatedSet.weight_mode = 'percent'
+                    updatedSet.percentage = undefined
+                    updatedSet.weight_absolute = undefined
+                } else {
+                    updatedSet.backoff_percent = undefined
                 }
             }
 
@@ -94,6 +98,11 @@ export function useTemplateSetEditor({
             if (updates._ui_weight_mode) {
                 updatedSet._ui_weight_mode = updates._ui_weight_mode
                 updatedSet.weight_mode = updates._ui_weight_mode
+                if (updates._ui_weight_mode === 'percent') {
+                    updatedSet.weight_absolute = undefined
+                } else {
+                    updatedSet.percentage = undefined
+                }
             }
 
             next[index] = updatedSet
@@ -107,7 +116,7 @@ export function useTemplateSetEditor({
                 reps_min: 8, reps_max: 8, rir: 2, type: 'straight',
                 _ui_mode: 'fixed' as const, _ui_weight_mode: 'percent' as const
             }
-            return [...prev, { ...lastSet, _id: crypto.randomUUID() }]
+            return [...prev, { ...lastSet, _id: crypto.randomUUID(), is_backoff: false, backoff_percent: undefined }]
         })
     }, [])
 
@@ -122,8 +131,20 @@ export function useTemplateSetEditor({
         return setsData.map(s => {
             const { _id, _ui_mode, _ui_weight_mode, ...rest } = s
             // Ensure consistency before saving
-            if (rest.weight_absolute) rest.weight_mode = 'absolute'
-            else if (rest.percentage || rest.backoff_percent) rest.weight_mode = 'percent'
+            if (rest.is_backoff) {
+                rest.weight_mode = 'percent'
+                rest.percentage = undefined
+                rest.weight_absolute = undefined
+            } else {
+                rest.backoff_percent = undefined
+                if (rest.weight_absolute) {
+                    rest.weight_mode = 'absolute'
+                    rest.percentage = undefined
+                } else if (rest.percentage) {
+                    rest.weight_mode = 'percent'
+                    rest.weight_absolute = undefined
+                }
+            }
             return rest
         })
     }, [setsData])

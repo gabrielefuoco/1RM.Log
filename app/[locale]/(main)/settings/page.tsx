@@ -41,7 +41,7 @@ export default function SettingsPage() {
         <div className="space-y-6 pt-4 pb-24">
 
             {/* Profile Card */}
-            <Card className="border-primary/30">
+            <Card>
                 <CardHeader className="pb-2">
                     <CardTitle className="text-lg flex items-center gap-2">
                         <User className="h-5 w-5 text-primary" />
@@ -81,7 +81,7 @@ export default function SettingsPage() {
             <ProgressionSettings />
 
             {/* Appearance & Locale */}
-            <Card className="border-border/50">
+            <Card>
                 <CardHeader className="pb-2">
                     <CardTitle className="text-lg flex items-center gap-2">
                         <SettingsIcon className="h-5 w-5 text-muted-foreground" />
@@ -127,7 +127,7 @@ export default function SettingsPage() {
             </Card>
 
             {/* Account Management */}
-            <Card className="border-border/50">
+            <Card>
                 <CardHeader className="pb-2">
                     <CardTitle className="text-lg flex items-center gap-2">
                         <ShieldAlert className="h-5 w-5 text-muted-foreground" />

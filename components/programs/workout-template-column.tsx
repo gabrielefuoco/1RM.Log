@@ -73,7 +73,7 @@ export function WorkoutTemplateColumn({ template, exercises, onRefresh }: Workou
     }
 
     return (
-        <div className="flex-1 min-w-[380px] md:min-w-[450px] flex flex-col h-full bg-muted/50 rounded-[2rem] border border-border overflow-hidden shadow-lg">
+        <div className="flex-1 min-w-[380px] md:min-w-[450px] flex flex-col h-full bg-muted/30 rounded-lg border border-border/40 overflow-hidden shadow-lg">
             {/* Header */}
             <div className="flex items-center justify-between p-6 pb-4 border-b border-border">
                 <div className="flex items-center gap-4 overflow-hidden">
@@ -137,7 +137,7 @@ export function WorkoutTemplateColumn({ template, exercises, onRefresh }: Workou
                     currentExercisesCount={exercises.length}
                     onSuccess={onRefresh}
                     trigger={
-                        <Button variant="ghost" className="w-full justify-center text-muted-foreground hover:text-primary hover:bg-primary/5 border border-dashed border-border hover:border-primary/30 h-12 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] transition-all">
+                        <Button variant="ghost" className="w-full justify-center text-muted-foreground hover:text-primary hover:bg-primary/5 border border-dashed border-border hover:border-primary/30 h-12 rounded-lg text-[10px] font-black uppercase tracking-[0.2em] transition-all">
                             <Plus className="h-4 w-4 mr-2" /> Aggiungi Esercizio
                         </Button>
                     }

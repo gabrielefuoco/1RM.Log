@@ -2,29 +2,47 @@ import * as React from "react"
 
 import { cn } from "@/lib/utils"
 
-const Card = React.forwardRef<
-    HTMLDivElement,
-    React.HTMLAttributes<HTMLDivElement>
->(({ className, ...props }, ref) => (
-    <div
-        ref={ref}
-        className={cn(
-            "rounded-lg border bg-card text-card-foreground shadow-sm transition-all duration-200",
-            "border-border/50 hover:border-primary hover:-translate-y-[1px] hover:-translate-x-[1px]",
-            className
-        )}
-        style={{
-            '--hover-shadow': 'color-mix(in srgb, var(--primary) 30%, transparent)'
-        } as React.CSSProperties}
-        onMouseEnter={(e) => {
-            e.currentTarget.style.boxShadow = '4px 4px 0px 0px var(--hover-shadow)';
-        }}
-        onMouseLeave={(e) => {
-            e.currentTarget.style.boxShadow = '';
-        }}
-        {...props}
-    />
-))
+// ── Variant styles ──────────────────────────────────────────────────
+const variantStyles = {
+    default: "bg-card border-border/50 shadow-sm hover:border-primary/40",
+    elevated: "bg-card border-border/50 shadow-sm hover:border-primary/40",
+    inset: "bg-muted/30 border-border/40",
+} as const
+
+type CardVariant = keyof typeof variantStyles
+
+interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
+    variant?: CardVariant
+    withOverlay?: boolean
+}
+
+const Card = React.forwardRef<HTMLDivElement, CardProps>(
+    ({ className, variant = "default", withOverlay, children, ...props }, ref) => {
+        const showOverlay = withOverlay ?? (variant !== "inset")
+
+        return (
+            <div
+                ref={ref}
+                className={cn(
+                    "rounded-lg border text-card-foreground transition-all duration-200 relative overflow-hidden",
+                    variantStyles[variant],
+                    className
+                )}
+                {...props}
+            >
+                {/* Elevated: left accent bar */}
+                {variant === "elevated" && (
+                    <div className="absolute top-0 left-0 w-1 h-full bg-border/40 group-hover:bg-primary/50 transition-colors duration-300" />
+                )}
+                {/* Overlay gradient on hover */}
+                {showOverlay && (
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-transparent to-primary/5 opacity-0 hover:opacity-100 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+                )}
+                {children}
+            </div>
+        )
+    }
+)
 Card.displayName = "Card"
 
 const CardHeader = React.forwardRef<
@@ -33,7 +51,7 @@ const CardHeader = React.forwardRef<
 >(({ className, ...props }, ref) => (
     <div
         ref={ref}
-        className={cn("flex flex-col space-y-1.5 p-6", className)}
+        className={cn("flex flex-col space-y-1.5 p-6 relative z-[1]", className)}
         {...props}
     />
 ))
@@ -70,7 +88,7 @@ const CardContent = React.forwardRef<
     HTMLDivElement,
     React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => (
-    <div ref={ref} className={cn("p-6 pt-0", className)} {...props} />
+    <div ref={ref} className={cn("p-6 pt-0 relative z-[1]", className)} {...props} />
 ))
 CardContent.displayName = "CardContent"
 
@@ -80,10 +98,11 @@ const CardFooter = React.forwardRef<
 >(({ className, ...props }, ref) => (
     <div
         ref={ref}
-        className={cn("flex items-center p-6 pt-0", className)}
+        className={cn("flex items-center p-6 pt-0 relative z-[1]", className)}
         {...props}
     />
 ))
 CardFooter.displayName = "CardFooter"
 
 export { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent }
+export type { CardVariant }

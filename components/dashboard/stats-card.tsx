@@ -16,7 +16,7 @@ interface StatsCardProps {
 export function StatsCard({ title, value, subtitle, icon: Icon, trend, isPositive, isLoading }: StatsCardProps) {
     if (isLoading) {
         return (
-            <Card className="h-full border-border/50">
+            <Card className="h-full">
                 <CardContent className="p-5 flex flex-col justify-between h-full">
                     <div className="flex justify-between items-start mb-4">
                         <Skeleton className="w-9 h-9 rounded-md" />

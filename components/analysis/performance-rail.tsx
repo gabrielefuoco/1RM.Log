@@ -43,7 +43,7 @@ export function PerformanceRail({ items }: { items: PerformanceItem[] }) {
                         <Dialog key={item.id}>
                             <DialogTrigger asChild>
                                 <div
-                                    className="flex flex-col justify-center w-[220px] px-4 py-3 bg-muted/50 hover:bg-muted rounded-lg border border-border transition-colors group cursor-pointer active:scale-95"
+                                    className="flex flex-col justify-center w-[220px] px-4 py-3 bg-muted/30 hover:bg-muted/50 rounded-lg border border-border/40 transition-colors group cursor-pointer active:scale-95"
                                 >
                                     <div className="flex items-center justify-between mb-1">
                                         <h4 className="text-xs font-bold text-foreground truncate max-w-[120px]" title={item.exercise}>
@@ -89,11 +89,11 @@ export function PerformanceRail({ items }: { items: PerformanceItem[] }) {
                                     </div>
 
                                     <div className="grid grid-cols-2 gap-4">
-                                        <div className="p-4 rounded-lg bg-muted/50 border border-border text-center">
+                                        <div className="p-4 rounded-lg bg-muted/30 border border-border/40 text-center">
                                             <p className="text-xs text-muted-foreground uppercase tracking-widest mb-1">Previous</p>
                                             <p className="text-2xl font-heading text-muted-foreground/70">{prev1RM.toFixed(1)}</p>
                                         </div>
-                                        <div className="p-4 rounded-lg bg-primary/5 border border-primary/20 text-center relative overflow-hidden">
+                                        <div className="p-4 rounded-lg bg-primary/5 border border-border/40 text-center relative overflow-hidden">
                                             <div className="absolute inset-0 bg-primary/5 animate-pulse" />
                                             <p className="text-xs text-primary font-bold uppercase tracking-widest mb-1 relative z-10">New Record</p>
                                             <p className="text-2xl font-heading text-primary relative z-10">{item.value.toFixed(1)}</p>

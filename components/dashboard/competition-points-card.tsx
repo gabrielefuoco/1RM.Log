@@ -16,7 +16,7 @@ export function CompetitionPointsCard() {
 
     if (isLoading) {
         return (
-            <Card className="border-border/50 overflow-hidden animate-pulse">
+            <Card className="overflow-hidden animate-pulse">
                 <div className="h-40" />
             </Card>
         )
@@ -25,7 +25,7 @@ export function CompetitionPointsCard() {
     if (!points || points.total === 0) return null
 
     return (
-        <Card className="border-border/50 overflow-hidden group hover:border-primary/20 transition-all duration-500">
+        <Card className="overflow-hidden group">
             <CardHeader className="pb-2 border-b border-border">
                 <CardTitle className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground flex items-center justify-between">
                     <span className="flex items-center gap-2">
@@ -55,7 +55,7 @@ export function CompetitionPointsCard() {
                     />
                 </div>
 
-                <div className="bg-muted/50 rounded-2xl p-4 border border-border flex items-center justify-between group-hover:bg-primary/5 group-hover:border-primary/10 transition-all">
+                <div className="bg-muted/30 rounded-lg p-4 border border-border/40 flex items-center justify-between group-hover:bg-primary/5 group-hover:border-primary/10 transition-all">
                     <div>
                         <div className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-1">SBD Total</div>
                         <div className="text-3xl font-black text-foreground flex items-baseline gap-1">

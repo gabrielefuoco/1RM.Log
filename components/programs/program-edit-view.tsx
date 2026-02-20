@@ -255,7 +255,7 @@ export function ProgramEditView({ programId, templates, onRefresh }: ProgramEdit
                 {createPortal(
                     <DragOverlay>
                         {activeExercise ? (
-                            <div className="w-[320px] opacity-90 cursor-grabbing bg-card/95 backdrop-blur-xl rounded-xl border border-primary/50 shadow-[0_0_50px_-12px_var(--primary)] overflow-hidden scale-105 rotate-2">
+                            <div className="w-[320px] opacity-90 cursor-grabbing bg-card/95 backdrop-blur-xl rounded-lg border border-primary/40 shadow-lg overflow-hidden scale-105 rotate-2">
                                 <TemplateExerciseCard
                                     exercise={activeExercise}
                                     index={0}

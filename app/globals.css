@@ -304,7 +304,7 @@
 
 /* UTILITIES */
 @utility fusion-card {
-  @apply bg-card border border-border rounded-lg transition-all duration-200;
+  @apply bg-card border border-border/50 rounded-lg transition-all duration-200;
 }
 
 @utility glass-header {
@@ -329,16 +329,6 @@
     content: '';
     @apply absolute inset-x-0 top-0 h-[1px];
     background: linear-gradient(to right, transparent, color-mix(in srgb, var(--color-primary) 50%, transparent), transparent);
-  }
-}
-
-@utility fusion-card-hover {
-  @apply hover:border-primary hover:-translate-y-[2px] hover:-translate-x-[2px];
-  /* Dynamic shadow color based on primary */
-  box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-primary) 30%, transparent);
-
-  &:hover {
-    box-shadow: 4px 4px 0px 0px color-mix(in srgb, var(--color-primary) 30%, transparent);
   }
 }
 

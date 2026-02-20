@@ -207,7 +207,7 @@ export default function SessionDetailPage({
             </div>
 
             {/* Notes Section */}
-            <Card className="border-border/50">
+            <Card>
                 <CardContent className="p-4">
                     <div className="flex items-center justify-between mb-2">
                         <h3 className="font-bold text-foreground text-sm uppercase tracking-wider">Notes</h3>
@@ -275,7 +275,7 @@ export default function SessionDetailPage({
                     ))}
 
                     {logs.length === 0 && (
-                        <div className="text-center py-12 border border-dashed border-border rounded-xl">
+                        <div className="text-center py-12 border border-dashed border-border rounded-lg">
                             <p className="text-muted-foreground">No sets recorded in this session.</p>
                         </div>
                     )}

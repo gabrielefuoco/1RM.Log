@@ -28,7 +28,7 @@ export function DailyReadiness({ onComplete }: DailyReadinessProps) {
     const StatusIcon = status.icon
 
     return (
-        <div className="space-y-8 p-6 bg-card border border-border rounded-3xl animate-in fade-in slide-in-from-bottom-4 duration-500">
+        <div className="space-y-8 p-6 bg-card border border-border rounded-lg animate-in fade-in slide-in-from-bottom-4 duration-500">
             <div className="text-center space-y-2">
                 <h2 className="text-2xl font-black uppercase tracking-tighter text-foreground italic">{t("readyTitle")}</h2>
                 <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest">{t("readySubtitle")}</p>
@@ -67,7 +67,7 @@ export function DailyReadiness({ onComplete }: DailyReadinessProps) {
                         <button
                             onClick={() => setAdjustment('volume')}
                             className={cn(
-                                "flex flex-col items-center p-4 rounded-2xl border transition-all",
+                                "flex flex-col items-center p-4 rounded-lg border transition-all",
                                 adjustment === 'volume' ? "bg-orange-500/20 border-orange-500 text-foreground" : "bg-muted/30 border-border text-muted-foreground"
                             )}
                         >
@@ -77,7 +77,7 @@ export function DailyReadiness({ onComplete }: DailyReadinessProps) {
                         <button
                             onClick={() => setAdjustment('intensity')}
                             className={cn(
-                                "flex flex-col items-center p-4 rounded-2xl border transition-all",
+                                "flex flex-col items-center p-4 rounded-lg border transition-all",
                                 adjustment === 'intensity' ? "bg-orange-500/20 border-orange-500 text-foreground" : "bg-muted/30 border-border text-muted-foreground"
                             )}
                         >
@@ -90,7 +90,7 @@ export function DailyReadiness({ onComplete }: DailyReadinessProps) {
 
             <Button
                 onClick={() => onComplete({ score, adjustment })}
-                className="w-full h-14 bg-primary text-background font-black text-base uppercase tracking-widest rounded-2xl shadow-lg shadow-primary/40"
+                className="w-full h-14 bg-primary text-background font-black text-base uppercase tracking-widest rounded-lg shadow-lg shadow-primary/20"
             >
                 {t("startTraining")} <Check className="ml-2 h-5 w-5" />
             </Button>

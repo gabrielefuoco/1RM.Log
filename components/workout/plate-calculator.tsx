@@ -45,7 +45,7 @@ export function PlateCalculator({ weight, barWeight = 20, maxPlateWeight = 20 }:
                     <Calculator className="h-3.5 w-3.5" />
                 </Button>
             </DialogTrigger>
-            <DialogContent className="bg-background border-border max-w-[350px] rounded-3xl">
+            <DialogContent className="bg-background border-border max-w-[350px] rounded-lg">
                 <DialogHeader>
                     <DialogTitle className="text-center text-primary uppercase tracking-widest font-black italic">
                         {t("plateCalculator")}
@@ -63,7 +63,7 @@ export function PlateCalculator({ weight, barWeight = 20, maxPlateWeight = 20 }:
                     </div>
 
                     {/* Barbell Visualization */}
-                    <div className="relative w-full h-24 flex items-center justify-center bg-muted/50 rounded-2xl border border-border overflow-hidden">
+                    <div className="relative w-full h-24 flex items-center justify-center bg-muted/50 rounded-lg border border-border overflow-hidden">
                         {/* Bar sleeve */}
                         <div className="absolute left-4 right-4 h-3 bg-gradient-to-b from-zinc-400 to-zinc-600 rounded-full opacity-40" />
 
@@ -100,7 +100,7 @@ export function PlateCalculator({ weight, barWeight = 20, maxPlateWeight = 20 }:
 
                     {/* Plates List */}
                     <div className="w-full grid grid-cols-2 gap-4">
-                        <div className="bg-muted/40 p-3 rounded-2xl border border-border text-center">
+                        <div className="bg-muted/40 p-3 rounded-lg border border-border text-center">
                             <p className="text-[8px] text-muted-foreground uppercase font-black mb-1">{t("perSide")}</p>
                             <div className="flex flex-wrap justify-center gap-1">
                                 {neededPlates.map((p, i) => (
@@ -109,7 +109,7 @@ export function PlateCalculator({ weight, barWeight = 20, maxPlateWeight = 20 }:
                                 {neededPlates.length === 0 && <span className="text-xs font-bold text-muted-foreground">-</span>}
                             </div>
                         </div>
-                        <div className="bg-muted/40 p-3 rounded-2xl border border-border text-center">
+                        <div className="bg-muted/40 p-3 rounded-lg border border-border text-center">
                             <p className="text-[8px] text-muted-foreground uppercase font-black mb-1">{t("totalPlates")}</p>
                             <div className="text-lg font-black text-primary">
                                 {neededPlates.length * 2}

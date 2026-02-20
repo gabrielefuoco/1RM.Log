@@ -20,7 +20,7 @@ export function HistoryList({ sessions }: HistoryListProps) {
 
     if (sessions.length === 0) {
         return (
-            <div className="text-center py-12 border border-dashed border-border rounded-2xl bg-muted/50">
+            <div className="text-center py-12 border border-dashed border-border rounded-lg bg-muted/30">
                 <p className="text-zinc-500 font-medium">{t("noWorkouts")}</p>
             </div>
         )
@@ -77,7 +77,7 @@ export function HistoryList({ sessions }: HistoryListProps) {
                                         title={session.workout_template?.name || t("freeWorkout")}
                                         index={parseInt(day)} // Day number
                                         onClick={() => router.push(`/history/${session.id}`)}
-                                        className="bg-muted/30 border-border hover:border-primary/20"
+                                        className="bg-muted/30"
                                         subtitle={
                                             <div className="space-y-2 mt-1">
                                                 <div className="flex items-center gap-4 text-xs font-medium text-zinc-500">

@@ -2,9 +2,8 @@
 
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
-import { ChevronRight, Play, MoreVertical } from "lucide-react"
+import { Play } from "lucide-react"
 import { ReactNode } from "react"
 
 export interface UniversalListCardProps {
@@ -50,25 +49,19 @@ export function UniversalListCard({
 
     return (
         <Card
+            variant="elevated"
             className={cn(
-                "relative overflow-hidden transition-all duration-300 group cursor-pointer",
-                // Base Styles
-                "border-border/50",
-                // Hover Effects
-                "hover:border-primary/20",
+                "group cursor-pointer",
                 // Active State
-                isActive && "border-primary/40 bg-primary/[0.05] shadow-lg shadow-primary/10",
+                isActive && "border-primary/40 bg-primary/[0.05]",
                 className
             )}
             onClick={onClick}
         >
-            {/* Active Glow/Indicator Line */}
-            <div className={cn(
-                "absolute top-0 left-0 w-1 h-full transition-colors duration-300",
-                isActive ? "bg-primary" : "bg-border/40 group-hover:bg-primary/50"
-            )} />
-
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-transparent to-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+            {/* Active state override for left bar */}
+            {isActive && (
+                <div className="absolute top-0 left-0 w-1 h-full bg-primary z-[2]" />
+            )}
 
             <CardContent className={cn(
                 isCompact ? "p-3 pl-5 gap-2.5" : "p-4 pl-6 gap-3",
@@ -88,7 +81,7 @@ export function UniversalListCard({
                         {(icon || index !== undefined) && (
                             <div className={cn(
                                 "flex flex-col items-center justify-center shrink-0 font-heading font-black transition-colors rounded-lg border",
-                                isCompact ? "h-11 w-11 text-sm bg-zinc-900 shadow-inner" : "h-14 w-14 text-base",
+                                isCompact ? "h-11 w-11 text-sm" : "h-14 w-14 text-base",
                                 isActive
                                     ? "bg-primary/20 border-primary/30 text-primary"
                                     : "bg-muted/30 border-border text-muted-foreground group-hover:text-foreground"
@@ -98,7 +91,7 @@ export function UniversalListCard({
                         )}
 
                         <div className="min-w-0 flex-1">
-                            {/* Title - Large & Heading Font as requested */}
+                            {/* Title */}
                             <h3 className={cn(
                                 "font-heading uppercase tracking-tight leading-tight mb-0.5 transition-colors truncate",
                                 isCompact ? "text-lg md:text-xl" : "text-xl md:text-2xl",
@@ -114,7 +107,7 @@ export function UniversalListCard({
                         </div>
                     </div>
 
-                    {/* New Header Extra Slot (e.g. Trendline) */}
+                    {/* Header Extra Slot */}
                     {headerExtra && (
                         <div className="flex flex-1 justify-center px-4 self-center min-w-[80px]">
                             {headerExtra}
@@ -150,7 +143,7 @@ export function UniversalListCard({
                     </div>
                 </div>
 
-                {/* Main Content Slot (Collapsible or Block) */}
+                {/* Main Content Slot */}
                 {children && (
                     <div className="border-t border-border/40">
                         {children}

@@ -95,7 +95,7 @@ export function RestTimer({ initialSeconds = 90, onComplete, onClose, isOpen }: 
                 onClick={onClose}
             />
 
-            <div className="relative w-full max-w-sm bg-card/95 backdrop-blur-xl border border-primary/30 rounded-3xl p-6 shadow-[0_0_40px_rgba(0,0,0,0.5),0_0_20px_rgba(19,236,109,0.1)] animate-in zoom-in-95 duration-200">
+            <div className="relative w-full max-w-sm bg-card/95 backdrop-blur-xl border border-primary/30 rounded-lg shadow-2xl animate-in zoom-in-95 duration-200">
                 <div className="flex items-center justify-between mb-6">
                     <div className="flex items-center gap-3">
                         <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
@@ -139,7 +139,7 @@ export function RestTimer({ initialSeconds = 90, onComplete, onClose, isOpen }: 
                 </div>
 
                 <Button
-                    className="w-full mt-6 h-14 bg-primary text-primary-foreground font-black text-lg rounded-2xl hover:bg-primary/90 shadow-[0_0_20px_rgba(19,236,109,0.2)]"
+                    className="w-full mt-6 h-14 bg-primary text-primary-foreground font-black text-lg rounded-lg hover:bg-primary/90 shadow-lg shadow-primary/20"
                     onClick={onClose}
                 >
                     {t("skipRest")}

@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { ArrowLeft, Calendar, Clock, Trash2, Save, Pencil, MoreVertical } from "lucide-react"
 import { useRouter } from "next/navigation"
+import { useHeader } from "@/components/header-provider"
 import { format } from "date-fns"
 import { it } from "date-fns/locale"
 import { toast } from "sonner"
@@ -83,9 +84,20 @@ export default function SessionDetailPage({
         }
     }
 
+    const { setHeader } = useHeader()
+
     useEffect(() => {
         loadData()
     }, [sessionId])
+
+    useEffect(() => {
+        if (session) {
+            setHeader({
+                title: session.workout_template?.name || "Free Workout",
+                subtitle: format(new Date(session.date), "d MMM yyyy, HH:mm")
+            })
+        }
+    }, [session, setHeader])
 
     const handleSaveNotes = async () => {
         try {
@@ -162,32 +174,20 @@ export default function SessionDetailPage({
 
     return (
         <div className="space-y-6 pt-4 pb-24">
-            {/* Header */}
-            <div className="flex flex-col gap-4">
+            {/* Navigation & Actions */}
+            <div className="flex items-center justify-between">
                 <Button variant="ghost" size="sm" className="-ml-3 w-fit text-muted-foreground hover:text-foreground" onClick={() => router.back()}>
                     <ArrowLeft className="h-4 w-4 mr-1" />
                     Back to History
                 </Button>
 
-                <div className="flex items-start justify-between">
-                    <div>
-                        <h1 className="text-2xl font-bold text-foreground tracking-tight">
-                            {session.workout_template?.name || "Free Workout"}
-                        </h1>
-                        <div className="flex items-center gap-4 mt-2 text-sm text-muted-foreground">
-                            <div className="flex items-center gap-1">
-                                <Calendar className="h-4 w-4" />
-                                {format(new Date(session.date), "d MMM yyyy, HH:mm")}
-                            </div>
-                            {session.duration_seconds && (
-                                <div className="flex items-center gap-1">
-                                    <Clock className="h-4 w-4" />
-                                    {Math.floor(session.duration_seconds / 60)} min
-                                </div>
-                            )}
+                <div className="flex items-center gap-2">
+                    {session.duration_seconds && (
+                        <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                            <Clock className="h-3.5 w-3.5" />
+                            {Math.floor(session.duration_seconds / 60)} min
                         </div>
-                    </div>
-
+                    )}
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                             <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground">

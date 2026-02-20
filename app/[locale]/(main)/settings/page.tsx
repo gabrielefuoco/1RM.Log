@@ -12,11 +12,21 @@ import { ProgressionSettings } from "@/components/settings/progression-settings"
 import { useTranslations } from "next-intl"
 import { LocaleSwitcher } from "@/components/settings/locale-switcher"
 import { ThemeCustomizer } from "@/components/settings/theme-customizer"
+import { useHeader } from "@/components/header-provider"
+import { useEffect } from "react"
 
 export default function SettingsPage() {
     const { data: profile, isLoading } = useProfile()
     const { setTheme, theme } = useTheme()
     const t = useTranslations("Settings")
+    const { setHeader } = useHeader()
+
+    useEffect(() => {
+        setHeader({
+            title: t("title"),
+            subtitle: t("description")
+        })
+    }, [t, setHeader])
 
     const handleLogout = async () => {
         await signOut()
@@ -29,10 +39,6 @@ export default function SettingsPage() {
 
     return (
         <div className="space-y-6 pb-20">
-            <div>
-                <h1 className="text-3xl font-bold tracking-tight mb-2">{t("title")}</h1>
-                <p className="text-muted-foreground">{t("description")}</p>
-            </div>
 
             {/* Profile Card */}
             <Card className="border-primary/30">

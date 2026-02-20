@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button"
 import { ArrowLeft, Plus, Play, LayoutGrid, Columns } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { useRouter } from "next/navigation"
+import { useHeader } from "@/components/header-provider"
 import { Card, CardContent } from "@/components/ui/card"
 import { ProgramEditView } from "@/components/programs/program-edit-view"
 
@@ -44,29 +45,33 @@ export default function ProgramDetailPage({ params }: { params: Promise<{ id: st
         setLoading(false)
     }
 
+    const { setHeader } = useHeader()
+
     useEffect(() => {
         loadData()
     }, [id])
+
+    useEffect(() => {
+        if (program) {
+            setHeader({
+                title: program.name,
+                subtitle: program.description || undefined
+            })
+        }
+    }, [program, setHeader])
 
     if (loading) return <div className="p-8 text-center text-muted-foreground">Caricamento programma...</div>
     if (!program) return <div className="p-8 text-center text-red-400">Programma non trovato</div>
 
     return (
         <div className="space-y-6 pt-4 pb-24">
-            {/* Header */}
-            <div className="flex flex-col gap-4">
+            {/* Navigation */}
+            <div className="flex items-center justify-between">
                 <Button variant="ghost" size="sm" className="-ml-3 w-fit text-muted-foreground hover:text-foreground" onClick={() => router.back()}>
                     <ArrowLeft className="h-4 w-4 mr-1" />
                     Torna ai programmi
                 </Button>
-
-                <div>
-                    <div className="flex items-center justify-between mb-2">
-                        <h1 className="text-2xl font-bold text-foreground tracking-tight">{program.name}</h1>
-                        {program.is_active && <Badge className="bg-primary text-primary-foreground">ATTIVO</Badge>}
-                    </div>
-                    {program.description && <p className="text-sm text-muted-foreground">{program.description}</p>}
-                </div>
+                {program.is_active && <Badge className="bg-primary text-primary-foreground">ATTIVO</Badge>}
             </div>
 
             {/* Templates List */}

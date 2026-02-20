@@ -7,9 +7,11 @@ import { ProgramCard } from "@/components/programs/program-card"
 import { ProgramDrawer } from "@/components/programs/program-drawer"
 import { Activity } from "lucide-react"
 import { useTranslations } from "next-intl"
+import { useHeader } from "@/components/header-provider"
 
 export default function ProgramsPage() {
     const t = useTranslations("Programs")
+    const { setHeader } = useHeader()
     const [activeProgram, setActiveProgram] = useState<Program | null>(null)
     const [pastPrograms, setPastPrograms] = useState<Program[]>([])
     const [loading, setLoading] = useState(true)
@@ -59,18 +61,20 @@ export default function ProgramsPage() {
         loadPrograms()
     }, [])
 
+    useEffect(() => {
+        setHeader({
+            title: t("title"),
+            subtitle: t("subtitle")
+        })
+    }, [t, setHeader])
+
     return (
         <div className="space-y-8 pt-4 pb-24">
-            {/* Header */}
-            <div className="flex flex-col gap-1">
-                <h1 className="text-2xl font-bold text-foreground tracking-tight">{t("title")}</h1>
-                <p className="text-sm text-muted-foreground">{t("subtitle")}</p>
-                {errorMsg && (
-                    <div className="p-3 bg-red-500/10 border border-red-500/20 text-red-500 text-xs rounded font-mono">
-                        {errorMsg}
-                    </div>
-                )}
-            </div>
+            {errorMsg && (
+                <div className="p-3 bg-red-500/10 border border-red-500/20 text-red-500 text-xs rounded font-mono">
+                    {errorMsg}
+                </div>
+            )}
 
             {/* Active Program Section */}
             <section>

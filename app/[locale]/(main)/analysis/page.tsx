@@ -137,7 +137,7 @@ export default function AnalysisPage() {
     }, [t, setHeader])
 
     return (
-        <div className="p-4 md:p-8 space-y-8 pb-32">
+        <div className="space-y-6 pt-4 pb-24">
 
             {/* Action Toolbar */}
             <div className="flex items-center gap-2 flex-wrap">

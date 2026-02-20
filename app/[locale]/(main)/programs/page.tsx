@@ -69,7 +69,7 @@ export default function ProgramsPage() {
     }, [t, setHeader])
 
     return (
-        <div className="space-y-8 pt-4 pb-24">
+        <div className="space-y-6 pt-4 pb-24">
             {errorMsg && (
                 <div className="p-3 bg-red-500/10 border border-red-500/20 text-red-500 text-xs rounded font-mono">
                     {errorMsg}

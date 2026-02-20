@@ -75,7 +75,7 @@ export default function BodyweightPage() {
     }))
 
     return (
-        <div className="space-y-6 pb-20">
+        <div className="space-y-6 pt-4 pb-24">
             {/* Action Bar */}
             <div className="flex items-center gap-4 pt-4">
                 <Button

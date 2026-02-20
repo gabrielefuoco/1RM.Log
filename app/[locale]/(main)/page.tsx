@@ -35,7 +35,7 @@ export default function HomePage() {
     const featuredCharts = CHART_PRESETS.filter(p => p.id === 'trend_1rm' || p.id === 'weekly_volume')
 
     return (
-        <div className="space-y-6 pt-4 pb-20">
+        <div className="space-y-6 pt-4 pb-24">
             {/* Unified Desktop Grid Layout */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 

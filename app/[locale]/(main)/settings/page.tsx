@@ -38,7 +38,7 @@ export default function SettingsPage() {
     }
 
     return (
-        <div className="space-y-6 pb-20">
+        <div className="space-y-6 pt-4 pb-24">
 
             {/* Profile Card */}
             <Card className="border-primary/30">

@@ -66,7 +66,7 @@ export default function HistoryPage() {
     const workoutDays = sessions.map(s => new Date(s.date))
 
     return (
-        <div className="space-y-8 pt-4 pb-24 container-padding">
+        <div className="space-y-6 pt-4 pb-24">
             {/* Quick Stats Dashboard */}
             <div className="grid grid-cols-3 gap-3">
                 {[

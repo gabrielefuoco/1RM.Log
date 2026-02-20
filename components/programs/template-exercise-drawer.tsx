@@ -153,10 +153,10 @@ export function TemplateExerciseDrawer({
     const contentBody = (
         <div className="flex flex-col h-full max-h-[85vh]">
             <Header className="p-6 pb-2 shrink-0 text-left">
-                <Title className="text-2xl uppercase italic font-black tracking-tighter text-white">
+                <Title className="text-2xl uppercase italic font-black tracking-tighter text-foreground">
                     {selectedExercise ? (mode === 'add' ? "Configure Exercise" : "Edit Configuration") : "Select Exercise"}
                 </Title>
-                <Description className="text-slate-400">
+                <Description className="text-muted-foreground">
                     {selectedExercise
                         ? `Set targets for ${selectedExercise.name}`
                         : "Search and select from the database"}
@@ -167,10 +167,10 @@ export function TemplateExerciseDrawer({
                 {!selectedExercise ? (
                     <div className="space-y-4">
                         <div className="relative">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                             <Input
                                 placeholder="Search exercise..."
-                                className="pl-10 bg-card/50 border-border text-white h-12 rounded-lg focus:border-primary/50"
+                                className="pl-10 bg-card/50 border-border h-12 rounded-lg focus:border-primary/50"
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
                                 autoFocus
@@ -191,8 +191,8 @@ export function TemplateExerciseDrawer({
                                         <Dumbbell className="h-5 w-5 text-primary" />
                                     </div>
                                     <div className="min-w-0">
-                                        <p className="font-bold text-white text-base truncate">{exercise.name}</p>
-                                        <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">{exercise.body_parts?.join(', ')}</p>
+                                        <p className="font-bold text-foreground text-base truncate">{exercise.name}</p>
+                                        <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider">{exercise.body_parts?.join(', ')}</p>
                                     </div>
                                 </button>
                             ))}
@@ -205,7 +205,7 @@ export function TemplateExerciseDrawer({
                                 <Dumbbell className="h-6 w-6 text-primary" />
                             </div>
                             <div className="flex-1 z-10 min-w-0">
-                                <p className="text-lg font-black text-white leading-tight uppercase tracking-tight truncate">{selectedExercise.name}</p>
+                                <p className="text-lg font-black text-foreground leading-tight uppercase tracking-tight truncate">{selectedExercise.name}</p>
                                 {mode === 'add' && (
                                     <button
                                         className="text-[10px] text-primary hover:text-primary/80 uppercase font-black tracking-widest mt-1"
@@ -239,7 +239,7 @@ export function TemplateExerciseDrawer({
                     </Button>
                 ))}
             </DialogTrigger>
-            <DialogContent className="max-w-2xl bg-zinc-950/95 border border-white/10 backdrop-blur-xl shadow-2xl p-0 overflow-hidden text-white flex flex-col w-[95vw] sm:w-full rounded-3xl">
+            <DialogContent className="max-w-2xl bg-card border border-border backdrop-blur-xl shadow-2xl p-0 overflow-hidden flex flex-col w-[95vw] sm:w-full rounded-3xl">
                 {contentBody}
             </DialogContent>
         </Dialog>

@@ -102,11 +102,11 @@ export function ProgramDrawer({ mode, program, open: controlledOpen, onOpenChang
         >
             <div className="space-y-4">
                 <div className="space-y-2">
-                    <Label htmlFor="prog-name" className="text-white">Nome Programma</Label>
+                    <Label htmlFor="prog-name" className="text-foreground">Nome Programma</Label>
                     <Input
                         id="prog-name"
                         placeholder="es. Winter Bulk - Week 1-4"
-                        className="bg-card/50 border-border text-white"
+                        className="bg-card/50 border-border"
                         value={name}
                         onChange={(e) => setName(e.target.value)}
                     />
@@ -117,7 +117,7 @@ export function ProgramDrawer({ mode, program, open: controlledOpen, onOpenChang
                         <Input
                             id="prog-desc"
                             placeholder="Obiettivi del mesociclo..."
-                            className="bg-card/50 border-border text-white"
+                            className="bg-card/50 border-border"
                             value={description}
                             onChange={(e) => setDescription(e.target.value)}
                         />
@@ -125,7 +125,7 @@ export function ProgramDrawer({ mode, program, open: controlledOpen, onOpenChang
                         <Textarea
                             id="prog-desc"
                             placeholder="Obiettivi: Ipertrofia..."
-                            className="bg-card/50 border-border text-white resize-none"
+                            className="bg-card/50 border-border resize-none"
                             value={description}
                             onChange={(e) => setDescription(e.target.value)}
                         />
@@ -137,7 +137,7 @@ export function ProgramDrawer({ mode, program, open: controlledOpen, onOpenChang
                         <Input
                             id="prog-date"
                             type="date"
-                            className="bg-card/50 border-border text-white w-full block"
+                            className="bg-card/50 border-border w-full block"
                             value={startDate}
                             onChange={(e) => setStartDate(e.target.value)}
                         />

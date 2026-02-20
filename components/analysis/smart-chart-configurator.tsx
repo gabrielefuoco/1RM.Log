@@ -309,7 +309,7 @@ export function SmartChartConfigurator({
     if (isDesktop) {
         return (
             <Dialog open={open} onOpenChange={onOpenChange}>
-                <DialogContent className="max-w-2xl bg-zinc-950/90 border border-white/5 backdrop-blur-xl shadow-2xl p-0 overflow-hidden text-white">
+                <DialogContent className="max-w-2xl bg-card border border-border backdrop-blur-xl shadow-2xl p-0 overflow-hidden">
                     <DialogHeader className="p-6 pb-2">
                         <DialogTitle className="font-heading uppercase text-2xl tracking-tight flex items-center gap-2">
                             {isFocusedEdit ? <Settings2 className="size-6 text-primary" /> : <BarChart3 className="size-6 text-primary" />}
@@ -338,7 +338,7 @@ export function SmartChartConfigurator({
 
     return (
         <Drawer open={open} onOpenChange={onOpenChange}>
-            <DrawerContent className="bg-zinc-950/95 border-t border-white/10 max-h-[95vh] text-white">
+            <DrawerContent className="bg-card border-t border-border max-h-[95vh]">
                 <div className="mx-auto w-full max-w-sm overflow-y-auto">
                     <DrawerHeader className="p-6 pb-2">
                         <DrawerTitle className="font-heading uppercase text-2xl tracking-tight flex items-center gap-2">

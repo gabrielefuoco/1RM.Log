@@ -44,7 +44,7 @@ export function DesktopSidebar() {
     ]
 
     return (
-        <div className="hidden lg:flex h-screen w-72 flex-col fixed left-0 top-0 border-r border-white/5 bg-background shadow-[1px_0_30px_rgba(0,0,0,0.5)] z-50">
+        <div className="hidden lg:flex h-screen w-72 flex-col fixed left-0 top-0 border-r border-border bg-background shadow-lg z-50">
             {/* Logo Area */}
             <div className="p-8 pb-4">
                 <Link href="/" className="flex items-center gap-3 group">
@@ -52,7 +52,7 @@ export function DesktopSidebar() {
                         <Dumbbell className="h-6 w-6 text-primary" />
                     </div>
                     <div>
-                        <h1 className="font-heading font-bold text-2xl tracking-tighter leading-none text-white">
+                        <h1 className="font-heading font-bold text-2xl tracking-tighter leading-none text-foreground">
                             1RM<span className="text-primary">.LOG</span>
                         </h1>
                         <p className="text-[10px] text-muted-foreground tracking-[0.2em] uppercase font-mono">
@@ -64,7 +64,7 @@ export function DesktopSidebar() {
 
             {/* Navigation */}
             <nav className="flex-1 px-4 py-8 space-y-2">
-                <p className="px-4 text-xs font-mono font-bold text-slate-500 uppercase tracking-widest mb-4">
+                <p className="px-4 text-xs font-mono font-bold text-muted-foreground uppercase tracking-widest mb-4">
                     {t("menu")}
                 </p>
                 {navItems.map((item) => {
@@ -85,7 +85,7 @@ export function DesktopSidebar() {
                                 "flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 group relative overflow-hidden",
                                 isActive
                                     ? "bg-primary/10 text-primary border border-primary/20"
-                                    : "text-slate-400 hover:text-white hover:bg-white/5 border border-transparent"
+                                    : "text-muted-foreground hover:text-foreground hover:bg-muted border border-transparent"
                             )}
                         >
                             {/* Neon Indicator for Active */}
@@ -96,7 +96,7 @@ export function DesktopSidebar() {
                             <item.icon
                                 className={cn(
                                     "h-5 w-5 transition-transform group-hover:scale-110",
-                                    isActive ? "text-primary filter drop-shadow-[0_0_5px_var(--primary)]" : "text-slate-500 group-hover:text-white"
+                                    isActive ? "text-primary filter drop-shadow-[0_0_5px_var(--primary)]" : "text-muted-foreground group-hover:text-foreground"
                                 )}
                             />
                             <span className="font-heading font-bold tracking-wide uppercase text-sm">

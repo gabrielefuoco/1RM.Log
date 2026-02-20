@@ -226,7 +226,7 @@ export function ProgramEditView({ programId, templates, onRefresh }: ProgramEdit
     return (
         <div className="h-full w-full">
             <div className="mb-8 px-1">
-                <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500 mb-2">
+                <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground mb-2">
                     Schede Allenamento
                 </h2>
             </div>
@@ -255,7 +255,7 @@ export function ProgramEditView({ programId, templates, onRefresh }: ProgramEdit
                 {createPortal(
                     <DragOverlay>
                         {activeExercise ? (
-                            <div className="w-[320px] opacity-90 cursor-grabbing bg-black/80 backdrop-blur-xl rounded-xl border border-primary/50 shadow-[0_0_50px_-12px_var(--primary)] overflow-hidden scale-105 rotate-2">
+                            <div className="w-[320px] opacity-90 cursor-grabbing bg-card/95 backdrop-blur-xl rounded-xl border border-primary/50 shadow-[0_0_50px_-12px_var(--primary)] overflow-hidden scale-105 rotate-2">
                                 <TemplateExerciseCard
                                     exercise={activeExercise}
                                     index={0}

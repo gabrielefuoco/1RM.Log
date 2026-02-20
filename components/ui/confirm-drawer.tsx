@@ -38,10 +38,10 @@ export function ConfirmDrawer({
 }: ConfirmDrawerProps) {
     return (
         <Drawer open={open} onOpenChange={onOpenChange}>
-            <DrawerContent className="bg-background border-t border-white/10">
+            <DrawerContent className="bg-background border-t border-border">
                 <div className="mx-auto w-full max-w-sm">
                     <DrawerHeader>
-                        <DrawerTitle className="text-white text-xl">{title}</DrawerTitle>
+                        <DrawerTitle className="text-foreground text-xl">{title}</DrawerTitle>
                         {description && (
                             <DrawerDescription className="text-slate-400">
                                 {description}
@@ -67,7 +67,7 @@ export function ConfirmDrawer({
                             {confirmLabel}
                         </Button>
                         <DrawerClose asChild>
-                            <Button variant="outline" className="w-full border-white/10 text-white hover:bg-white/5 hover:text-white">
+                            <Button variant="outline" className="w-full border-border hover:bg-muted">
                                 {cancelLabel}
                             </Button>
                         </DrawerClose>

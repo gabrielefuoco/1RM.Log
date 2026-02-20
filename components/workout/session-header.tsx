@@ -129,7 +129,7 @@ export function SessionHeader({
             {templateData && (
                 <div className="relative group">
                     <div className="absolute -inset-0.5 bg-gradient-to-r from-primary/20 to-transparent rounded-2xl blur opacity-20 group-hover:opacity-40 transition-opacity"></div>
-                    <div className="relative flex items-center bg-zinc-900/60 rounded-2xl border border-white/5 overflow-hidden backdrop-blur-sm">
+                    <div className="relative flex items-center bg-muted/60 rounded-2xl border border-border overflow-hidden">
                         {/* Status bar left accent */}
                         <div className={cn(
                             "absolute left-0 top-0 bottom-0 w-1 transition-colors shadow-sm shadow-primary/40",
@@ -166,7 +166,7 @@ export function SessionHeader({
                 <div
                     className={cn(
                         "transition-all duration-300 ease-in-out cursor-pointer",
-                        "bg-zinc-900/30 rounded-2xl border border-white/5",
+                        "bg-muted/30 rounded-2xl border border-border",
                         isExpanded ? "p-4 space-y-4" : "px-4 py-3"
                     )}
                     onClick={() => setIsExpanded(!isExpanded)}
@@ -189,21 +189,21 @@ export function SessionHeader({
                         <div className="pt-2 animate-in fade-in slide-in-from-top-2 duration-300">
                             {nextTemplateData ? (
                                 <div className="grid grid-cols-3 gap-2">
-                                    <div className="bg-zinc-950/50 rounded-xl p-2 border border-white/5 text-center">
-                                        <p className="text-[9px] text-slate-500 uppercase font-black">{t("sets")}</p>
-                                        <p className="text-lg font-black text-white">{nextTemplateData.target_sets}</p>
+                                    <div className="bg-muted/50 rounded-xl p-2 border border-border text-center">
+                                        <p className="text-[9px] text-muted-foreground uppercase font-black">{t("sets")}</p>
+                                        <p className="text-lg font-black text-foreground">{nextTemplateData.target_sets}</p>
                                     </div>
-                                    <div className="bg-zinc-950/50 rounded-xl p-2 border border-white/5 text-center">
-                                        <p className="text-[9px] text-slate-500 uppercase font-black">{t("reps")}</p>
-                                        <p className="text-lg font-black text-white">{nextTemplateData.target_reps_min}-{nextTemplateData.target_reps_max}</p>
+                                    <div className="bg-muted/50 rounded-xl p-2 border border-border text-center">
+                                        <p className="text-[9px] text-muted-foreground uppercase font-black">{t("reps")}</p>
+                                        <p className="text-lg font-black text-foreground">{nextTemplateData.target_reps_min}-{nextTemplateData.target_reps_max}</p>
                                     </div>
-                                    <div className="bg-zinc-950/50 rounded-xl p-2 border border-white/5 text-center">
-                                        <p className="text-[9px] text-slate-500 uppercase font-black">RIR</p>
+                                    <div className="bg-muted/50 rounded-xl p-2 border border-border text-center">
+                                        <p className="text-[9px] text-muted-foreground uppercase font-black">RIR</p>
                                         <p className="text-lg font-black text-primary">{nextTemplateData.target_rir ?? '-'}</p>
                                     </div>
                                 </div>
                             ) : (
-                                <p className="text-[10px] text-slate-500 italic text-center py-2 bg-zinc-950/30 rounded-xl border border-white/5">{t("noTarget")}</p>
+                                <p className="text-[10px] text-muted-foreground italic text-center py-2 bg-muted/30 rounded-xl border border-border">{t("noTarget")}</p>
                             )}
                         </div>
                     )}

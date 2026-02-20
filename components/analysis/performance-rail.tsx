@@ -43,7 +43,7 @@ export function PerformanceRail({ items }: { items: PerformanceItem[] }) {
                         <Dialog key={item.id}>
                             <DialogTrigger asChild>
                                 <div
-                                    className="flex flex-col justify-center w-[220px] px-4 py-3 bg-white/5 hover:bg-white/10 rounded-lg border border-white/10 transition-colors group cursor-pointer active:scale-95"
+                                    className="flex flex-col justify-center w-[220px] px-4 py-3 bg-muted/50 hover:bg-muted rounded-lg border border-border transition-colors group cursor-pointer active:scale-95"
                                 >
                                     <div className="flex items-center justify-between mb-1">
                                         <h4 className="text-xs font-bold text-foreground truncate max-w-[120px]" title={item.exercise}>

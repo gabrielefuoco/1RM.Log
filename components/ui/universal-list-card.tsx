@@ -91,7 +91,7 @@ export function UniversalListCard({
                                 isCompact ? "h-11 w-11 text-sm bg-zinc-900 shadow-inner" : "h-14 w-14 text-base",
                                 isActive
                                     ? "bg-primary/20 border-primary/30 text-primary"
-                                    : "bg-muted/30 border-white/5 text-muted-foreground group-hover:text-foreground"
+                                    : "bg-muted/30 border-border text-muted-foreground group-hover:text-foreground"
                             )}>
                                 {icon ? icon : (index! + 1).toString().padStart(2, '0')}
                             </div>

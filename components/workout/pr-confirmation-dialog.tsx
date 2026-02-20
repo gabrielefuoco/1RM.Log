@@ -39,7 +39,7 @@ export function PRConfirmationDialog({
 
     return (
         <Drawer open={open} onOpenChange={onOpenChange}>
-            <DrawerContent className="bg-zinc-950 border-t border-white/10 text-white">
+            <DrawerContent className="bg-card border-t border-border">
                 <div className="mx-auto w-full max-w-md">
                     <DrawerHeader className="text-center">
                         <div className="mx-auto bg-amber-500/10 p-3 rounded-full w-fit mb-2">
@@ -56,7 +56,7 @@ export function PRConfirmationDialog({
                     <ScrollArea className="max-h-[200px] px-4 pr-6">
                         <div className="space-y-3">
                             {updates.map((update, i) => (
-                                <div key={i} className="flex items-center justify-between bg-white/5 border border-white/5 p-3 rounded-xl">
+                                <div key={i} className="flex items-center justify-between bg-muted/50 border border-border p-3 rounded-xl">
                                     <div className="font-bold text-sm truncate max-w-[150px]">
                                         {update.exerciseName}
                                     </div>
@@ -84,7 +84,7 @@ export function PRConfirmationDialog({
                         <Button
                             onClick={onCancel}
                             variant="outline"
-                            className="w-full h-12 bg-transparent border-white/10 text-slate-400 hover:bg-white/5 hover:text-white font-bold rounded-xl"
+                            className="w-full h-12 bg-transparent border-border text-muted-foreground hover:bg-muted hover:text-foreground font-bold rounded-xl"
                         >
                             {t("notNow")}
                         </Button>

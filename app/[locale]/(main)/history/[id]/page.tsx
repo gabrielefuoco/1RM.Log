@@ -157,24 +157,24 @@ export default function SessionDetailPage({
     }, {} as Record<string, { exerciseName: string; exerciseBodyParts: string[]; logs: ExtendedLog[] }>)
 
 
-    if (loading) return <div className="p-8 text-center text-slate-500">Loading...</div>
+    if (loading) return <div className="p-8 text-center text-muted-foreground">Loading...</div>
     if (!session) return <div className="p-8 text-center text-red-400">Workout not found</div>
 
     return (
         <div className="space-y-6 pt-4 pb-24">
             {/* Header */}
             <div className="flex flex-col gap-4">
-                <Button variant="ghost" size="sm" className="-ml-3 w-fit text-slate-400 hover:text-white" onClick={() => router.back()}>
+                <Button variant="ghost" size="sm" className="-ml-3 w-fit text-muted-foreground hover:text-foreground" onClick={() => router.back()}>
                     <ArrowLeft className="h-4 w-4 mr-1" />
                     Back to History
                 </Button>
 
                 <div className="flex items-start justify-between">
                     <div>
-                        <h1 className="text-2xl font-bold text-white tracking-tight">
+                        <h1 className="text-2xl font-bold text-foreground tracking-tight">
                             {session.workout_template?.name || "Free Workout"}
                         </h1>
-                        <div className="flex items-center gap-4 mt-2 text-sm text-slate-500">
+                        <div className="flex items-center gap-4 mt-2 text-sm text-muted-foreground">
                             <div className="flex items-center gap-1">
                                 <Calendar className="h-4 w-4" />
                                 {format(new Date(session.date), "d MMM yyyy, HH:mm")}
@@ -190,11 +190,11 @@ export default function SessionDetailPage({
 
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="icon" className="text-slate-400 hover:text-white">
+                            <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground">
                                 <MoreVertical className="h-5 w-5" />
                             </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="bg-zinc-900 border-white/10 text-white">
+                        <DropdownMenuContent align="end" className="bg-popover border-border">
                             <DropdownMenuItem
                                 onClick={() => setDeleteSessionOpen(true)}
                                 className="text-red-400 focus:text-red-400 focus:bg-red-900/20"
@@ -210,9 +210,9 @@ export default function SessionDetailPage({
             <Card className="border-border/50">
                 <CardContent className="p-4">
                     <div className="flex items-center justify-between mb-2">
-                        <h3 className="font-bold text-white text-sm uppercase tracking-wider">Notes</h3>
+                        <h3 className="font-bold text-foreground text-sm uppercase tracking-wider">Notes</h3>
                         {!isEditingNotes && (
-                            <Button variant="ghost" className="h-6 w-6 p-0 text-slate-500 hover:text-white" onClick={() => setIsEditingNotes(true)}>
+                            <Button variant="ghost" className="h-6 w-6 p-0 text-muted-foreground hover:text-foreground" onClick={() => setIsEditingNotes(true)}>
                                 <Pencil className="h-3 w-3" />
                             </Button>
                         )}
@@ -223,16 +223,16 @@ export default function SessionDetailPage({
                             <Textarea
                                 value={notes}
                                 onChange={(e) => setNotes(e.target.value)}
-                                className="bg-zinc-900 border-white/10 text-white min-h-[80px]"
+                                className="bg-card border-border min-h-[80px]"
                                 placeholder="Write notes..."
                             />
                             <div className="flex justify-end gap-2">
-                                <Button variant="ghost" size="sm" onClick={() => setIsEditingNotes(false)} className="text-slate-400 hover:text-white">Cancel</Button>
-                                <Button size="sm" onClick={handleSaveNotes} className="bg-primary text-background-dark font-bold hover:bg-white">Save</Button>
+                                <Button variant="ghost" size="sm" onClick={() => setIsEditingNotes(false)} className="text-muted-foreground hover:text-foreground">Cancel</Button>
+                                <Button size="sm" onClick={handleSaveNotes} className="bg-primary text-primary-foreground font-bold hover:bg-primary/90">Save</Button>
                             </div>
                         </div>
                     ) : (
-                        <p className="text-sm text-slate-400 whitespace-pre-wrap">
+                        <p className="text-sm text-muted-foreground whitespace-pre-wrap">
                             {session.notes || "No notes."}
                         </p>
                     )}
@@ -243,7 +243,7 @@ export default function SessionDetailPage({
             {/* Logs List */}
             <div className="space-y-6">
                 <div className="flex items-center justify-between mb-4">
-                    <h2 className="text-sm font-bold text-slate-500 uppercase tracking-widest pl-1">Exercises</h2>
+                    <h2 className="text-sm font-bold text-muted-foreground uppercase tracking-widest pl-1">Exercises</h2>
                 </div>
 
                 <div className="space-y-4">
@@ -257,7 +257,7 @@ export default function SessionDetailPage({
                             subtitle={
                                 <div className="flex flex-wrap gap-1 mt-0.5">
                                     {group.exerciseBodyParts.map((bp) => (
-                                        <Badge key={bp} variant="secondary" className="text-[9px] h-3.5 px-1.5 bg-white/5 text-zinc-500 border-none font-black uppercase tracking-tighter">
+                                        <Badge key={bp} variant="secondary" className="text-[9px] h-3.5 px-1.5 bg-muted/50 text-muted-foreground border-none font-black uppercase tracking-tighter">
                                             {bp}
                                         </Badge>
                                     ))}
@@ -275,8 +275,8 @@ export default function SessionDetailPage({
                     ))}
 
                     {logs.length === 0 && (
-                        <div className="text-center py-12 border border-dashed border-white/10 rounded-xl">
-                            <p className="text-slate-500">No sets recorded in this session.</p>
+                        <div className="text-center py-12 border border-dashed border-border rounded-xl">
+                            <p className="text-muted-foreground">No sets recorded in this session.</p>
                         </div>
                     )}
                 </div>
@@ -297,7 +297,7 @@ export default function SessionDetailPage({
 
             {/* Edit Log Drawer */}
             <Drawer open={!!editingLog} onOpenChange={(open) => !open && setEditingLog(null)}>
-                <DrawerContent className="bg-zinc-900 border-t border-white/10 text-white">
+                <DrawerContent className="bg-card border-t border-border">
                     <div className="mx-auto w-full max-w-sm">
                         <DrawerHeader>
                             <DrawerTitle>Modify Set</DrawerTitle>
@@ -312,7 +312,7 @@ export default function SessionDetailPage({
                                     step="0.5"
                                     value={editLogWeight}
                                     onChange={(e) => setEditLogWeight(Number(e.target.value))}
-                                    className="bg-zinc-950 border-white/10 text-white"
+                                    className="bg-card border-border"
                                 />
                             </div>
                             <div className="space-y-2">
@@ -321,7 +321,7 @@ export default function SessionDetailPage({
                                     type="number"
                                     value={editLogReps}
                                     onChange={(e) => setEditLogReps(Number(e.target.value))}
-                                    className="bg-zinc-950 border-white/10 text-white"
+                                    className="bg-card border-border"
                                 />
                             </div>
                             <div className="col-span-2 space-y-2">
@@ -330,14 +330,14 @@ export default function SessionDetailPage({
                                     type="number"
                                     value={editLogRir ?? ""}
                                     onChange={(e) => setEditLogRir(e.target.value ? Number(e.target.value) : undefined)}
-                                    className="bg-zinc-950 border-white/10 text-white"
+                                    className="bg-card border-border"
                                 />
                             </div>
                         </div>
 
                         <DrawerFooter>
-                            <Button onClick={handleUpdateLog} className="bg-primary text-background-dark font-bold w-full">Save</Button>
-                            <Button variant="outline" onClick={() => setEditingLog(null)} className="text-slate-400 border-white/10 w-full">Cancel</Button>
+                            <Button onClick={handleUpdateLog} className="bg-primary text-primary-foreground font-bold w-full">Save</Button>
+                            <Button variant="outline" onClick={() => setEditingLog(null)} className="text-muted-foreground border-border w-full">Cancel</Button>
                         </DrawerFooter>
                     </div>
                 </DrawerContent>

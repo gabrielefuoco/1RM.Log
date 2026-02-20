@@ -136,7 +136,7 @@ function ExerciseCard({ exercise, onEdit, onDelete }: { exercise: Exercise, onEd
                                 <MoreVertical className="h-4 w-4" />
                             </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="w-40 bg-zinc-900 border-white/10 text-white">
+                        <DropdownMenuContent align="end" className="w-40 bg-popover border-border">
                             <DropdownMenuItem onClick={onEdit} className="focus:bg-white/10 focus:text-white cursor-pointer">
                                 <Pencil className="mr-2 h-4 w-4" /> Modifica
                             </DropdownMenuItem>

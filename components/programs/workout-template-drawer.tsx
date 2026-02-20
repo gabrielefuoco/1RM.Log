@@ -85,7 +85,7 @@ export function WorkoutTemplateDrawer({
     }
 
     const defaultTrigger = mode === 'create' ? (
-        <Button variant="outline" size="sm" className="h-8 border-dashed border-white/20 hover:border-primary hover:text-primary">
+        <Button variant="outline" size="sm" className="h-8 border-dashed border-border hover:border-primary hover:text-primary">
             <Plus className="h-4 w-4 mr-1" />
             Nuova Scheda
         </Button>
@@ -107,11 +107,11 @@ export function WorkoutTemplateDrawer({
         >
             <div className="space-y-4">
                 <div className="space-y-2">
-                    <Label htmlFor="template-name" className="text-white">Nome Scheda</Label>
+                    <Label htmlFor="template-name" className="text-foreground">Nome Scheda</Label>
                     <Input
                         id="template-name"
                         placeholder="es. Upper Body A"
-                        className="bg-card/50 border-border text-white"
+                        className="bg-card/50 border-border"
                         value={name}
                         onChange={(e) => setName(e.target.value)}
                     />

@@ -20,7 +20,7 @@ export function HistoryList({ sessions }: HistoryListProps) {
 
     if (sessions.length === 0) {
         return (
-            <div className="text-center py-12 border border-dashed border-white/10 rounded-2xl bg-white/5">
+            <div className="text-center py-12 border border-dashed border-border rounded-2xl bg-muted/50">
                 <p className="text-zinc-500 font-medium">{t("noWorkouts")}</p>
             </div>
         )
@@ -77,7 +77,7 @@ export function HistoryList({ sessions }: HistoryListProps) {
                                         title={session.workout_template?.name || t("freeWorkout")}
                                         index={parseInt(day)} // Day number
                                         onClick={() => router.push(`/history/${session.id}`)}
-                                        className="bg-zinc-900/30 border-white/5 hover:border-primary/20"
+                                        className="bg-muted/30 border-border hover:border-primary/20"
                                         subtitle={
                                             <div className="space-y-2 mt-1">
                                                 <div className="flex items-center gap-4 text-xs font-medium text-zinc-500">
@@ -97,7 +97,7 @@ export function HistoryList({ sessions }: HistoryListProps) {
                                                     <div className="bg-primary/5 text-primary text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded border border-primary/10">
                                                         {uniqueExercises} Exercises
                                                     </div>
-                                                    <div className="bg-zinc-800/50 text-zinc-400 text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded border border-white/5">
+                                                    <div className="bg-muted/50 text-muted-foreground text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded border border-border">
                                                         {setsCount} Sets
                                                     </div>
                                                 </div>

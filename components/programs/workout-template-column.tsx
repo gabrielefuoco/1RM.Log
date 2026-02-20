@@ -73,29 +73,29 @@ export function WorkoutTemplateColumn({ template, exercises, onRefresh }: Workou
     }
 
     return (
-        <div className="flex-1 min-w-[380px] md:min-w-[450px] flex flex-col h-full bg-zinc-950/40 backdrop-blur-xl rounded-[2rem] border border-white/5 overflow-hidden shadow-2xl">
+        <div className="flex-1 min-w-[380px] md:min-w-[450px] flex flex-col h-full bg-muted/50 rounded-[2rem] border border-border overflow-hidden shadow-lg">
             {/* Header */}
-            <div className="flex items-center justify-between p-6 pb-4 border-b border-white/5 bg-white/[0.01]">
+            <div className="flex items-center justify-between p-6 pb-4 border-b border-border">
                 <div className="flex items-center gap-4 overflow-hidden">
                     <div className="h-10 w-10 rounded-full bg-primary/20 flex items-center justify-center text-sm font-black text-primary border-2 border-primary shadow-[0_0_15px_rgba(0,255,163,0.3)] shrink-0">
                         {template.order + 1}
                     </div>
-                    <h3 className="font-heading font-black text-white truncate text-2xl tracking-tighter italic" title={template.name}>
+                    <h3 className="font-heading font-black text-foreground truncate text-2xl tracking-tighter italic" title={template.name}>
                         {template.name}
                     </h3>
                 </div>
 
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon" className="h-7 w-7 text-slate-400 hover:text-white hover:bg-white/10">
+                        <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-foreground">
                             <MoreVertical className="h-4 w-4" />
                         </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="bg-zinc-900 border-white/10 text-white w-40">
+                    <DropdownMenuContent align="end" className="bg-popover border-border w-40">
                         <DropdownMenuItem onClick={() => setEditTemplateOpen(true)} className="cursor-pointer focus:bg-white/10">
                             <Pencil className="mr-2 h-3.5 w-3.5" /> Rinomina
                         </DropdownMenuItem>
-                        <DropdownMenuSeparator className="bg-white/10" />
+                        <DropdownMenuSeparator className="bg-border" />
                         <DropdownMenuItem
                             onClick={() => setDeleteTemplateOpen(true)}
                             className="text-red-400 focus:text-red-400 focus:bg-red-900/20 cursor-pointer"
@@ -121,8 +121,8 @@ export function WorkoutTemplateColumn({ template, exercises, onRefresh }: Workou
                         ))}
 
                         {exercises.length === 0 && (
-                            <div className="text-center py-12 opacity-50 border border-dashed border-white/10 rounded-lg">
-                                <p className="text-xs text-slate-400">Nessun esercizio</p>
+                            <div className="text-center py-12 opacity-50 border border-dashed border-border rounded-lg">
+                                <p className="text-xs text-muted-foreground">Nessun esercizio</p>
                             </div>
                         )}
                     </div>
@@ -130,14 +130,14 @@ export function WorkoutTemplateColumn({ template, exercises, onRefresh }: Workou
             </ScrollArea>
 
             {/* Footer Add Button */}
-            <div className="p-3 border-t border-white/5 bg-zinc-900/30">
+            <div className="p-3 border-t border-border bg-muted/30">
                 <TemplateExerciseDrawer
                     mode="add"
                     templateId={template.id}
                     currentExercisesCount={exercises.length}
                     onSuccess={onRefresh}
                     trigger={
-                        <Button variant="ghost" className="w-full justify-center text-slate-400 hover:text-primary hover:bg-primary/5 border border-dashed border-white/10 hover:border-primary/30 h-12 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] transition-all">
+                        <Button variant="ghost" className="w-full justify-center text-muted-foreground hover:text-primary hover:bg-primary/5 border border-dashed border-border hover:border-primary/30 h-12 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] transition-all">
                             <Plus className="h-4 w-4 mr-2" /> Aggiungi Esercizio
                         </Button>
                     }

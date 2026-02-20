@@ -100,7 +100,7 @@ export function EditOneRmDialog({ exerciseId, exerciseName, history1RM, onUpdate
                     </Button>
                 )}
             </DrawerTrigger>
-            <DrawerContent className="bg-background border-t border-white/10">
+            <DrawerContent className="bg-background border-t border-border">
                 <div className="mx-auto w-full max-w-sm">
                     <DrawerHeader>
                         <DrawerTitle className="flex items-center gap-2 text-white text-xl">

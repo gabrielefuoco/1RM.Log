@@ -72,16 +72,16 @@ export function ProgramCard({ program, onRefresh }: ProgramCardProps) {
                 // Construct the subtitle (Dates + Desc)
                 subtitle={
                     <div className="flex flex-col gap-1">
-                        <div className="flex items-center gap-2 text-xs text-slate-500">
+                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
                             <Calendar className="h-3 w-3" />
                             {format(new Date(program.start_date), "d MMM yyyy", { locale: it })}
                             {program.end_date && ` - ${format(new Date(program.end_date), "d MMM yyyy", { locale: it })}`}
                         </div>
                         {program.description && (
-                            <span className="text-xs text-slate-500 line-clamp-1">{program.description}</span>
+                            <span className="text-xs text-muted-foreground line-clamp-1">{program.description}</span>
                         )}
                         <div className="flex gap-2 mt-1">
-                            <Badge variant="outline" className="text-[10px] h-5 bg-white/5 border-border text-slate-400">
+                            <Badge variant="outline" className="text-[10px] h-5 bg-muted/50 border-border text-muted-foreground">
                                 {isActive ? "CURRENT MACROCYCLE" : "ARCHIVED"}
                             </Badge>
                         </div>
@@ -92,17 +92,17 @@ export function ProgramCard({ program, onRefresh }: ProgramCardProps) {
                 actions={
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400 hover:text-white hover:bg-white/10">
+                            <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-foreground">
                                 <MoreVertical className="h-4 w-4" />
                             </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="w-48 bg-card border-border text-white">
+                        <DropdownMenuContent align="end" className="w-48 bg-popover border-border">
                             {!isActive && (
                                 <DropdownMenuItem onClick={handleToggleActive} className="focus:bg-primary/20 text-primary focus:text-primary cursor-pointer">
                                     <Power className="mr-2 h-4 w-4" /> Imposta Attivo
                                 </DropdownMenuItem>
                             )}
-                            <DropdownMenuItem onClick={() => setEditOpen(true)} className="focus:bg-white/10 focus:text-white cursor-pointer">
+                            <DropdownMenuItem onClick={() => setEditOpen(true)} className="focus:bg-accent cursor-pointer">
                                 <Pencil className="mr-2 h-4 w-4" /> Modifica
                             </DropdownMenuItem>
                             <DropdownMenuSeparator className="bg-white/10" />

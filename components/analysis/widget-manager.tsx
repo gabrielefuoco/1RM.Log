@@ -33,7 +33,7 @@ export function WidgetManager({ config, onToggle }: WidgetManagerProps) {
                     Personalizza
                 </Button>
             </DrawerTrigger>
-            <DrawerContent className="bg-background border-t border-white/10">
+            <DrawerContent className="bg-background border-t border-border">
                 <div className="mx-auto w-full max-w-sm">
                     <DrawerHeader>
                         <DrawerTitle className="font-heading uppercase tracking-widest text-primary">Gestione Widget</DrawerTitle>

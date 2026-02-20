@@ -41,7 +41,7 @@ export function TopHeader() {
                     <Skeleton className="h-9 w-48" />
                 ) : (
                     <h1 className="text-2xl font-heading font-bold tracking-tight text-foreground uppercase">
-                        Ciao, <span className="text-white">{profile?.full_name?.split(' ')[0] || "Atleta"}</span>
+                        Ciao, <span className="text-foreground">{profile?.full_name?.split(' ')[0] || "Atleta"}</span>
                     </h1>
                 )}
             </div>

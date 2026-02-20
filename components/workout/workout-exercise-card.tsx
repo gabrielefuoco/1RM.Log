@@ -44,7 +44,7 @@ export function WorkoutExerciseCard({
         >
             <div className="overflow-hidden">
                 {/* Table Header */}
-                <div className="grid grid-cols-12 gap-2 py-3 px-4 text-[9px] font-black uppercase tracking-[0.2em] text-slate-500 border-b border-white/5">
+                <div className="grid grid-cols-12 gap-2 py-3 px-4 text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground border-b border-border">
                     <div className="col-span-1 text-center font-black">#</div>
                     <div className="col-span-3 text-center font-black">Reps</div>
                     <div className="col-span-3 text-center font-black">Load</div>

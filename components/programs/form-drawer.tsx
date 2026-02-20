@@ -46,7 +46,7 @@ export function FormDrawer({
             <DrawerContent className="bg-background border-t border-border">
                 <div className="mx-auto w-full max-w-sm">
                     <DrawerHeader>
-                        <DrawerTitle className="text-white text-xl">{title}</DrawerTitle>
+                        <DrawerTitle className="text-foreground text-xl">{title}</DrawerTitle>
                         {description && <DrawerDescription>{description}</DrawerDescription>}
                     </DrawerHeader>
 
@@ -63,7 +63,7 @@ export function FormDrawer({
                             {loading ? (loadingLabel || submitLabel) : submitLabel}
                         </Button>
                         <DrawerClose asChild>
-                            <Button variant="outline" className="w-full border-border text-white hover:bg-white/5 hover:text-white">
+                            <Button variant="outline" className="w-full border-border hover:bg-muted">
                                 Annulla
                             </Button>
                         </DrawerClose>

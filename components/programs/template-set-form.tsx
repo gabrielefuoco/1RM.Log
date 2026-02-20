@@ -137,7 +137,7 @@ export function TemplateSetForm({
                                                             type="number"
                                                             value={set.reps_min}
                                                             onChange={(e) => updateSingleSet(i, { reps_min: Number(e.target.value) })}
-                                                            className="h-9 text-sm text-center font-bold px-1 bg-background/80 border-border rounded-lg focus:border-primary/50 text-white"
+                                                            className="h-9 text-sm text-center font-bold px-1 bg-background/80 border-border rounded-lg focus:border-primary/50"
                                                         />
                                                     </div>
                                                     <div className="col-span-1 space-y-1.5 relative">
@@ -148,11 +148,11 @@ export function TemplateSetForm({
                                                             type="number"
                                                             value={set.reps_max}
                                                             onChange={(e) => updateSingleSet(i, { reps_max: Number(e.target.value) })}
-                                                            className="h-9 text-sm text-center font-bold px-1 bg-background/80 border-border rounded-lg focus:border-primary/50 text-white"
+                                                            className="h-9 text-sm text-center font-bold px-1 bg-background/80 border-border rounded-lg focus:border-primary/50"
                                                         />
                                                         <button
                                                             onClick={() => updateSingleSet(i, { _ui_mode: 'fixed' })}
-                                                            className="absolute -left-[14px] top-[42px] z-10 w-4 h-4 bg-card rounded-full flex items-center justify-center text-[8px] text-zinc-400 hover:bg-card/80 hover:text-white border border-border"
+                                                            className="absolute -left-[14px] top-[42px] z-10 w-4 h-4 bg-card rounded-full flex items-center justify-center text-[8px] text-muted-foreground hover:bg-card/80 hover:text-foreground border border-border"
                                                             title="Fixed Reps"
                                                         >
                                                             =
@@ -169,7 +169,7 @@ export function TemplateSetForm({
                                                             type="number"
                                                             value={set.reps_min}
                                                             onChange={(e) => updateSingleSet(i, { reps_min: Number(e.target.value) })}
-                                                            className="h-9 text-lg text-center font-bold px-1 bg-background/80 border-border rounded-lg focus:border-primary/50 text-white"
+                                                            className="h-9 text-lg text-center font-bold px-1 bg-background/80 border-border rounded-lg focus:border-primary/50"
                                                         />
                                                         <button
                                                             onClick={() => updateSingleSet(i, { _ui_mode: 'range' })}
@@ -191,7 +191,7 @@ export function TemplateSetForm({
                                                     value={set.rir}
                                                     onChange={(e) => updateSingleSet(i, { rir: Number(e.target.value) })}
                                                     className={cn(
-                                                        "h-9 text-sm text-center font-bold px-1 bg-background/80 border-border rounded-lg text-white"
+                                                        "h-9 text-sm text-center font-bold px-1 bg-background/80 border-border rounded-lg"
                                                     )}
                                                 />
                                             </div>
@@ -203,7 +203,7 @@ export function TemplateSetForm({
                                                             className={cn(
                                                                 "flex-1 h-full flex items-center justify-center text-[10px] font-black uppercase tracking-wider rounded transition-all duration-200",
                                                                 set._ui_weight_mode === 'absolute'
-                                                                    ? "bg-card text-white shadow-sm border border-border"
+                                                                    ? "bg-card shadow-sm border border-border"
                                                                     : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
                                                             )}
                                                         >
@@ -240,7 +240,7 @@ export function TemplateSetForm({
                                                                 onChange={(e) => updateSingleSet(i, {
                                                                     weight_absolute: e.target.value ? Number(e.target.value) : undefined
                                                                 })}
-                                                                className="h-9 text-sm text-center font-bold bg-background text-white border-border focus:border-white/30"
+                                                                className="h-9 text-sm text-center font-bold bg-background border-border focus:border-primary/30"
                                                             />
                                                             <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] font-bold text-muted-foreground/60 pointer-events-none">kg</span>
                                                         </div>

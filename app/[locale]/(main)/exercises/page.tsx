@@ -8,9 +8,11 @@ import { ExerciseDrawer } from "@/components/exercises/exercise-drawer"
 import { Input } from "@/components/ui/input"
 import { Search } from "lucide-react"
 import { useTranslations } from "next-intl"
+import { useHeader } from "@/components/header-provider"
 
 export default function ExercisesPage() {
     const t = useTranslations("Exercises")
+    const { setHeader } = useHeader()
     const [exercises, setExercises] = useState<Exercise[]>([])
     const [loading, setLoading] = useState(true)
     const [search, setSearch] = useState("")
@@ -26,6 +28,14 @@ export default function ExercisesPage() {
     useEffect(() => {
         loadData()
     }, [])
+
+    // Set header
+    useEffect(() => {
+        setHeader({
+            title: t("title"),
+            subtitle: t("subtitle")
+        })
+    }, [t])
 
     // Search logic
     useEffect(() => {
@@ -45,13 +55,7 @@ export default function ExercisesPage() {
 
 
     return (
-        <div className="space-y-8 pt-4 container-padding">
-            {/* Header */}
-            <div>
-                <h1 className="text-4xl font-black text-foreground italic uppercase tracking-tighter leading-none mb-2">{t("title")}</h1>
-                <p className="text-muted-foreground font-bold uppercase tracking-widest text-[10px]">{t("subtitle")}</p>
-            </div>
-
+        <div className="space-y-8 pt-4 pb-32">
             {/* Search */}
             <div className="relative group">
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">

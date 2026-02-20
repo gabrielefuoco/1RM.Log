@@ -18,12 +18,15 @@ import { SmartChartConfigurator } from "@/components/analysis/smart-chart-config
 import { Plus } from "lucide-react"
 import { toast } from "sonner"
 import { createClient } from "@/lib/supabase/client"
+import { useHeader } from "@/components/header-provider"
+import { useEffect } from "react"
 
 export default function AnalysisPage() {
     const queryClient = useQueryClient()
     const t = useTranslations("Analysis")
     const [showComparison, setShowComparison] = useState(false)
     const [compMetric, setCompMetric] = useState<'dots' | 'wilks' | 'ipf'>('dots')
+    const { setHeader } = useHeader()
 
     // Configurator State
     const [configDrawerOpen, setConfigDrawerOpen] = useState(false)
@@ -125,36 +128,40 @@ export default function AnalysisPage() {
 
     const widgetConfig = CHART_PRESETS.map(w => ({ id: w.id, title: w.title, visible: isVisible(w.id) }))
 
-    return (
-        <div className="p-4 md:p-8 space-y-8 pb-32">
-            {/* Header */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                <div>
-                    <h2 className="text-3xl font-heading uppercase tracking-wide">{t("title")}</h2>
-                    <p className="text-muted-foreground text-sm">{t("subtitle")}</p>
-                </div>
-                <div className="flex items-center gap-3">
+    // Set dynamic header
+    useEffect(() => {
+        setHeader({
+            title: t("title"),
+            subtitle: t("subtitle"),
+            actions: (
+                <>
                     <Button
                         variant="outline"
                         size="sm"
                         onClick={handleAddChart}
-                        className="gap-2 h-8 text-xs font-mono uppercase bg-primary/5 border-primary/20 hover:bg-primary/10"
+                        className="gap-2 h-8 text-[10px] md:text-xs font-mono uppercase bg-primary/5 border-primary/20 hover:bg-primary/10"
                     >
-                        <Plus className="size-4" />
-                        Add Chart
+                        <Plus className="size-3 md:size-4" />
+                        <span className="hidden xs:inline">Add Chart</span>
+                        <span className="xs:hidden">Add</span>
                     </Button>
                     <Button
                         variant={showComparison ? "default" : "outline"}
                         size="sm"
                         onClick={() => setShowComparison(!showComparison)}
-                        className="gap-2 h-8 text-xs font-mono uppercase"
+                        className="gap-2 h-8 text-[10px] md:text-xs font-mono uppercase"
                     >
-                        <CalendarRange className="size-4" />
+                        <CalendarRange className="size-3 md:size-4" />
                         {showComparison ? t("comparisonOn") : t("comparisonOff")}
                     </Button>
                     <WidgetManager config={widgetConfig} onToggle={handleToggle} />
-                </div>
-            </div>
+                </>
+            )
+        })
+    }, [t, showComparison, widgetConfig])
+
+    return (
+        <div className="p-4 md:p-8 space-y-8 pb-32">
 
             {/* Configurator */}
             <SmartChartConfigurator

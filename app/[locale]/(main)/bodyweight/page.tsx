@@ -31,13 +31,23 @@ import {
 import { format, subDays, startOfDay } from "date-fns"
 import { it, enUS } from "date-fns/locale"
 import { useTranslations, useLocale } from "next-intl"
+import { useHeader } from "@/components/header-provider"
+import { useEffect } from "react"
 
 export default function BodyweightPage() {
     const t = useTranslations("Bodyweight")
     const locale = useLocale()
     const router = useRouter()
     const { history, latest, addWeight, deleteWeight, isAdding, isLoading } = useBodyweight()
+    const { setHeader } = useHeader()
     const [newWeight, setNewWeight] = useState("")
+
+    useEffect(() => {
+        setHeader({
+            title: t("title"),
+            subtitle: t("subtitle")
+        })
+    }, [t])
 
     const handleAdd = async () => {
         if (!newWeight || isAdding) return
@@ -66,8 +76,8 @@ export default function BodyweightPage() {
 
     return (
         <div className="space-y-6 pb-20">
-            {/* Header */}
-            <div className="flex items-center gap-4">
+            {/* Action Bar */}
+            <div className="flex items-center gap-4 pt-4">
                 <Button
                     variant="ghost"
                     size="icon"
@@ -76,10 +86,6 @@ export default function BodyweightPage() {
                 >
                     <ChevronLeft className="w-5 h-5" />
                 </Button>
-                <div>
-                    <h1 className="text-2xl font-heading font-black tracking-tight uppercase">{t("title")}</h1>
-                    <p className="text-xs text-muted-foreground font-bold tracking-widest uppercase">{t("subtitle")}</p>
-                </div>
             </div>
 
             {/* Quick Stats Grid */}

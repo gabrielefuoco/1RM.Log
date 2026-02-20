@@ -9,9 +9,11 @@ import { it, enUS } from "date-fns/locale"
 import { useTranslations, useLocale } from "next-intl"
 import { cn } from "@/lib/utils"
 import { buttonVariants } from "@/components/ui/button"
+import { useHeader } from "@/components/header-provider"
 
 export default function HistoryPage() {
     const t = useTranslations("History")
+    const { setHeader } = useHeader()
     const locale = useLocale()
     const [sessions, setSessions] = useState<(WorkoutSession & { workout_template: { name: string } | null, exercise_logs: any[] })[]>([])
     const [loading, setLoading] = useState(true)
@@ -19,6 +21,14 @@ export default function HistoryPage() {
     const [date, setDate] = useState<Date | undefined>(new Date())
 
     const dateLocale = locale === "it" ? it : enUS
+
+    // Set header
+    useEffect(() => {
+        setHeader({
+            title: t("title"),
+            subtitle: t("subtitle")
+        })
+    }, [t])
 
     useEffect(() => {
         const loadHistory = async () => {
@@ -57,12 +67,6 @@ export default function HistoryPage() {
 
     return (
         <div className="space-y-8 pt-4 pb-24 container-padding">
-            {/* Header */}
-            <div>
-                <h1 className="text-4xl font-black text-foreground italic uppercase tracking-tighter leading-none mb-2">{t("title")}</h1>
-                <p className="text-muted-foreground font-bold uppercase tracking-widest text-[10px]">{t("subtitle")}</p>
-            </div>
-
             {/* Quick Stats Dashboard */}
             <div className="grid grid-cols-3 gap-3">
                 {[

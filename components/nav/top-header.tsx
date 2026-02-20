@@ -18,10 +18,18 @@ import { LogOut, Settings as SettingsIcon, BookOpen, Maximize2, Minimize2 } from
 import Link from "next/link"
 import { signOut } from "@/app/[locale]/(auth)/actions"
 import { useFullscreen } from "@/hooks/use-fullscreen"
+import { useHeader } from "@/components/header-provider"
+import { usePathname } from "next/navigation"
 
 export function TopHeader() {
     const { data: profile, isLoading } = useProfile()
     const { isFullscreen, toggleFullscreen } = useFullscreen()
+    const { title, subtitle, actions } = useHeader()
+    const pathname = usePathname()
+
+    // Home detection (assuming home is /[locale])
+    // Pathname usually looks like /it or /en
+    const isHome = pathname.split('/').length <= 2
 
     const today = format(new Date(), "EEEE d MMMM", { locale: it })
 
@@ -33,67 +41,92 @@ export function TopHeader() {
 
     return (
         <header className="glass-header flex items-center justify-between px-6 py-4 pt-8">
-            <div>
-                <p className="text-xs font-mono font-bold uppercase tracking-widest text-primary/80 mb-1">
-                    {today}
-                </p>
-                {isLoading ? (
-                    <Skeleton className="h-9 w-48" />
+            <div className="flex-1">
+                {(!isHome && title) ? (
+                    <div>
+                        <h1 className="text-2xl font-heading font-bold tracking-tight text-foreground uppercase">
+                            {title}
+                        </h1>
+                        {subtitle && (
+                            <p className="text-xs font-sans text-muted-foreground mt-0.5">
+                                {subtitle}
+                            </p>
+                        )}
+                    </div>
                 ) : (
-                    <h1 className="text-2xl font-heading font-bold tracking-tight text-foreground uppercase">
-                        Ciao, <span className="text-foreground">{profile?.full_name?.split(' ')[0] || "Atleta"}</span>
-                    </h1>
+                    <div>
+                        <p className="text-xs font-mono font-bold uppercase tracking-widest text-primary/80 mb-1">
+                            {today}
+                        </p>
+                        {isLoading ? (
+                            <Skeleton className="h-9 w-48" />
+                        ) : (
+                            <h1 className="text-2xl font-heading font-bold tracking-tight text-foreground uppercase">
+                                Ciao, <span className="text-foreground">{profile?.full_name?.split(' ')[0] || "Atleta"}</span>
+                            </h1>
+                        )}
+                    </div>
                 )}
             </div>
-            {isLoading ? (
-                <Skeleton className="h-12 w-12 rounded-md" />
-            ) : (
-                <div className="flex items-center gap-3">
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={toggleFullscreen}
-                        className="text-muted-foreground hover:text-primary transition-colors h-10 w-10"
-                        title={isFullscreen ? "Esci da Schermo Intero" : "Schermo Intero"}
-                    >
-                        {isFullscreen ? <Minimize2 className="h-5 w-5" /> : <Maximize2 className="h-5 w-5" />}
-                    </Button>
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Avatar className="h-11 w-11 border border-border/30 rounded-md cursor-pointer hover:border-primary transition-colors">
-                                <AvatarImage src={profile?.avatar_url || undefined} alt={profile?.full_name || "User"} />
-                                <AvatarFallback className="bg-card text-primary font-heading font-bold text-lg rounded-md">
-                                    {getInitials(profile?.full_name)}
-                                </AvatarFallback>
-                            </Avatar>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="w-56 bg-card border-border/20 rounded-lg">
-                            <DropdownMenuLabel className="font-heading uppercase tracking-wide">Il mio account</DropdownMenuLabel>
-                            <DropdownMenuSeparator className="bg-border/10" />
-                            <DropdownMenuItem asChild>
-                                <Link href="/settings" className="cursor-pointer w-full flex items-center font-sans">
-                                    <SettingsIcon className="mr-2 h-4 w-4" />
-                                    <span>Impostazioni</span>
-                                </Link>
-                            </DropdownMenuItem>
-                            <DropdownMenuItem asChild>
-                                <Link href="/exercises" className="cursor-pointer w-full flex items-center font-sans">
-                                    <BookOpen className="mr-2 h-4 w-4" />
-                                    <span>Gestione Esercizi</span>
-                                </Link>
-                            </DropdownMenuItem>
-                            <DropdownMenuSeparator className="bg-border/10" />
-                            <DropdownMenuItem
-                                className="text-destructive focus:text-destructive focus:bg-destructive/10 cursor-pointer font-sans"
-                                onClick={() => signOut()}
-                            >
-                                <LogOut className="mr-2 h-4 w-4" />
-                                <span>Esci</span>
-                            </DropdownMenuItem>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
-                </div>
-            )}
+
+            <div className="flex items-center gap-3">
+                {/* Custom Page Actions */}
+                {!isHome && actions && (
+                    <div className="flex items-center gap-2 mr-2">
+                        {actions}
+                    </div>
+                )}
+
+                {isLoading ? (
+                    <Skeleton className="h-12 w-12 rounded-md" />
+                ) : (
+                    <>
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={toggleFullscreen}
+                            className="text-muted-foreground hover:text-primary transition-colors h-10 w-10 shrink-0"
+                            title={isFullscreen ? "Esci da Schermo Intero" : "Schermo Intero"}
+                        >
+                            {isFullscreen ? <Minimize2 className="h-5 w-5" /> : <Maximize2 className="h-5 w-5" />}
+                        </Button>
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Avatar className="h-11 w-11 border border-border/30 rounded-md cursor-pointer hover:border-primary transition-colors shrink-0">
+                                    <AvatarImage src={profile?.avatar_url || undefined} alt={profile?.full_name || "User"} />
+                                    <AvatarFallback className="bg-card text-primary font-heading font-bold text-lg rounded-md">
+                                        {getInitials(profile?.full_name)}
+                                    </AvatarFallback>
+                                </Avatar>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end" className="w-56 bg-card border-border/20 rounded-lg">
+                                <DropdownMenuLabel className="font-heading uppercase tracking-wide">Il mio account</DropdownMenuLabel>
+                                <DropdownMenuSeparator className="bg-border/10" />
+                                <DropdownMenuItem asChild>
+                                    <Link href="/settings" className="cursor-pointer w-full flex items-center font-sans">
+                                        <SettingsIcon className="mr-2 h-4 w-4" />
+                                        <span>Impostazioni</span>
+                                    </Link>
+                                </DropdownMenuItem>
+                                <DropdownMenuItem asChild>
+                                    <Link href="/exercises" className="cursor-pointer w-full flex items-center font-sans">
+                                        <BookOpen className="mr-2 h-4 w-4" />
+                                        <span>Gestione Esercizi</span>
+                                    </Link>
+                                </DropdownMenuItem>
+                                <DropdownMenuSeparator className="bg-border/10" />
+                                <DropdownMenuItem
+                                    className="text-destructive focus:text-destructive focus:bg-destructive/10 cursor-pointer font-sans"
+                                    onClick={() => signOut()}
+                                >
+                                    <LogOut className="mr-2 h-4 w-4" />
+                                    <span>Esci</span>
+                                </DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+                    </>
+                )}
+            </div>
         </header>
     )
 }

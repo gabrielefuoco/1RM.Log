@@ -4,8 +4,8 @@ import { cn } from "@/lib/utils"
 
 // ── Variant styles ──────────────────────────────────────────────────
 const variantStyles = {
-    default: "bg-card border-border/50 shadow-sm hover:border-primary/40",
-    elevated: "bg-card border-border/50 shadow-sm hover:border-primary/40",
+    default: "bg-card border-border/50 shadow-sm card-hover-fx",
+    elevated: "bg-card border-border/50 shadow-sm card-hover-fx",
     inset: "bg-muted/30 border-border/40",
 } as const
 

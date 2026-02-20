@@ -307,6 +307,15 @@
   @apply bg-card border border-border/50 rounded-lg transition-all duration-200;
 }
 
+@utility card-hover-fx {
+  @apply hover:border-primary hover:-translate-y-[2px] hover:-translate-x-[2px];
+
+  &:hover {
+    box-shadow: 4px 4px 0px 0px color-mix(in srgb, var(--color-primary) 30%, transparent);
+  }
+}
+
+
 @utility glass-header {
   @apply sticky top-0 z-40 w-full;
   @apply bg-background/60 backdrop-blur-xl;

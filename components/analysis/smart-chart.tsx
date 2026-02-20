@@ -204,7 +204,7 @@ export function SmartChart({ config, onDelete, onEdit }: SmartChartProps) {
 
     return (
         <AnalysisGridItem colSpan={config.colSpan}>
-            <Card className="border border-border/40 bg-card/40 backdrop-blur-sm overflow-hidden group">
+            <Card className="border border-border/50 overflow-hidden group">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <div
                         className={cn(

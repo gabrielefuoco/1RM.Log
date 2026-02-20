@@ -84,7 +84,7 @@ export default function BodyweightPage() {
 
             {/* Quick Stats Grid */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <Card className="bg-secondary/5 border-border/40">
+                <Card className="border-border/50">
                     <CardContent className="pt-4 px-4 pb-3">
                         <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-1">{t("current")}</p>
                         <div className="flex items-baseline gap-1">
@@ -93,7 +93,7 @@ export default function BodyweightPage() {
                         </div>
                     </CardContent>
                 </Card>
-                <Card className="bg-secondary/5 border-border/40">
+                <Card className="border-border/50">
                     <CardContent className="pt-4 px-4 pb-3">
                         <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-1">{t("variation")}</p>
                         <div className="flex items-center gap-1">
@@ -105,7 +105,7 @@ export default function BodyweightPage() {
                         </div>
                     </CardContent>
                 </Card>
-                <Card className="bg-secondary/5 border-border/40">
+                <Card className="border-border/50">
                     <CardContent className="pt-4 px-4 pb-3">
                         <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-1">{t("min")}</p>
                         <div className="flex items-baseline gap-1">
@@ -114,7 +114,7 @@ export default function BodyweightPage() {
                         </div>
                     </CardContent>
                 </Card>
-                <Card className="bg-secondary/5 border-border/40">
+                <Card className="border-border/50">
                     <CardContent className="pt-4 px-4 pb-3">
                         <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-1">{t("max")}</p>
                         <div className="flex items-baseline gap-1">
@@ -126,7 +126,7 @@ export default function BodyweightPage() {
             </div>
 
             {/* Main Chart Card */}
-            <Card className="border-border/40 bg-card/30 overflow-hidden">
+            <Card className="border-border/50 overflow-hidden">
                 <CardHeader className="border-b border-border/10 bg-secondary/5 py-4">
                     <div className="flex items-center justify-between">
                         <CardTitle className="text-xs font-heading font-bold tracking-widest text-muted-foreground uppercase flex items-center gap-2">
@@ -184,7 +184,7 @@ export default function BodyweightPage() {
             {/* Input & History */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* Input Card */}
-                <Card className="lg:col-span-1 border-border/40 bg-card/30">
+                <Card className="border-border/50">
                     <CardHeader>
                         <CardTitle className="text-sm font-bold tracking-tight uppercase">{t("newEntry")}</CardTitle>
                     </CardHeader>
@@ -211,7 +211,7 @@ export default function BodyweightPage() {
                 </Card>
 
                 {/* History List */}
-                <Card className="lg:col-span-2 border-border/40 bg-card/30">
+                <Card className="lg:col-span-2 border-border/50">
                     <CardHeader className="flex flex-row items-center justify-between">
                         <CardTitle className="text-sm font-bold tracking-tight uppercase">{t("historyLogs")}</CardTitle>
                         <p className="text-[10px] font-bold text-muted-foreground uppercase">{t("entries", { count: history.length })}</p>

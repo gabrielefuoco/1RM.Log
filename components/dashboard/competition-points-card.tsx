@@ -16,7 +16,7 @@ export function CompetitionPointsCard() {
 
     if (isLoading) {
         return (
-            <Card className="bg-zinc-950 border-white/5 overflow-hidden animate-pulse">
+            <Card className="border-border/50 overflow-hidden animate-pulse">
                 <div className="h-40" />
             </Card>
         )
@@ -25,7 +25,7 @@ export function CompetitionPointsCard() {
     if (!points || points.total === 0) return null
 
     return (
-        <Card className="bg-zinc-950 border-white/5 overflow-hidden group hover:border-primary/20 transition-all duration-500">
+        <Card className="border-border/50 overflow-hidden group hover:border-primary/20 transition-all duration-500">
             <CardHeader className="pb-2 border-b border-white/5 bg-white/[0.02]">
                 <CardTitle className="text-xs font-black uppercase tracking-[0.2em] text-slate-500 flex items-center justify-between">
                     <span className="flex items-center gap-2">

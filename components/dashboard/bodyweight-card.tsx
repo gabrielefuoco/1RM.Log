@@ -39,7 +39,7 @@ export function BodyweightCard() {
     }))
 
     return (
-        <Card className="overflow-hidden border-border/40 bg-card/50 backdrop-blur-sm">
+        <Card className="overflow-hidden border-border/50">
             <CardHeader className="flex flex-row items-center justify-between pb-2 border-b border-border/10 bg-secondary/5">
                 <div className="flex items-center gap-2">
                     <Scale className="w-4 h-4 text-primary" />

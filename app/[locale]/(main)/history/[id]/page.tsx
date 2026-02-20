@@ -207,7 +207,7 @@ export default function SessionDetailPage({
             </div>
 
             {/* Notes Section */}
-            <Card className="bg-zinc-900/40 border-white/5">
+            <Card className="border-border/50">
                 <CardContent className="p-4">
                     <div className="flex items-center justify-between mb-2">
                         <h3 className="font-bold text-white text-sm uppercase tracking-wider">Notes</h3>

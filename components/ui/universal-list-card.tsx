@@ -53,9 +53,9 @@ export function UniversalListCard({
             className={cn(
                 "relative overflow-hidden transition-all duration-300 group cursor-pointer",
                 // Base Styles
-                "bg-card/40 backdrop-blur-md border border-border/40",
+                "border-border/50",
                 // Hover Effects
-                "hover:bg-card/60 hover:border-primary/20",
+                "hover:border-primary/20",
                 // Active State
                 isActive && "border-primary/40 bg-primary/[0.05] shadow-lg shadow-primary/10",
                 className

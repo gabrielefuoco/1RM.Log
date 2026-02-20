@@ -42,18 +42,7 @@ export function TopHeader() {
     return (
         <header className="glass-header flex items-center justify-between px-6 py-4 pt-8">
             <div className="flex-1">
-                {(!isHome && title) ? (
-                    <div>
-                        <h1 className="text-2xl font-heading font-bold tracking-tight text-foreground uppercase">
-                            {title}
-                        </h1>
-                        {subtitle && (
-                            <p className="text-xs font-sans text-muted-foreground mt-0.5">
-                                {subtitle}
-                            </p>
-                        )}
-                    </div>
-                ) : (
+                {isHome ? (
                     <div>
                         <p className="text-xs font-mono font-bold uppercase tracking-widest text-primary/80 mb-1">
                             {today}
@@ -66,6 +55,19 @@ export function TopHeader() {
                             </h1>
                         )}
                     </div>
+                ) : title ? (
+                    <div>
+                        <h1 className="text-2xl font-heading font-bold tracking-tight text-foreground uppercase">
+                            {title}
+                        </h1>
+                        {subtitle && (
+                            <p className="text-xs font-sans text-muted-foreground mt-0.5">
+                                {subtitle}
+                            </p>
+                        )}
+                    </div>
+                ) : (
+                    <Skeleton className="h-9 w-48" />
                 )}
             </div>
 

@@ -44,7 +44,7 @@ export function WorkoutExerciseCard({
         >
             <div className="overflow-hidden">
                 {/* Table Header */}
-                <div className="grid grid-cols-12 gap-2 py-3 px-4 text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground border-b border-border">
+                <div className="grid grid-cols-12 gap-2 py-2 px-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground/80 border-b border-border/50 bg-muted/10">
                     <div className="col-span-1 text-center font-black">#</div>
                     <div className="col-span-3 text-center font-black">Reps</div>
                     <div className="col-span-3 text-center font-black">Load</div>
@@ -67,21 +67,21 @@ export function WorkoutExerciseCard({
                         const isFailure = rir === 0
 
                         return (
-                            <div key={i} className="grid grid-cols-12 gap-2 py-4 px-4 text-[13px] items-center hover:bg-muted/20 transition-colors group/row">
-                                <div className="col-span-1 text-center font-heading text-muted-foreground font-black text-sm">
+                            <div key={i} className="grid grid-cols-12 gap-2 py-2.5 px-4 items-center hover:bg-muted/30 transition-colors relative">
+                                <div className="col-span-1 text-center font-heading text-muted-foreground/60 font-black text-[13px]">
                                     {setNumber}
                                 </div>
-                                <div className="col-span-3 text-center font-black text-base tracking-tight text-primary shadow-primary/20 drop-shadow-sm">
+                                <div className="col-span-3 text-center font-black text-[15px] tracking-tight text-primary shadow-primary/20 drop-shadow-sm">
                                     {reps}
                                 </div>
-                                <div className="col-span-3 text-center font-bold text-foreground tabular-nums tracking-tighter">
+                                <div className="col-span-3 text-center font-bold text-[15px] text-foreground tabular-nums tracking-tighter">
                                     {load}
                                 </div>
-                                <div className="col-span-2 text-center text-foreground/80 font-heading font-black text-sm">
+                                <div className="col-span-2 text-center text-foreground/90 font-heading font-black text-[14px]">
                                     {rir ?? '-'}
                                 </div>
                                 <div className="col-span-3 text-right">
-                                    <span className="text-[9px] text-muted-foreground uppercase font-black italic tracking-[0.15em] opacity-80">
+                                    <span className="text-[10px] text-muted-foreground/70 uppercase font-black italic tracking-widest">
                                         {isFailure ? "Failure" : "Straight"}
                                     </span>
                                 </div>

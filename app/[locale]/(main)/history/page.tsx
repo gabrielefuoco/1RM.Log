@@ -74,7 +74,7 @@ export default function HistoryPage() {
                     { label: "TOTAL SETS", value: stats.totalSets, color: "text-primary" },
                     { label: "CONSISTENCY", value: `${stats.consistency}%`, color: "text-amber-500" },
                 ].map((stat, i) => (
-                    <div key={i} className="bg-muted/50 border border-border rounded-2xl p-3 flex flex-col items-center justify-center text-center">
+                    <div key={i} className="bg-muted/50 border border-border rounded-lg p-3 flex flex-col items-center justify-center text-center">
                         <span className="text-[9px] font-black text-muted-foreground tracking-[0.2em] mb-1">{stat.label}</span>
                         <span className={cn("text-xl font-black italic tracking-tighter", stat.color)}>{stat.value}</span>
                     </div>
@@ -82,7 +82,7 @@ export default function HistoryPage() {
             </div>
 
             {/* Calendar Card */}
-            <div className="bg-card border border-border rounded-3xl p-4 flex justify-center shadow-xl relative overflow-hidden group">
+            <div className="bg-card border border-border rounded-lg p-4 flex justify-center shadow-xl relative overflow-hidden group">
                 <div className="absolute top-0 right-0 w-24 h-24 bg-primary/5 blur-3xl pointer-events-none" />
                 <CalendarComponent
                     mode="single"
@@ -103,7 +103,7 @@ export default function HistoryPage() {
                         workout: workoutDays
                     }}
                     modifiersClassNames={{
-                        workout: "text-primary font-black scale-110 relative z-10 before:absolute before:inset-x-1 before:bottom-1 before:top-1 before:bg-primary/20 before:rounded-full before:-z-10"
+                        workout: "text-primary font-black scale-110 relative z-10 before:absolute before:inset-x-1 before:bottom-1 before:top-1 before:bg-primary/20 before:rounded-md before:-z-10"
                     }}
                     locale={dateLocale}
                 />

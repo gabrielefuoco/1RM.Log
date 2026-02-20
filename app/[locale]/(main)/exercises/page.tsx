@@ -63,7 +63,7 @@ export default function ExercisesPage() {
                 </div>
                 <Input
                     placeholder={t("searchPlaceholder")}
-                    className="pl-11 bg-muted/50 border-border text-foreground rounded-2xl h-12 focus:border-primary/20 focus:bg-muted/70 transition-all placeholder:text-muted-foreground font-medium"
+                    className="pl-11 bg-muted/50 border-border text-foreground rounded-lg h-12 focus:border-primary/20 focus:bg-muted/70 transition-all placeholder:text-muted-foreground font-medium"
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
                 />

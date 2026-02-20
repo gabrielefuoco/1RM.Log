@@ -109,7 +109,7 @@ export function WorkoutTemplateColumn({ template, exercises, onRefresh }: Workou
             {/* List */}
             <ScrollArea className="flex-1 p-3">
                 <SortableContext items={exercises.map(e => e.id)} strategy={verticalListSortingStrategy}>
-                    <div ref={setNodeRef} className="space-y-0 pb-4 min-h-[100px]">
+                    <div ref={setNodeRef} className="space-y-0 pb-4 pt-1 px-1 -mx-1 min-h-[100px]">
                         {exercises.map((ex, i) => (
                             <SortableTemplateExerciseCard
                                 key={ex.id}

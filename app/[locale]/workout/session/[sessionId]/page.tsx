@@ -248,8 +248,14 @@ export default function SessionRunnerPage({ params }: { params: Promise<{ sessio
                             const targetPercentage = setTarget?.percentage
 
                             const sessionWorkLogs = currentItem.logs.filter(l => l.set_type === 'work')
-                            const lastSessionLog = sessionWorkLogs.find(l => l.set_number === log.set_number - 1) || sessionWorkLogs[sessionWorkLogs.length - 1]
+                            const sequentialPrevLog = sessionWorkLogs.find(l => l.set_number === log.set_number - 1)
+                            const lastSessionLog = sequentialPrevLog || sessionWorkLogs[sessionWorkLogs.length - 1]
                             const effectivePrevLog = lastSessionLog || currentItem.historyLogs[0]
+
+                            // For logged sets, the previous weight should be the sequential one, or the last logged work set.
+                            // But usually, since it's already logged, its 'weight' was calculated relative to something at the time.
+                            // We still pass it so the badge "Drop -10%" renders correctly if targetPercentage is not defining it.
+                            const previousWeightLog = sequentialPrevLog || currentItem.logs.filter(l => l.set_number < log.set_number && l.set_type === 'work').pop();
 
                             return (
                                 <SetLogger
@@ -269,7 +275,7 @@ export default function SessionRunnerPage({ params }: { params: Promise<{ sessio
                                     initialValues={log}
                                     previousLog={effectivePrevLog}
                                     templateSet={setTarget}
-                                    previousSetWeight={currentItem.logs.find(l => l.set_number === log.set_number - 1)?.weight}
+                                    previousSetWeight={previousWeightLog?.weight}
                                     isDeload={s.isDeload}
                                     progressionTarget={currentItem.progressionTarget}
                                     onRemove={() => s.removeSet(s.currentIndex, log.set_number, true, log.id)}
@@ -296,6 +302,7 @@ export default function SessionRunnerPage({ params }: { params: Promise<{ sessio
 
                             const sessionWorkLogs = currentItem.logs.filter(l => l.set_type === 'work')
                             const effectivePrevLog = sessionWorkLogs[sessionWorkLogs.length - 1] || currentItem.historyLogs[0]
+                            const previousWorkSetLogged = currentItem.logs.slice().reverse().find(l => l.set_type === 'work')
 
                             return (
                                 <SetLogger
@@ -316,7 +323,7 @@ export default function SessionRunnerPage({ params }: { params: Promise<{ sessio
                                     intensityMultiplier={s.intensityMultiplier}
                                     previousLog={effectivePrevLog}
                                     templateSet={setTarget}
-                                    previousSetWeight={currentItem.logs.find(l => l.set_number === setNum - 1)?.weight}
+                                    previousSetWeight={previousWorkSetLogged?.weight}
                                     isDeload={s.isDeload}
                                     progressionTarget={currentItem.progressionTarget}
                                     onRemove={() => s.removeSet(s.currentIndex, setNum, false)}
